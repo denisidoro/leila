@@ -6,8 +6,8 @@ VarSpeedServo servo0, servo1;  // create servo object to control a servo
 void setup() {
 
 	Serial.begin(9600);
-	servo0.attach(9, 60, 160);  //the pin for the servoa control
-	servo1.attach(11, 60, 160);  //the pin for the servob control
+	servo0.attach(9, 900, 2100);  //the pin for the servoa control
+	servo1.attach(11, 900, 2100);  //the pin for the servob control
 
 }
 

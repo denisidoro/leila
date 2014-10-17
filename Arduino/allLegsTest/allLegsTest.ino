@@ -1,25 +1,28 @@
-
-String readString;
 #include <VarSpeedServo.h> 
-VarSpeedServo servo0, servo1;  // create servo object to control a servo 
+
+VarSpeedServo sv[12]; 
+int svt[12];
 
 void setup() {
 
 	Serial.begin(9600);
-	servo0.attach(9, 900, 2100);  //the pin for the servoa control
-	servo1.attach(11, 900, 2100);  //the pin for the servob control
+
+	for (int i = 0; i < 12; i++)
+		sv.attach(2 + i, 900, 2100);
 
 }
 
 void loop() {
 
 	if (Serial.available()) {
-		int angle0 = Serial.parseInt();
-		int speed0 = Serial.parseInt();
-		int angle1 = Serial.parseInt();
-		int speed1 = Serial.parseInt();
-		servo0.write(angle0, speed0);
-		servo1.write(angle1, speed1);
+		for (int i = 0; i < 12; i++)
+			svt[i] = Serial.parseInt();
+		updateServos();
 	}
 
+}
+
+void updateServos() {
+	for (int i = 0; i < 12; i++)
+		sv[i].write(svt[i]);
 }

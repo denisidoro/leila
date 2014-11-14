@@ -13,14 +13,28 @@ void setup(){
 	setPos(3, 4, 5, angles);
 	printAngles(angles);
 
+	for (int i = 0; i < 3; i++)
+		Dynamixel.move(i + 1, 800);
+
 }
 
 void loop(){
 
 	if (Serial.available()) {
-		setPos(Serial.parseInt, Serial.parseInt, Serial.parseInt, angles);
+		/*setPos(Serial.parseInt(), Serial.parseInt(), Serial.parseInt(), angles);
+		printAngles(angles);
 		for (int i = 0; i < 3; i++)
-			Dynamixel.moveSpeed(i, angles[i], 1020);
+			Dynamixel.moveSpeed(i + 1, angles[i], 1020);*/
+		angles[0] = Serial.parseInt();
+		angles[1] = Serial.parseInt();
+		angles[2] = Serial.parseInt();
+		Dynamixel.moveSpeed(1, angles[0], 1020);
+		delay(100);
+		Dynamixel.moveSpeed(2, angles[1], 1020);
+		delay(100);
+		Dynamixel.moveSpeed(3, angles[2], 1020);
+		//delay(1);
+		printAngles(angles);
 	}
  
 }
@@ -33,14 +47,14 @@ void setPos(int x, int y, int z, int *angles) {
 	float l1_2 = FemurLength*FemurLength, l2_2 = TibiaLength*TibiaLength;
 	float x_2 = x*x, z_2 = z*z;
 
-	angles[0] = radianToBits(atan2(z, x));
-	angles[1] = radianToBits(acos((l1_2 + x_2 + z_2 - l2_2)/(2*FemurLength*sqrt(x_2 + z_2))) - angles[0]);
-	angles[2] = radianToBits(acos((l1_2 + l2_2 - x_2 - z_2)/(2*FemurLength*TibiaLength)));
+	angles[0] = radianToBit(atan2(z, x));
+	angles[1] = radianToBit(acos((l1_2 + x_2 + z_2 - l2_2)/(2*FemurLength*sqrt(x_2 + z_2))) - angles[0]);
+	angles[2] = radianToBit(acos((l1_2 + l2_2 - x_2 - z_2)/(2*FemurLength*TibiaLength)));
 
 }
 
-int radianToBits(float radian) {
-    int bits = 3069/(5 * M_PI)*radian;
+int radianToBit(float radian) {
+    int bits = 3069/(5 * M_PI)*(radian + 5*M_PI/6);
 	return (bits < 1024 ? bits : 1023);
 }
 

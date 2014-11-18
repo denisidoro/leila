@@ -1,0 +1,23 @@
+{
+  "name": "Node",
+  "version": "0.0.0",
+  "main": "public/stylesheets/style.less",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "bootstrap": "~3.3.1",
+    "dat.gui": "*",
+    "gamepad": "https://github.com/kallaspriit/HTML5-JavaScript-Gamepad-Controller-Library.git#master"
+  }
+}

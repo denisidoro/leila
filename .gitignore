@@ -1,3 +1,6 @@
 .DS_Store
 
 Docs/*
+
+Node/node_modules/*
+Node/public/bower/*

@@ -1,8 +1,26 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+body, html {
+	height: 100%;
+	overflow-y: hidden;
 }
 
-a {
-  color: #00B7FF;
+body {
+	background: #ebe9f9;
+	background: -moz-linear-gradient(top,  #ebe9f9 0%, #d8d0ef 35%, #cec7ec 72%, #c1bfea 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebe9f9), color-stop(35%,#d8d0ef), color-stop(72%,#cec7ec), color-stop(100%,#c1bfea));
+	background: -webkit-linear-gradient(top,  #ebe9f9 0%,#d8d0ef 35%,#cec7ec 72%,#c1bfea 100%);
+	background: -o-linear-gradient(top,  #ebe9f9 0%,#d8d0ef 35%,#cec7ec 72%,#c1bfea 100%);
+	background: -ms-linear-gradient(top,  #ebe9f9 0%,#d8d0ef 35%,#cec7ec 72%,#c1bfea 100%);
+	background: linear-gradient(to bottom,  #ebe9f9 0%,#d8d0ef 35%,#cec7ec 72%,#c1bfea 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebe9f9', endColorstr='#c1bfea',GradientType=0 );
+}
+
+#table-holder {
+	position: absolute;
+	height: 30vh;
+	width: 100%;
+	bottom: 0;
+    overflow-y: auto;
+    .number	{ width: 75px; }
+    .time	{ width: 100px; }
+    .from	{ width: 100px; }
 }

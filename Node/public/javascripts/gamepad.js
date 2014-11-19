@@ -1,11 +1,13 @@
 $(document).ready(function() {
 
+  initGUI();
+
   window.gamepad = new Gamepad();
 
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
     console.log('Gamepad connected', device);
-    if (typeof gui == 'undefined')
-      initGUI();
+    if (typeof gui.gamepadStarted == 'undefined')
+      initGamepadGUI();
   });
 
   gamepad.bind(Gamepad.Event.DISCONNECTED, function(device) {
@@ -20,12 +22,12 @@ $(document).ready(function() {
     switch (e.axis) {
       case "RIGHT_STICK_Y":
         if (e.gamepad.state.RIGHT_TOP_SHOULDER == 1)
-          hexapod.baseRotZ = map(e.value, 1, -1, -90, 90);
+          hexapod.baseRotZ = scale(e.value, 1, -1, -90, 90);
         else
-          hexapod.baseRotY = map(e.value, 1, -1, -90, 90);
+          hexapod.baseRotY = scale(e.value, 1, -1, -90, 90);
         break;
       case "RIGHT_STICK_X":
-        hexapod.baseRotX = map(e.value, -1, 1, -90, 90);
+        hexapod.baseRotX = scale(e.value, -1, 1, -90, 90);
         break;
     }
   });

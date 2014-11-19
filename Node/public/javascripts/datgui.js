@@ -9,6 +9,14 @@ function initGUI() {
 	gui.f1.add(hexapod, 'baseRotY', -90, 90).listen();
 	gui.f1.add(hexapod, 'baseRotZ', -90, 90).listen();
 
+	gui.f1.open();
+  
+};
+
+function initGamepadGUI() {
+
+	gui.gamepadStarted = true;
+
 	gui.f2 = gui.addFolder('Controller');
 	for(var p in gamepad.gamepads[0].state) {
 		if (p.toLowerCase().indexOf('stick') != -1 || p.toLowerCase().indexOf('bottom_shoulder') != -1)
@@ -17,6 +25,4 @@ function initGUI() {
 			gui.f2.add(gamepad.gamepads[0].state, p, false).listen();
 	}
 
-	gui.f1.open();
-  
-};
+}

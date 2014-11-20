@@ -28,7 +28,7 @@
     <tbody>
     	<% for (var i = 0; i < 20; i++) { %>
       <tr>
-        <td>1</td>
+        <td><%= Math.pow(10, i) %></td>
         <td>16:55:21</td>
         <td>Arduino</td>
         <td><%= JSON.stringify({"myobject": "hello", asdf:"avzx"}) %></td>

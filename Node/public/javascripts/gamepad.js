@@ -1,8 +1,4 @@
-$(document).ready(function() {
-
-  initGUI();
-
-  window.gamepad = new Gamepad();
+function initGamepad() {
 
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
     console.log('Gamepad connected', device);
@@ -36,4 +32,4 @@ $(document).ready(function() {
     alert('Your browser does not support gamepads, get the latest Google Chrome or Firefox.');
   }
 
-});
+}

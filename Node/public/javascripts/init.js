@@ -11,4 +11,6 @@ $(document).ready(function() {
 	var socket;
 	initSocket();
 
+	logToTable('init', 'Initialization finished', 'Server');
+
 });

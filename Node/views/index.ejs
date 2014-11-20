@@ -8,6 +8,10 @@
 	<body>
 		<h1>Hello, world!</h1>
 
+    <p>
+      <button onclick="randomLED()">Random LED</button>
+    </p>
+
 
 
 <pre><code class="javascript">alert('hello');</code></pre>
@@ -16,24 +20,17 @@
 
 <div id="table-holder">
 
-  <table id="logTable" class="table table-bordered">
+  <table id="log-table" class="table table-bordered">
     <thead>
       <tr>
         <th class="number">#</th>
         <th class="time">Time</th>
         <th class="from">From</th>
+        <th class="tag">Tag</th>
         <th char="message">Message</th>
       </tr>
     </thead>
     <tbody>
-    	<% for (var i = 0; i < 20; i++) { %>
-      <tr>
-        <td><%= Math.pow(10, i) %></td>
-        <td>16:55:21</td>
-        <td>Arduino</td>
-        <td><%= JSON.stringify({"myobject": "hello", asdf:"avzx"}) %></td>
-      </tr>
-  <% } %>
     </tbody>
   </table>
 

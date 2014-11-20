@@ -1,0 +1,28 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Programs\\nodejs\\node.exe',
+1 verbose cli   'C:\\Programs\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'uninstall',
+1 verbose cli   'johnny-five' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.33
+4 verbose node_modules\johnny-five unbuild
+5 info preuninstall johnny-five@0.8.27
+6 info uninstall johnny-five@0.8.27
+7 verbose true,D:\dev\hexapod\node\node_modules,D:\dev\hexapod\node\node_modules unbuild johnny-five@0.8.27
+8 info postuninstall johnny-five@0.8.27
+9 error Error: EPERM, rmdir 'D:\dev\hexapod\node\node_modules\johnny-five\node_modules\serialport\node_modules\node-pre-gyp\node_modules\tar-pack\node_modules'
+9 error  { [Error: EPERM, rmdir 'D:\dev\hexapod\node\node_modules\johnny-five\node_modules\serialport\node_modules\node-pre-gyp\node_modules\tar-pack\node_modules']
+9 error   errno: 50,
+9 error   code: 'EPERM',
+9 error   path: 'D:\\dev\\hexapod\\node\\node_modules\\johnny-five\\node_modules\\serialport\\node_modules\\node-pre-gyp\\node_modules\\tar-pack\\node_modules' }
+10 error Please try running this command again as root/Administrator.
+11 error System Windows_NT 6.2.9200
+12 error command "C:\\Programs\\nodejs\\node.exe" "C:\\Programs\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "uninstall" "johnny-five"
+13 error cwd D:\dev\hexapod\node
+14 error node -v v0.10.33
+15 error npm -v 1.4.28
+16 error path D:\dev\hexapod\node\node_modules\johnny-five\node_modules\serialport\node_modules\node-pre-gyp\node_modules\tar-pack\node_modules
+17 error code EPERM
+18 error errno 50
+19 error stack Error: EPERM, rmdir 'D:\dev\hexapod\node\node_modules\johnny-five\node_modules\serialport\node_modules\node-pre-gyp\node_modules\tar-pack\node_modules'
+20 verbose exit [ 50, true ]

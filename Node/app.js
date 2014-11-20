@@ -1,11 +1,14 @@
 var debug = require('debug')('Node');
 
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser');
+
+var five = require("johnny-five"),
+    board = new five.Board();
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -68,14 +71,42 @@ app.use(function(err, req, res, next) {
     });
 });
 
+module.exports = app;
+
+
+
+
+/* ================
+   MINE
+================ */
+
+
+board.on("ready", function() {
+    console.log('board ready');
+    io.emit('response', 'Board is now ready!');
+});
+
+
 io.on('connection', function(socket) {
-    console.log('a user connected')
+
+    console.log('a user connected');
+    io.emit('response', ['Hello', board.isReady]);
+    
     socket.on('disconnect', function() {
         console.log('a user disconnected');
     });
-    socket.on('testmessage', function(msg) {
-        console.log(['testmessage', msg]);
-    });
-});
 
-module.exports = app;
+    if (board.isReady) {
+
+        console.log('board socket response functions defined');
+
+        socket.on('turnLED', function(status) {
+            console.log(['led', status]);
+            var led = new five.Led(13);
+            if (status) led.on(); else led.off();
+            io.emit('response', 'LED change complete');
+        });
+
+    }
+
+});

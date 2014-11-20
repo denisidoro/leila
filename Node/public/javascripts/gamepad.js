@@ -1,17 +1,17 @@
 function initGamepad() {
 
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
-    console.log('Gamepad connected', device);
+    logToTable('gamepad', 'Gamepad connected');
     if (typeof gui.gamepadStarted == 'undefined')
       initGamepadGUI();
   });
 
   gamepad.bind(Gamepad.Event.DISCONNECTED, function(device) {
-    console.log('Gamepad disconnected', device);
+    console.log('gamepad', 'Gamepad disconnected');
   });
 
   gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
-    //socket.emit('controller', e.gamepad.index + ", " + e.control);
+    randomLED();
   });
 
   gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {

@@ -13,8 +13,7 @@ function initGUI() {
 
 	$.each(controllers, function(i, c) {
 		c.listen().onFinishChange(function(value) {
-			console.log(['value changed: ', value]);
-			socket.emit('testmessage', value);
+			socket.emitWithLog('hexapodConfigChange', hexapod, false, ['rot', i, value]);
 		});
 	});
 

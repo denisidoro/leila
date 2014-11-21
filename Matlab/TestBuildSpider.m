@@ -16,7 +16,7 @@ U(6,:) = [ + d2 + 50;  - d3 - 130;  - 80];
 
 
 % Translação em x
-frames = 2;
+frames = 2
 F(2*frames) = struct('cdata',[],'colormap',[]);
 x_0 = [0;0;0];
 rot = [0;0;0];

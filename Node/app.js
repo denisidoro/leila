@@ -107,6 +107,10 @@ io.on('connection', function(socket) {
             io.emit('response', 'LED change complete');
         });
 
+        socket.on('callA2', function(status) {
+            board.io.sysex(0xA2);
+        });
+
     }
 
 });

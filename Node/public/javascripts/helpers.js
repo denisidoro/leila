@@ -34,3 +34,7 @@ function logToTable(tag, msg, from) {
 function randomLED() {
 	socket.emitWithLog('turnLED', [true, false][Math.round(Math.random())]);
 }
+
+function callA2() {
+	socket.emitWithLog('callA2');
+}

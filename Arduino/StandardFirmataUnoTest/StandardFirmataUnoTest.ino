@@ -14,7 +14,6 @@
   Copyright (C) 2010-2011 Paul Stoffregen.  All rights reserved.
   Copyright (C) 2009 Shigeru Kobayashi.  All rights reserved.
   Copyright (C) 2009-2011 Jeff Hoefs.  All rights reserved.
-  Copyright (C) 2013 Sho Hashimoto.  All rights reserved.
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -22,6 +21,7 @@
   version 2.1 of the License, or (at your option) any later version.
  
   See file LICENSE.txt for further informations on licensing terms.
+
   formatted using the GNU C formatting and indenting
 */
 
@@ -33,9 +33,7 @@
 #include <Wire.h>
 #include <Firmata.h>
 
-#include <Math.h>
 #include "constants.h"
-#include "DynamixelSerial2.h"
 
 // move the following defines to Firmata.h?
 #define I2C_WRITE B00000000
@@ -355,11 +353,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
     break;
 
   case 0xA1: // Test servos
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
-    Dynamixel.move(argv[0], argv[1] * 10);
-    delay(100);
-    digitalWrite(13, LOW);
     break;
 
   case 0xA2: // LED on
@@ -618,9 +611,6 @@ void systemResetCallback()
 
 void setup() 
 {
-
-  Dynamixel.begin(1000000, AX12Pin);
-
   Firmata.setFirmwareVersion(FIRMATA_MAJOR_VERSION, FIRMATA_MINOR_VERSION);
 
   Firmata.attach(ANALOG_MESSAGE, analogWriteCallback);
@@ -633,10 +623,6 @@ void setup()
 
   Firmata.begin(57600);
   systemResetCallback();  // reset to default config
-
-  for (int i = 1; i <= 3; i++)
-    Dynamixel.move(i, 512);
-
 }
 
 /*==============================================================================
@@ -681,6 +667,8 @@ void loop()
 }
 
 
+
+
 /*==============================================================================
  * DYNAMIXEL
  *============================================================================*/
@@ -688,7 +676,7 @@ void loop()
  void sendSomeInfo() {
 
       Serial.write(START_SYSEX);
-      Serial.write(0xB0);
+      Serial.write(GENERIC_RESPONSE);
       Serial.write(8);
       Serial.write(12);
       Serial.write(511);

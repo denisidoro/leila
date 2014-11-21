@@ -6,7 +6,7 @@ function scale(x, in_min, in_max, out_min, out_max) {
 function logToTable(tag, msg, from) {
 
 	// Input checkup
-	from = from || "This device";
+	from = from || "Here";
 	if (typeof msg == 'undefined') {
 		msg = tag; tag = "-";
 	}

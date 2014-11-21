@@ -366,27 +366,20 @@ void sysexCallback(byte command, byte argc, byte *argv)
     int value;
     switch(argc) {
       case 2: // one servo
-        Dynamixel.move(argv[0], 8*argv[1]);
+        Dynamixel.move(argv[0], argv[1]);
         break;
       case 3: // one servo, given speed
-        Dynamixel.moveSpeed(argv[0], 8*argv[1], 8*argv[2]);
+        Dynamixel.moveSpeed(argv[0], argv[1], argv[2]);
         break;
       case 18: // all servos
         for (int i = 1; i <= 18; i++) {
-          Dynamixel.move(i, 8*argv[0]);
+          Dynamixel.move(i, argv[0]);
         }
         break;
       case 19: // all servos, given speed
         for (int i = 1; i <= 18; i++) {
-          Dynamixel.moveSpeed(i, 8*argv[0], 8*argv[1]);
+          Dynamixel.moveSpeed(i, argv[0], argv[1]);
         }
-        break;
-      case 9: // one servo, high precision
-        value = 0;
-        for (int i = 1; i <= 8; i++) {
-          value += argv[i];
-        }
-        Dynamixel.move(argv[0], value);
         break;
     }
     break;

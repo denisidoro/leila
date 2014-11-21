@@ -38,3 +38,7 @@ function randomLED() {
 function callA2() {
 	socket.emitWithLog('callA2');
 }
+
+function callBlink() {
+	socket.emitWithLog('callBlink', 254);
+}

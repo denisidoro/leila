@@ -33,6 +33,7 @@
 #include <Wire.h>
 #include <Firmata.h>
 
+#include "DynamixelSerial.h"
 #include "constants.h"
 
 // move the following defines to Firmata.h?
@@ -333,14 +334,17 @@ void sysexCallback(byte command, byte argc, byte *argv)
   
   switch(command) {
 
-  case 0xA0: // LED Blink Command (pin, times, .1 seconds)
+  /*============================================================================
+   * CUSTOM SYSEX-BASED commands
+   *==========================================================================*/
+
+  case LED_BLINK_TEST: // LED Blink Command (pin, times, .1 seconds)
     if(argc < 3) break;
     byte blink_pin;
     byte blink_count;
     blink_pin = argv[0];
     blink_count = argv[1];
     delayTime = argv[2] * 100;
-
     pinMode(blink_pin, OUTPUT);
     byte i;
     for(i = 0; i < blink_count; i++){
@@ -352,14 +356,60 @@ void sysexCallback(byte command, byte argc, byte *argv)
     Firmata.sendSysex(command, argc, argv); // callback
     break;
 
-  case 0xA1: // Test servos
-    break;
-
-  case 0xA2: // LED on
+  case RESPONSE_TEST: // LED on and SYSEX response
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
     sendSomeInfo();
     break;
+
+  case MOVE_AX12: // move servos
+    int value;
+    switch(argc) {
+      case 2: // one servo
+        Dynamixel.move(argv[0], 8*argv[1]);
+        break;
+      case 3: // one servo, given speed
+        Dynamixel.moveSpeed(argv[0], 8*argv[1], 8*argv[2]);
+        break;
+      case 18: // all servos
+        for (int i = 1; i <= 18; i++) {
+          Dynamixel.move(i, 8*argv[0]);
+        }
+        break;
+      case 19: // all servos, given speed
+        for (int i = 1; i <= 18; i++) {
+          Dynamixel.moveSpeed(i, 8*argv[0], 8*argv[1]);
+        }
+        break;
+      case 9: // one servo, high precision
+        value = 0;
+        for (int i = 1; i <= 8; i++) {
+          value += argv[i];
+        }
+        Dynamixel.move(argv[0], value);
+        break;
+    }
+    break;
+
+  case G_POSITION_AX12: 
+    Serial.write(START_SYSEX);
+    Serial.write(GENERIC_RESPONSE);
+    Serial.write(G_MOVING_AX12);
+    switch(argc) {
+      case 1: // one servo
+        Serial.write(Dynamixel.readPosition(argv[0]));
+        break;
+      case 0: // all servos
+        for (int i = 1; i <= 18; i++)
+        Serial.write(Dynamixel.readPosition(i));
+        break;
+    }
+    Serial.write(END_SYSEX);
+    break;
+
+  /*============================================================================
+   * DEFAULT SYSEX-BASED commands
+   *==========================================================================*/
 
   case I2C_REQUEST:
     mode = argv[1] & I2C_READ_WRITE_MODE_MASK;
@@ -677,9 +727,13 @@ void loop()
 
       Serial.write(START_SYSEX);
       Serial.write(GENERIC_RESPONSE);
-      Serial.write(8);
-      Serial.write(12);
-      Serial.write(511);
+      Serial.write(15);
+      Serial.write(16);
+      Serial.write(127);
+      Serial.write(240);
+      Serial.write(258);
+      Serial.write(510);
+      Serial.write(580);
       Serial.write(END_SYSEX);
 
  }

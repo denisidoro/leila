@@ -81,9 +81,15 @@ module.exports = app;
 ================ */
 
 
-board.on("ready", function() {
+board.on('ready', function() {
+
     console.log('board ready');
     io.emit('response', 'Board is now ready!');
+
+    this.io.on('genericresponse', function(res) {
+        console.log(['generic response', res]);
+    });
+
 });
 
 
@@ -107,8 +113,14 @@ io.on('connection', function(socket) {
             io.emit('response', 'LED change complete');
         });
 
-        socket.on('callA2', function(status) {
-            board.io.sysex(0xA2);
+        socket.on('callA2', function() {
+            console.log('call 0x81');
+            board.io.sysex(0x81);
+        });
+
+        socket.on('callBlink', function(times) {
+            console.log('call 0x80');
+            board.io.sysex(0x80, [13, times, 2]);
         });
 
     }

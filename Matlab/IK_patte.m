@@ -1,4 +1,4 @@
-function [angles] = IK_araignee( x_0, i, x_P,u, L, ang)
+function [angles] = IK_patte( x_0, i, x_P,u, L, ang)
 %Entradas: 
 %x_0 = Centro do referencial da aranha
 %i = Número da pata
@@ -25,8 +25,7 @@ R = C*B*A;
 s_i1 = x_P - x_0;
 l_i = x_0 + R*s_i1 - u;
 %Resultado
-alpha = atan(l_i(2)/l_i(1))+ang(3)+ang(1);
-%alpha = atan(l_i(2)/l_i(1));
+alpha = atan(dot(l_i,R*[0;1;0])/dot(l_i,R*[1;0;0]));
 
 %%%Knee joint vector calculation
 s_i2 = [s_i1(1) + ((-1)^i)*L(1)*cos(alpha);

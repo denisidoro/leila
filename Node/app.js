@@ -86,8 +86,8 @@ board.on('ready', function() {
     console.log('board ready');
     io.emit('response', 'Board is now ready!');
 
-    this.io.on('genericresponse', function(res) {
-        console.log(['generic response', res]);
+    this.io.on('sysexResponse', function(res) {
+        console.log(['sysex response', res]);
     });
 
 });
@@ -105,11 +105,10 @@ io.on('connection', function(socket) {
     if (board.isReady) {
 
         console.log('board socket response functions defined');
+        var led13 = new five.Led(13);
 
-        socket.on('turnLED', function(status) {
-            console.log(['led', status]);
-            var led = new five.Led(13);
-            if (status) led.on(); else led.off();
+        socket.on('toggleLED', function() {
+            led13.toggle();
             io.emit('response', 'LED change complete');
         });
 

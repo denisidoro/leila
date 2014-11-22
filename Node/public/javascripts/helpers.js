@@ -7,9 +7,8 @@ function logToTable(tag, msg, from) {
 
 	// Input checkup
 	from = from || "Here";
-	if (typeof msg == 'undefined') {
-		msg = tag; tag = "-";
-	}
+	if (typeof msg == 'undefined')
+		msg = '';
 	if (!(typeof msg == 'string' || msg instanceof String))
 		msg = JSON.stringify(msg);
 
@@ -31,8 +30,8 @@ function logToTable(tag, msg, from) {
    TEMP
 =================== */
 
-function randomLED() {
-	socket.emitWithLog('turnLED', [true, false][Math.round(Math.random())]);
+function toggleLED() {
+	socket.emitWithLog('toggleLED');
 }
 
 function callA2() {

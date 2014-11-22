@@ -3,9 +3,9 @@ function initSocket() {
 	socket = io();
 
 	// Define custom emit function with log
-	socket.emitWithLog = function(tag, msg, from, customLogMsg) {
-		customLogMsg = customLogMsg || msg;
-		logToTable(tag, customLogMsg, from);
+	socket.emitWithLog = function(tag, msg, from, logMsg) {
+		logMsg = logMsg || msg;
+		logToTable(tag, logMsg, from);
 		socket.emit(tag, msg);
 	}
 

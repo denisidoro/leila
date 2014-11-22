@@ -7,3 +7,5 @@ Node/node_modules/*/
 !Node/node_modules/changes/
 
 Node/public/bower/*
+
+Design/resource/*

@@ -13,4 +13,8 @@ function initSocket() {
 		logToTable('serverResponse', msg, 'Server');
 	});
 
+	socket.on('sysexResponse', function(msg) {
+		logToTable('sysexResponse', msg, 'Arduino');
+	});
+
 }

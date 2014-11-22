@@ -42,3 +42,7 @@ function callA2() {
 function callBlink() {
 	socket.emitWithLog('callBlink', 254);
 }
+
+function sendCode() {
+	socket.emitWithLog('eval', editor.getValue());
+}

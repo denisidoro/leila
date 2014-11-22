@@ -17,7 +17,7 @@ function initGUI() {
 		});
 	});
 
-	gui.f1.open();
+	//gui.f1.open();
   
 };
 

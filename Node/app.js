@@ -123,6 +123,17 @@ io.on('connection', function(socket) {
             board.io.sysex(0x80, [13, times, 2]);
         });
 
+        socket.on('eval', function(string) {
+            console.log(['eval', string]);
+            try {
+                eval(string); 
+            } catch (e) {
+                if (e instanceof SyntaxError) {
+                    console.log(['eval error', e.message]);
+                }
+            }
+        });
+
     }
 
 });

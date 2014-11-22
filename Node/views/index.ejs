@@ -9,14 +9,16 @@
 		<h1>LEILA</h1>
 
     <p>
+      <button onclick="sendCode()">Send code</button>
       <button onclick="randomLED()">Random LED</button>
       <button onclick="callA2()">Call RESPONSE_TEST</button>
       <button onclick="callBlink()">Call LED_BLINK_TEST</button>
     </p>
 
-    <!--<div id="my-div">
-      hello
-    </div>-->
+<div id="editor-holder">
+  <div id="editor">var led = new five.Led(13);
+led.on();</div>
+</div>
 
 <div id="log-table-holder">
 

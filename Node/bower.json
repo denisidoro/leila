@@ -18,6 +18,7 @@
     "jquery": "~2.1.1",
     "bootstrap": "~3.3.1",
     "dat.gui": "*",
-    "gamepad": "https://github.com/kallaspriit/HTML5-JavaScript-Gamepad-Controller-Library.git#master"
+    "gamepad": "https://github.com/kallaspriit/HTML5-JavaScript-Gamepad-Controller-Library.git#master",
+    "ace-builds": "~1.1.8"
   }
 }

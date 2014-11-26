@@ -1,4 +1,4 @@
-module.exports = function(io, five, board) {
+module.exports = function(io, five, board, hexapod) {
 
 	io.on('connection', function(socket) {
 
@@ -38,6 +38,11 @@ module.exports = function(io, five, board) {
 	                    console.log(['eval error', e.message]);
 	                }
 	            }
+	        });
+
+	        socket.on('hexapodConfigChange', function(hex) {
+	        	hexapod.IK.move(null, null, null, [hex.baseRotX, hex.baseRotY, hex.baseRotZ]);
+	            io.emit('response', 'New angles sent to servos');
 	        });
 
 	    }

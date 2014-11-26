@@ -73,7 +73,5 @@ module.exports = app;
    MINE
 ================ */
 var hexapod = require('./logic/hexapod').init(board);
-require('./logic/boardReady')(io, five, board);
-require('./logic/userConnected')(io, five, board);
-
-console.log(hexapod.IK.leg(1));
+require('./logic/boardReady')(io, five, board, hexapod);
+require('./logic/userConnected')(io, five, board, hexapod);

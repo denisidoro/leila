@@ -1,4 +1,4 @@
-module.exports = function(io, five, board) {
+module.exports = function(io, five, board, hexapod) {
 
 	board.on('ready', function() {
 
@@ -9,6 +9,8 @@ module.exports = function(io, five, board) {
 	        console.log(['sysex response', res]);
 	        io.emit('sysexResponse', res);
 	    });
+
+		hexapod.IK.move();
 
 	});
 

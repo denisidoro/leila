@@ -10,8 +10,6 @@ module.exports = function(io, five, board, hexapod) {
 	        io.emit('sysexResponse', res);
 	    });
 
-		hexapod.IK.move();
-
 	});
 
 }

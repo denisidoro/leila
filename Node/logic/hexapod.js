@@ -1,9 +1,15 @@
 /* ==============
    INIT
 ============== */
-const COXA_LENGTH =   69.716;   // in mm, 49.716  
-const FEMUR_LENGTH =  82.9;     // in mm
-const TIBIA_LENGTH =  144.448;  // in mm
+
+const MOVE_AX12       = 0xA0
+const MOVERW_AX12     = 0xA1
+const ACTION_AX12     = 0xA2
+const LED_BLINK_TEST  = 0x80
+
+const COXA_LENGTH     = 69.716;   // in mm, 49.716  
+const FEMUR_LENGTH    = 82.9;     // in mm
+const TIBIA_LENGTH    = 144.448;  // in mm
 
 const math = require("mathjs");
 const L = [COXA_LENGTH, FEMUR_LENGTH, TIBIA_LENGTH];
@@ -48,11 +54,17 @@ Servo.setPositions= function(pos) {
 }
 
 Servo.sendToArduino = function(pos) {
+
   if (!pos) {
-    board.io.sysex(0x00, pos);
-    Servo.setPositions(pos);
+    board.io.sysex(MOVE_AX12, Servo.getPositions());
+    return false;
   }
-  board.io.sysex(0x00, Servo.getPositions());
+
+  board.io.sysex(LED_BLINK_TEST, [13, pos.length, 1]);
+  board.io.sysex(MOVE_AX12, pos);
+  Servo.setPositions(pos);
+  return true;
+
 }
 
 
@@ -61,8 +73,8 @@ Servo.sendToArduino = function(pos) {
 ============== */
 
 var Base = {
-  rotation: {x: 0, y: 0, z: 0},
-  position: {x: 0, y: 0, z: 0}
+  rotation: math.zeros(3),
+  position: math.zeros(3)
 };
 
 
@@ -71,18 +83,6 @@ var Base = {
 ============== */
 
 var IK = {
-  
-  baseMovement: function(bRot, bPos) {
-    Servo.servos.forEach(function(s, i) {
-      s.position = i;
-    });
-    Base.rotation = bRot;
-    Base.position = bPos;
-  },
-
-  test: function() {
-    return math.ones(4);
-  },
 
   move: function(xBase, xLeg, u, angles) {
 
@@ -119,7 +119,9 @@ var IK = {
       bits = bits.concat(this.moveLeg(i, xBase, xLeg[i], u[i], angles));
     
     Servo.sendToArduino(bits);
-    console.log(bits);
+    Base.rotation = angles;
+    Base.position = xBase;
+    //console.log(bits);
 
   },
 

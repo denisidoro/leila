@@ -14,11 +14,12 @@ function logToTable(tag, msg, from) {
 
 	// Date string generation
 	now = new Date();
-	var date = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()];
+	var date = [now.getHours(), now.getMinutes(), now.getSeconds()];
 	$.each(date, function(i, e) {
 		if (e.toString().length == 1)
 			date[i] = '0' + date[i];
 	})
+	date.push(('000' + now.getMilliseconds()).slice(-3));
 	var dateString =  date.shift() + 'h' + date.join(':');
 
 	// Prepend to table

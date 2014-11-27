@@ -346,14 +346,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
     blink_pin = argv[0];
     blink_count = argv[1];
     delayTime = argv[2] * 100;
-    pinMode(blink_pin, OUTPUT);
-    byte i;
-    for(i = 0; i < blink_count; i++){
-      digitalWrite(blink_pin, true);
-      delay(delayTime);
-      digitalWrite(blink_pin, false);
-      delay(delayTime);
-    }
+    blinkLED(blink_pin, blink_count, delayTime);
     Firmata.sendSysex(command, argc, argv); // callback
     break;
 
@@ -366,21 +359,23 @@ void sysexCallback(byte command, byte argc, byte *argv)
   case MOVE_AX12: // move servos
     int value;
     switch(argc) {
-      case 2: // one servo
-        Dynamixel.move(argv[0], argv[1]);
+      case 3: // one servo                  // 1 + 1*2
+        Dynamixel.move(argv[0], byteArrayToInt(argv[1], argv[2]));
         break;
-      case 3: // one servo, given speed
-        Dynamixel.moveSpeed(argv[0], argv[1], argv[2]);
+      case 5: // one servo, given speed     // 1 + 1*2 + 1*2
+        Dynamixel.moveSpeed(argv[0], byteArrayToInt(argv[1], argv[2]), byteArrayToInt(argv[3], argv[4]));
         break;
-      case 18: // all servos
+      case 36: // all servos                // 18*2
+        for (int i = 0; i < 18; i++)
+          Dynamixel.moveRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]));
+        Dynamixel.action();
+        break;
+      case 38: // all servos, given speed  // 18*2 + 1*2
+        int speed = byteArrayToInt(argv[36], argv[37]);
         for (int i = 1; i <= 18; i++) {
-          Dynamixel.move(i, argv[0]);
+          Dynamixel.moveSpeedRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]), speed);
         }
-        break;
-      case 19: // all servos, given speed
-        for (int i = 1; i <= 18; i++) {
-          Dynamixel.moveSpeed(i, argv[0], argv[1]);
-        }
+        Dynamixel.action();
         break;
     }
     break;
@@ -718,20 +713,46 @@ void loop()
 
 
 /*==============================================================================
- * DYNAMIXEL
+ * DEBUG
  *============================================================================*/
 
- void sendSomeInfo() {
+void sendSomeInfo() {
+  Serial.write(START_SYSEX);
+  Serial.write(GENERIC_RESPONSE);
+  Serial.write(15);
+  Serial.write(16);
+  Serial.write(127);
+  Serial.write(240);
+  Serial.write(258);
+  Serial.write(510);
+  Serial.write(580);
+  Serial.write(END_SYSEX);
+}
 
-      Serial.write(START_SYSEX);
-      Serial.write(GENERIC_RESPONSE);
-      Serial.write(15);
-      Serial.write(16);
-      Serial.write(127);
-      Serial.write(240);
-      Serial.write(258);
-      Serial.write(510);
-      Serial.write(580);
-      Serial.write(END_SYSEX);
+void sendByte(byte b1, byte b2) {
+  Serial.write(START_SYSEX);
+  Serial.write(GENERIC_RESPONSE);
+  Serial.write(42);
+  Serial.write(b1);
+  Serial.write(b2);
+  Serial.write(END_SYSEX);
+}
 
- }
+void blinkLED(int blink_pin, int blink_count, int delayTime) {
+    pinMode(blink_pin, OUTPUT);
+    byte i;
+    for (i = 0; i < blink_count; i++){
+      digitalWrite(blink_pin, true);
+      delay(delayTime);
+      digitalWrite(blink_pin, false);
+      delay(delayTime);
+    }
+}
+
+/*==============================================================================
+ * MATH
+ *============================================================================*/
+
+int byteArrayToInt(byte byte1, byte byte2) {
+  return 256*byte2 + byte1;
+}

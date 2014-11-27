@@ -60,7 +60,7 @@ Servo.sendToArduino = function(pos) {
     return false;
   }
 
-  board.io.sysex(LED_BLINK_TEST, [13, pos.length, 1]);
+  //board.io.sysex(LED_BLINK_TEST, [13, pos.length, 1]);
   board.io.sysex(MOVE_AX12, pos);
   Servo.setPositions(pos);
   return true;
@@ -209,8 +209,7 @@ var Main = {
     console.log('Hexapod initialized');
   }
 
-}
-
+};
 
 /* ==============
    ASSOCIATIONS

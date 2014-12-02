@@ -16,8 +16,9 @@
     </p>
 
 <div id="editor-holder">
-  <div id="editor">led13.on();
-//board.io.sysex(0xA0, [512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512]);</div>
+  <div id="editor">//led13.on();
+//board.io.sysex(0xA0, [512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512]);
+board.io.sysex(0xA0, [3, 1020, 680], [1, 2]); // move servo 3 to the position 1020 with speed 680</div>
 </div>
 
 <div id="log-table-holder">

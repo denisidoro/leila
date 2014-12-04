@@ -179,9 +179,13 @@ var IK = {
     var beta = Math.acos((L[1]^2 + math.norm(l1)^2 - L[2]^2)/(2*L[1]*math.norm(l1))) - (rho + phi);
     var gamma = math.pi - Math.acos(((L[1]^2) + (L[2]^2 - math.norm(l1)^2))/(2*L[1]*L[2]));
 
-    return this.radiansToBits([alpha, beta, gamma]); // rho, phi
+    return HMath.radiansToBits([alpha, beta, gamma]); // rho, phi
 
-  },
+  }
+  
+};
+
+var HMath = {
 
   radiansToBits: function(radians) {
 
@@ -200,7 +204,7 @@ var IK = {
 
   }
   
-};
+}
 
 var Main = {
 
@@ -221,3 +225,4 @@ exports.init = function(board) {
 exports.Servo = Servo;
 exports.Base = Base;
 exports.IK = IK;
+exports.HMath = HMath;

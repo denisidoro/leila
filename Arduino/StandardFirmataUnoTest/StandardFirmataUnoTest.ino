@@ -324,7 +324,7 @@ void reportDigitalCallback(byte port, int value)
  * SYSEX-BASED commands
  *============================================================================*/
 
-void sysexCallback(byte command, byte argc, byte *argv)
+void sysexCallback(byte command, byte argc, byte *argv) 
 {
   byte mode;
   byte slaveAddress;
@@ -336,63 +336,22 @@ void sysexCallback(byte command, byte argc, byte *argv)
 
   /*============================================================================
    * CUSTOM SYSEX-BASED commands
-   *==========================================================================*/
+   *===========================================================ü===============*/
 
-  case LED_BLINK_TEST: // LED Blink Command (pin, times, .1 seconds)
-    if(argc < 3) break;
-    byte blink_pin;
-    byte blink_count;
-    blink_pin = argv[0];
-    blink_count = argv[1];
-    delayTime = argv[2] * 100;
-    blinkLED(blink_pin, blink_count, delayTime);
-    Firmata.sendSysex(command, argc, argv); // callback
+  case LED_BLINK_TEST:
+    blinkLED(argv[0], argv[1], argv[2]*100);
     break;
 
   case RESPONSE_TEST: // LED on and SYSEX response
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
-    sendSomeInfo();
+    responseTest(argc, argv);
     break;
 
   case MOVE_AX12: // move servos
-    int value;
-    switch(argc) {
-      case 3: // one servo                  // 1 + 1*2
-        Dynamixel.move(argv[0], byteArrayToInt(argv[1], argv[2]));
-        break;
-      case 5: // one servo, given speed     // 1 + 1*2 + 1*2
-        Dynamixel.moveSpeed(argv[0], byteArrayToInt(argv[1], argv[2]), byteArrayToInt(argv[3], argv[4]));
-        break;
-      case 36: // all servos                // 18*2
-        for (int i = 0; i < 18; i++)
-          Dynamixel.moveRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]));
-        Dynamixel.action();
-        break;
-      case 38: // all servos, given speed  // 18*2 + 1*2
-        int speed = byteArrayToInt(argv[36], argv[37]);
-        for (int i = 1; i <= 18; i++) {
-          Dynamixel.moveSpeedRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]), speed);
-        }
-        Dynamixel.action();
-        break;
-    }
+    moveAX12(argc, argv);
     break;
 
-  case G_POSITION_AX12: 
-    Serial.write(START_SYSEX);
-    Serial.write(GENERIC_RESPONSE);
-    Serial.write(G_MOVING_AX12);
-    switch(argc) {
-      case 1: // one servo
-        Serial.write(Dynamixel.readPosition(argv[0]));
-        break;
-      case 0: // all servos
-        for (int i = 1; i <= 18; i++)
-        Serial.write(Dynamixel.readPosition(i));
-        break;
-    }
-    Serial.write(END_SYSEX);
+  case READ_AX12: 
+    readAX12(argc, argv);
     break;
 
   /*============================================================================
@@ -750,4 +709,96 @@ void blinkLED(int blink_pin, int blink_count, int delayTime) {
 
 int byteArrayToInt(byte byte1, byte byte2) {
   return 256*byte2 + byte1;
+}
+
+byte* intToByteArray(int n, int s, boolean w) {
+
+  byte array[s];
+
+  for (int i = 0; i < s; i++)
+    array[i] = 0;
+
+  for (int i = 0; i < s; i++) {
+
+    byte b = n & 0xFF;
+    array[i] = b;
+    n = (n - b)/256;
+
+    if (w)
+      Serial.write(b != END_SYSEX ? b : 246); // CHECK: is this really necessary?
+
+  }
+
+  return array;
+
+}
+ 
+
+void responseTest(byte argc, byte *argv) {
+
+  Serial.write(START_SYSEX);
+  Serial.write(GENERIC_RESPONSE);
+  Serial.write(42);
+
+  for (int i = 0; i < argc; i++)
+    Serial.write(argv[i]);
+
+  Serial.write(END_SYSEX);
+
+}
+
+
+void moveAX12(byte argc, byte *argv) {
+
+  switch(argc) {
+  
+    case 3: // one servo                  // 1 + 1*2
+      Dynamixel.move(argv[0], byteArrayToInt(argv[1], argv[2]));
+      break;
+
+    case 5: // one servo, given speed     // 1 + 1*2 + 1*2
+      Dynamixel.moveSpeed(argv[0], byteArrayToInt(argv[1], argv[2]), byteArrayToInt(argv[3], argv[4]));
+      break;
+
+    case 36: // all servos                // 18*2
+      for (int i = 0; i < 18; i++)
+        Dynamixel.moveRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]));
+      Dynamixel.action();
+      break;
+
+    case 38: // all servos, given speed  // 18*2 + 1*2
+      int speed = byteArrayToInt(argv[36], argv[37]);
+      for (int i = 1; i <= 18; i++) {
+        Dynamixel.moveSpeedRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]), speed);
+      }
+      Dynamixel.action();
+      break;
+
+  }  
+
+} 
+
+void readAX12(byte argc, byte *argv) {
+
+  Serial.write(START_SYSEX);
+  Serial.write(GENERIC_RESPONSE);
+
+  switch(argv[0]) { // command
+    
+    case AX_PRESENT_POSITION_L:
+      Serial.write(AX_PRESENT_POSITION_L);
+      Serial.write(2); // byte length
+      if (argc == 2) // 1 + id
+        Serial.write(1022);
+      else {
+        for (int i = 0; i < 18; i++)
+          intToByteArray(237 + i, 2, true);
+          //Serial.write(intToByteArray(Dynamixel.readPosition(argv[ì + 1]), 4));
+      }
+      break;
+
+  }
+
+  Serial.write(END_SYSEX);
+
 }

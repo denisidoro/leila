@@ -2,22 +2,27 @@
    INIT
 ============== */
 
-const MOVE_AX12       = 0xA0
-const MOVERW_AX12     = 0xA1
-const ACTION_AX12     = 0xA2
-const LED_BLINK_TEST  = 0x80
+// Codes
+const MOVE_AX12               = 0xA0;
+const READ_AX12               = 0xA1;
+const LED_BLINK_TEST          = 0x80;
+const AX_PRESENT_POSITION_L   = 36; 
 
-const COXA_LENGTH     = 69.716;   // in mm, 49.716  
-const FEMUR_LENGTH    = 82.9;     // in mm
-const TIBIA_LENGTH    = 144.448;  // in mm
-
-const math = require("mathjs");
+// Dimensions
+const COXA_LENGTH             = 69.716;   // in mm, 49.716  
+const FEMUR_LENGTH            = 82.9;     // in mm
+const TIBIA_LENGTH            = 144.448;  // in mm
 const L = [COXA_LENGTH, FEMUR_LENGTH, TIBIA_LENGTH];
+
+// Libraries
+const math = require("mathjs");
+
+// Objects
 var board;
 
 
 /* ==============
-   Servo
+   SERVO
 ============== */
 
 var Servo = function(id) {
@@ -47,7 +52,8 @@ Servo.getPositions= function(pos) {
   return positions;
 }
 
-Servo.setPositions= function(pos) {
+Servo.updatePositions = function(pos) {
+  console.log(['updatePositions', pos]);
   Servo.servos.forEach(function(s, i) {
     s.position = pos[i];
   });
@@ -60,9 +66,8 @@ Servo.sendToArduino = function(pos) {
     return false;
   }
 
-  //board.io.sysex(LED_BLINK_TEST, [13, pos.length, 1]);
   board.io.sysex(MOVE_AX12, pos);
-  Servo.setPositions(pos);
+  Servo.updatePositions(pos);
   return true;
 
 }
@@ -74,7 +79,10 @@ Servo.sendToArduino = function(pos) {
 
 var Base = {
   rotation: math.zeros(3),
-  position: math.zeros(3)
+  position: math.zeros(3),
+  sayHello: function(msg) {
+    console.log(['sayHello', msg]);
+  }
 };
 
 
@@ -179,13 +187,9 @@ var IK = {
     var beta = Math.acos((L[1]^2 + math.norm(l1)^2 - L[2]^2)/(2*L[1]*math.norm(l1))) - (rho + phi);
     var gamma = math.pi - Math.acos(((L[1]^2) + (L[2]^2 - math.norm(l1)^2))/(2*L[1]*L[2]));
 
-    return HMath.radiansToBits([alpha, beta, gamma]); // rho, phi
+    return this.radiansToBits([alpha, beta, gamma]); // rho, phi
 
-  }
-  
-};
-
-var HMath = {
+  },
 
   radiansToBits: function(radians) {
 
@@ -204,13 +208,30 @@ var HMath = {
 
   }
   
-}
+};
+
+
+/* ==============
+   MAIN
+============== */
 
 var Main = {
 
   init: function(b) {
     board = b;
     console.log('Hexapod initialized');
+  },
+
+  update: function(res) {
+
+    var callback = {
+      AX_PRESENT_POSITION_L: Servo.updatePositions,
+      42: Base.sayHello
+    };
+
+    if (callback[res.code])
+      callback[res.code](res.data);
+
   }
 
 };
@@ -218,11 +239,16 @@ var Main = {
 /* ==============
    ASSOCIATIONS
 ============== */
+
 exports.init = function(board) { 
   Main.init(board);
   return exports; 
-}
+};
+
+exports.update = function(res) {
+  Main.update(res);
+};
+
 exports.Servo = Servo;
 exports.Base = Base;
 exports.IK = IK;
-exports.HMath = HMath;

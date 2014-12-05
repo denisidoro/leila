@@ -72,6 +72,8 @@ module.exports = app;
 /* ================
    MINE
 ================ */
-var hexapod = require('./logic/hexapod').init(board);
-require('./logic/boardReady')(io, five, board, hexapod);
-require('./logic/userConnected')(io, five, board, hexapod);
+var hex = require('./logic/hexapod').init(board);
+require('./logic/boardReady')(io, five, board, hex);        // maybe use hex.board?
+require('./logic/userConnected')(io, five, board, hex);
+
+// hex.Info.requestUpdate(hex.c.POSITION);

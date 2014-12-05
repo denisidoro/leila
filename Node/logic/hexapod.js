@@ -2,20 +2,9 @@
    INIT
 ============== */
 
-// Codes
-const MOVE_AX12               = 0xA0;
-const READ_AX12               = 0xA1;
-const LED_BLINK_TEST          = 0x80;
-const AX_PRESENT_POSITION_L   = 36; 
-
-// Dimensions
-const COXA_LENGTH             = 69.716;   // in mm, 49.716  
-const FEMUR_LENGTH            = 82.9;     // in mm
-const TIBIA_LENGTH            = 144.448;  // in mm
-const L = [COXA_LENGTH, FEMUR_LENGTH, TIBIA_LENGTH];
-
 // Libraries
-const math = require("mathjs");
+const math  = require("mathjs");
+const c     = require("./constants");
 
 // Objects
 var board;
@@ -26,69 +15,78 @@ var board;
 ============== */
 
 var Servo = function(id) {
-    this.id = (typeof id == 'undefined') ? Servo.servos.length : id;
-    this.moving = false;
+    this.id = (typeof id == 'undefined') ? Servo.list.length : id;
     this.position = 512;
     this.speed = 0;
+    this.load = 0;
+    this.temperature = 0;
+    this.voltage = 0;
+    this.moving = false;
 };
 
-Servo.servos = [];
+Servo.list = [];
   
 Servo.add = function(n) {
   n = n || 1;
   for (var i = 0; i < n; i++)
-    Servo.servos.push(new Servo());
+    Servo.list.push(new Servo());
 };
 
 Servo.remove = function(index) {
-  Servo.servos.splice(index, 1);
+  Servo.list.splice(index, 1);
 };
 
-Servo.getPositions= function(pos) {
-  var positions = [];
-  Servo.servos.forEach(function(s, i) {
-    positions.push(s.position);
+Servo.get = function(code) {
+
+  var res = [], v = {};
+
+  Servo.list.forEach(function(s, i) {
+
+	  switch (code) {
+      case 0:             v = s.id;          break;
+      case c.POSITION:    v = s.position;    break;
+      case c.SPEED:       v = s.speed;       break;
+      case c.LOAD:        v = s.load;        break;
+      case c.VOLTAGE:     v = s.voltage;     break;
+      case c.TEMPERATURE: v = s.temperature; break;
+      case c.MOVING:      v = s.moving;      break;
+    }
+
+	  if (v)
+    	res.push(v);
+
   });
-  return positions;
+  
+  return res;
+
 }
 
-Servo.updatePositions = function(pos) {
-  console.log(['updatePositions', pos]);
-  Servo.servos.forEach(function(s, i) {
-    s.position = pos[i];
+Servo.set = function(code, data) {
+  
+  Servo.list.forEach(function(s, i) {
+  	switch (code) {
+  		case c.POSITION: 		s.position 		= data[i]; break;
+  		case c.SPEED: 			s.speed 			= data[i]; break;
+  		case c.LOAD: 				s.load 				= data[i]; break;
+  		case c.VOLTAGE: 		s.voltage 		= data[i]; break;
+  		case c.TEMPERATURE: s.temperature = data[i]; break;
+  	}
   });
-}
-
-Servo.sendToArduino = function(pos) {
-
-  if (!pos) {
-    board.io.sysex(MOVE_AX12, Servo.getPositions());
-    return false;
-  }
-
-  board.io.sysex(MOVE_AX12, pos);
-  Servo.updatePositions(pos);
-  return true;
 
 }
 
-
-/* ==============
-   BASE
-============== */
-
-var Base = {
-  rotation: math.zeros(3),
-  position: math.zeros(3),
-  sayHello: function(msg) {
-    console.log(['sayHello', msg]);
-  }
-};
+Servo.move = function(pos) {
+	pos = pos || Servo.get(c.POSITION);
+  if (board.io)
+  	board.io.sysex(c.MOVE_AX12, pos, [0, 17]);
+  Servo.set(c.POSITION, pos);
+}
 
 
-/* ==============
-   IK
-============== */
+
+/* ============== 	// posteriorly change this to
+	 IK							  // a standalone class that	
+============== */  	// receives hexapod
 
 var IK = {
 
@@ -101,12 +99,12 @@ var IK = {
 
     if (!u) {
       var u = [];
-      u[0] = [ - d2 - 50,  d3 + 130,  - 80];
-      u[1] = [ + d2 + 50, d3 + 130, - 80];
-      u[2] = [ - d - 50, 0, -80];
-      u[3] = [ + d + 50, 0, -80];
-      u[4] = [ - d2 - 50,  - d3 - 130,  - 80];
-      u[5] = [ + d2 + 50,  - d3 - 130,  - 80];
+      u[0] = [-d2 - 50, d3 + 130, -80];
+      u[1] = [d2 + 50, d3 + 130, -80];
+      u[2] = [-d - 50, 0, - 80];
+      u[3] = [d + 50, 0, - 80];
+      u[4] = [-d2 - 50, -d3 - 130, -80];
+      u[5] = [d2 + 50, -d3 - 130, -80];
     }
 
     var xBase = xBase || [0, 30, 45];
@@ -126,9 +124,9 @@ var IK = {
     for (var i = 0; i < 6; i++)
       bits = bits.concat(this.moveLeg(i, xBase, xLeg[i], u[i], angles));
     
-    Servo.sendToArduino(bits);
-    Base.rotation = angles;
-    Base.position = xBase;
+    Servo.move(bits);
+    Info.base.rotation = angles;
+    Info.base.position = xBase;
     //console.log(bits);
 
   },
@@ -171,8 +169,8 @@ var IK = {
 
     // Knee joint vector calculation
     var s2 = math.matrix([
-      s1[0] + ((-1)^(i+1))*L[0]*Math.cos(alpha),
-      s1[1] + ((-1)^(i+1))*L[0]*Math.sin(alpha),
+      s1[0] + ((-1)^(i+1))*c.L[0]*Math.cos(alpha),
+      s1[1] + ((-1)^(i+1))*c.L[0]*Math.sin(alpha),
       s1[2]
     ]);
 
@@ -181,11 +179,11 @@ var IK = {
     
     // Intermediate angles
     var rho = Math.atan(math.subset(l1, math.index(2))/math.sqrt(l1[0]^2 + math.subset(l1, math.index(1))^2));
-    var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/L[0]);
+    var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/c.L[0]);
 
     // Solutions
-    var beta = Math.acos((L[1]^2 + math.norm(l1)^2 - L[2]^2)/(2*L[1]*math.norm(l1))) - (rho + phi);
-    var gamma = math.pi - Math.acos(((L[1]^2) + (L[2]^2 - math.norm(l1)^2))/(2*L[1]*L[2]));
+    var beta = Math.acos((c.L[1]^2 + math.norm(l1)^2 - L[2]^2)/(2*c.L[1]*math.norm(l1))) - (rho + phi);
+    var gamma = math.pi - Math.acos(((c.L[1]^2) + (c.L[2]^2 - math.norm(l1)^2))/(2*c.L[1]*c.L[2]));
 
     return this.radiansToBits([alpha, beta, gamma]); // rho, phi
 
@@ -211,44 +209,86 @@ var IK = {
 };
 
 
+
 /* ==============
-   MAIN
+   INFO
 ============== */
 
-var Main = {
+var Info = {
 
-  init: function(b) {
-    board = b;
+  init: function(b, periodicUpdates) {
+
+    board = b;			             // set board
+    Servo.add(18);	             // add 18 servos
+
+    if (periodicUpdates) {
+
+	    var intervals = [];
+      intervals[c.POSITION]     = 1000;
+		  intervals[c.SPEED] 			  = 1000,
+		  intervals[c.LOAD] 				= 5000,
+		  intervals[c.VOLTAGE] 		  = 10000,
+		  intervals[c.TEMPERATURE]  = 25000,
+		  intervals[c.MOVING] 			= 1000,
+
+	  	intervals.forEach(function(interval, code) {
+	    	setInterval(function() { Info.requestUpdate(code); }, interval);
+	    });
+
+    }
+
     console.log('Hexapod initialized');
+
   },
 
-  update: function(res) {
+  sayHello: function(msg) {
+    console.log(['sayHello', msg]);
+  },
+
+  requestUpdate: function(code) {
+  	if (board.io)
+  		board.io.sysex(READ_AX12, code || c.POSITION);
+  	console.log('updating ' + code);
+  },
+
+  updateCallback: function(res) {
 
     var callback = {
-      AX_PRESENT_POSITION_L: Servo.updatePositions,
-      42: Base.sayHello
+      42: Info.sayHello
     };
 
     if (callback[res.code])
       callback[res.code](res.data);
+    else
+    	Servo.update(res.code, res.data);
 
-  }
+  	console.log('updateCallback ' + code);
+
+  },
+
+  servos: function(code) {
+  	return Servo.get(code);
+  },
+
+	base: {
+	  rotation: math.zeros(3),
+	  position: math.zeros(3),
+	}
 
 };
 
+
+
 /* ==============
-   ASSOCIATIONS
+   EXPORTS
 ============== */
 
-exports.init = function(board) { 
-  Main.init(board);
+exports.init = function(board, periodicUpdates) { 
+  Info.init(board, periodicUpdates);
   return exports; 
 };
 
-exports.update = function(res) {
-  Main.update(res);
-};
-
 exports.Servo = Servo;
-exports.Base = Base;
-exports.IK = IK;
+exports.Info  = Info;
+exports.IK    = IK;
+exports.c     = c;

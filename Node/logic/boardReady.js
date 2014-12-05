@@ -1,3 +1,4 @@
+
 module.exports = function(io, five, board, hexapod) {
 
 	board.on('ready', function() {
@@ -8,7 +9,7 @@ module.exports = function(io, five, board, hexapod) {
 	    this.io.on('sysexResponse', function(res) {
 	        console.log(['sysex response', res]);
 	        io.emit('sysexResponse', res);
-	        hexapod.update(res);
+	        hexapod.Info.updateCallback(res);
 	    });
 
 	});

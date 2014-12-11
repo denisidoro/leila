@@ -75,10 +75,14 @@ Servo.set = function(code, data) {
 
 }
 
-Servo.move = function(pos) {
+Servo.prototype.move = function(pos) {
+  board.io.sysex(c.MOVE_AX12, [this.id + 1, pos], 1);
+}
+
+Servo.moveAll = function(pos) {
 	pos = pos || Servo.get(c.POSITION);
   if (board.io)
-  	board.io.sysex(c.MOVE_AX12, pos, [0, 17]);
+  	board.io.sysex(c.MOVE_AX12, [id, pos], [0, 17]);
   Servo.set(c.POSITION, pos);
 }
 
@@ -124,7 +128,7 @@ var IK = {
     for (var i = 0; i < 6; i++)
       bits = bits.concat(this.moveLeg(i, xBase, xLeg[i], u[i], angles));
     
-    Servo.move(bits);
+    Servo.moveAll(bits);
     Info.base.rotation = angles;
     Info.base.position = xBase;
     //console.log(bits);
@@ -247,7 +251,7 @@ var Info = {
 
   requestUpdate: function(code) {
   	if (board.io)
-  		board.io.sysex(READ_AX12, code || c.POSITION);
+  		board.io.sysex(c.READ_AX12, code || c.POSITION);
   	console.log('updating ' + code);
   },
 
@@ -260,9 +264,9 @@ var Info = {
     if (callback[res.code])
       callback[res.code](res.data);
     else
-    	Servo.update(res.code, res.data);
+    	Servo.set(res.code, res.data);
 
-  	console.log('updateCallback ' + code);
+  	console.log('updateCallback ' + res.code);
 
   },
 

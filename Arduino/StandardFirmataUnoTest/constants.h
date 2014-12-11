@@ -8,3 +8,4 @@
 #define RESPONSE_TEST		0x81
 #define MOVE_AX12			0xA0
 #define READ_AX12			0xA1
+#define SET_ID_AX12			0xA2

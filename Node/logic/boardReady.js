@@ -1,5 +1,5 @@
 
-module.exports = function(io, five, board, hexapod) {
+module.exports = function(io, five, board, hex) {
 
 	board.on('ready', function() {
 
@@ -9,8 +9,10 @@ module.exports = function(io, five, board, hexapod) {
 	    this.io.on('sysexResponse', function(res) {
 	        console.log(['sysex response', res]);
 	        io.emit('sysexResponse', res);
-	        hexapod.Info.updateCallback(res);
+	        hex.Info.updateCallback(res);
 	    });
+
+	    //board.io.sysex(0xA0, [1, 555], [1], true);
 
 	});
 

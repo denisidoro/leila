@@ -13,7 +13,7 @@ void setup() {
 		Serial.print(", ");
 		Serial.print(t);
 		Serial.print("\n");
-		delay(1000);
+		delay(3000);
 	}
 
 }

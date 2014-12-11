@@ -19,7 +19,13 @@
   <div id="editor">//led13.on();
 //board.io.sysex(0xA0, [512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512,512]);
 //board.io.sysex(0xA0, [3, 1020, 680], [1, 2]); // move servo 3 to the position 1020 with speed 680
-board.io.sysex(0x81, [1, 2, 3, 4, 5]);
+//board.io.sysex(0x81, [1, 2, 3, 4, 5]);
+//board.io.sysex(0xA0, [1, Math.floor((Math.random() * 750) + 1 + 200)], 1);
+
+//for (var i = 1; i < 3; i++)
+    board.io.sysex(0xA0, [6, Math.floor((Math.random() * 250) + 1 + 400)], 1);
+//board.io.sysex(0xA0, [512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512], [0, 17], true)
+//board.io.sysex(0xA2, [1, 6]);
 </div>
 </div>
 

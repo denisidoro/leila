@@ -1,4 +1,4 @@
-module.exports = function(io, five, board, hexapod) {
+module.exports = function(io, five, board, hex) {
 
 	io.on('connection', function(socket) {
 

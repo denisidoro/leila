@@ -72,7 +72,7 @@ module.exports = app;
 /* ================
    MINE
 ================ */
-var hex = require('./logic/hexapod').init(board);
+var hex = require('./logic/hexapod').init(board, false);
 require('./logic/boardReady')(io, five, board, hex);        // maybe use hex.board?
 require('./logic/userConnected')(io, five, board, hex);
 

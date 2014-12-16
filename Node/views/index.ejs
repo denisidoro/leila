@@ -10,46 +10,33 @@
 
     <p>
       <button onclick="sendCode()">Send code</button>
-      <button onclick="toggleLED()">Toggle LED</button>
-      <button onclick="callA2()">Call RESPONSE_TEST</button>
-      <button onclick="callBlink()">Call LED_BLINK_TEST</button>
+      <select id="samples"></select>
     </p>
 
-<div id="editor-holder">
-  <div id="editor">    var d1 = 43.7865, 
-        d2 = 91.82, 
-        d = d1 + d2,
-        d3 = 131.82;
-var u = [- d2 - 100, d3 + 50, -80];
-var xBase = [0,0,0];
-var xLeg = [- d2, d3, 0];
+    <div id="editor-holder">
+      <div id="editor"></div>
+    </div>
 
-console.log(hex.IK.moveLeg(0,xBase,xLeg,u));
-</div>
-</div>
+    <div id="log-table-holder">
 
-<div id="log-table-holder">
+      <table id="log-table" class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="number">#</th>
+            <th class="time">Time</th>
+            <th class="from">From</th>
+            <th class="tag">Tag</th>
+            <th char="message">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
 
-  <table id="log-table" class="table table-bordered">
-    <thead>
-      <tr>
-        <th class="number">#</th>
-        <th class="time">Time</th>
-        <th class="from">From</th>
-        <th class="tag">Tag</th>
-        <th char="message">Message</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
-</div>
-
-
-
+    </div>
 
 		<% include partials/jsdefaults.ejs %>
+
 	</body>
 
 </html>

@@ -9,10 +9,18 @@ function initSocket() {
 		socket.emit(tag, msg);
 	}
 
+	// Initialization
+	socket.on('init', function(msg) {
+		logToTable('init', msg.ready, 'Server');
+		populateSamplesSelect(msg.samples);
+	});
+
+	// Generic server response
 	socket.on('response', function(msg) {
 		logToTable('serverResponse', msg, 'Server');
 	});
 
+	// Generic Arduino response
 	socket.on('sysexResponse', function(msg) {
 		logToTable('sysexResponse', msg, 'Arduino');
 	});

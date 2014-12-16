@@ -1,5 +1,17 @@
+function sendCode() {
+	socket.emitWithLog('eval', editor.getValue());
+}
+
 function scale(x, in_min, in_max, out_min, out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function populateSamplesSelect(samples) {
+
+	$.each(samples, function() {
+	    $("#samples").append($("<option />").val(this).text(this)).change();
+	});
+
 }
 
 // Emit a message to the server and log it to the table
@@ -27,22 +39,7 @@ function logToTable(tag, msg, from) {
 	
 }
 
+
 /* ===================
    TEMP
 =================== */
-
-function toggleLED() {
-	socket.emitWithLog('toggleLED');
-}
-
-function callA2() {
-	socket.emitWithLog('callA2');
-}
-
-function callBlink() {
-	socket.emitWithLog('callBlink', 254);
-}
-
-function sendCode() {
-	socket.emitWithLog('eval', editor.getValue());
-}

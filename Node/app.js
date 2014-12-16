@@ -67,12 +67,6 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-
-
-/* ================
-   MINE
-================ */
 var hex = require('./hexapod/hexapod');
 require('./events/boardReady')(io, five, board, hex);
 require('./events/userConnected')(io, five, board, hex);
-

@@ -13,4 +13,11 @@ $(document).ready(function() {
 
 	logToTable('init', 'Initialization finished', 'Server');
 
+	$('#samples').on('change', function() {
+		console.log(this.value);
+		$.get("/samples/" + this.value, function(content) {
+			editor.setValue(content);
+		});
+	});
+
 });

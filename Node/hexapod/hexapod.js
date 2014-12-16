@@ -258,10 +258,6 @@ var Info = {
 
   },
 
-  sayHello: function(msg) {
-    console.log(['sayHello', msg]);
-  },
-
   requestUpdate: function(code) {
   	if (board.io)
   		board.io.sysex(c.READ_AX12, code || c.POSITION);
@@ -271,7 +267,7 @@ var Info = {
   updateCallback: function(res) {
 
     var callback = {
-      42: Info.sayHello
+      //42: Info.sayHello
     };
 
     if (callback[res.code])

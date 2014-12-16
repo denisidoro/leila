@@ -2,4 +2,10 @@
 
 script_dir=$(dirname $0)
 
-DEBUG=Node node ${script_dir}/../Node/
+if ! type "node" > /dev/null; then
+	node="/cygdrive/c/Portable/Programming/Node.js/node.exe"
+else
+	node="node"
+fi
+
+DEBUG=Node ${node} ${script_dir}/../Node/app.js

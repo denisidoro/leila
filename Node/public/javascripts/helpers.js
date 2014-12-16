@@ -7,11 +7,11 @@ function scale(x, in_min, in_max, out_min, out_max) {
 }
 
 function populateSamplesSelect(samples) {
-
+	$samples = $("#samples");
 	$.each(samples, function() {
-	    $("#samples").append($("<option />").val(this).text(this)).change();
+	    $samples.append($("<option />").val(this).text(this));
 	});
-
+	$samples.change();
 }
 
 // Emit a message to the server and log it to the table

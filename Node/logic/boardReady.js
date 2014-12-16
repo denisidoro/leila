@@ -12,8 +12,6 @@ module.exports = function(io, five, board, hex) {
 	        hex.Info.updateCallback(res);
 	    });
 
-	    //board.io.sysex(0xA0, [1, 555], [1], true);
-
 	});
 
 }

@@ -30,7 +30,7 @@ module.exports = function(io, five, board, hex) {
 	        });
 
 	        socket.on('eval', function(string) {
-	            console.log(['eval', string]);
+	            //console.log(['eval', string]);
 	            try {
 	                eval(string); 
 	            } catch (e) {

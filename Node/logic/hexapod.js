@@ -82,7 +82,7 @@ Servo.prototype.move = function(pos) {
 Servo.moveAll = function(pos) {
 	pos = pos || Servo.get(c.POSITION);
   if (board.io)
-  	board.io.sysex(c.MOVE_AX12, [id, pos], [0, 17]);
+  	board.io.sysex(c.MOVE_AX12, pos, [0, 17], true);
   Servo.set(c.POSITION, pos);
 }
 
@@ -171,26 +171,42 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
+
+   
+
     // Knee joint vector calculation
     var s2 = math.matrix([
-      s1[0] + ((-1)^(i+1))*c.L[0]*Math.cos(alpha),
-      s1[1] + ((-1)^(i+1))*c.L[0]*Math.sin(alpha),
+      s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
+      s1[1] + (Math.pow(-1, i+1))*c.L[0]*Math.sin(alpha),
       s1[2]
     ]);
+   
 
     // Knee leg vector calculation
-    var l1 = math.add(xBase, math.multiply(R, s2)); 
+    var l1 = math.subtract(math.add(xBase, math.multiply(R, s2)),u); 
     
+    
+
     // Intermediate angles
-    var rho = Math.atan(math.subset(l1, math.index(2))/math.sqrt(l1[0]^2 + math.subset(l1, math.index(1))^2));
+    var rho = Math.pow(math.subset(l1, math.index(0)),2) + Math.pow(math.subset(l1, math.index(1)),2);
+    rho = Math.sqrt(rho);
+    rho = Math.atan(math.subset(l1, math.index(2))/rho);
+    //Verificar phi se der errado com rotação da base
     var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/c.L[0]);
+    
 
-    // Solutions
-    var beta = Math.acos((c.L[1]^2 + math.norm(l1)^2 - L[2]^2)/(2*c.L[1]*math.norm(l1))) - (rho + phi);
-    var gamma = math.pi - Math.acos(((c.L[1]^2) + (c.L[2]^2 - math.norm(l1)^2))/(2*c.L[1]*c.L[2]));
+    var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
+    beta = beta/(2*c.L[1]*math.norm(l1));
+    beta = Math.acos(beta) - rho - phi;
 
+    var gamma = Math.pow(c.L[1],2) + Math.pow(c.L[2],2) - Math.pow(math.norm(l1),2);
+    gamma = gamma/(2*c.L[1]*c.L[2]);
+    gamma = Math.acos(gamma);
+    gamma = math.pi - gamma;
+    console.log(gamma);
+
+    //console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]); // rho, phi
-
   },
 
   radiansToBits: function(radians) {

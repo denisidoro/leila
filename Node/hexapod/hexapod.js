@@ -10,6 +10,7 @@ const c     = require("./constants");
 var board;
 
 
+
 /* ==============
    SERVO
 ============== */
@@ -88,12 +89,13 @@ Servo.moveAll = function(pos) {
 
 
 
-/* ============== 	// posteriorly change this to
-	 IK							  // a standalone class that	
-============== */  	// receives hexapod
+/* ============== 	
+	 IK							 	
+============== */ 
 
 var IK = {
 
+  // move all legs, based on body base
   move: function(xBase, xLeg, u, angles) {
 
     var d1 = 43.7865, 
@@ -126,7 +128,7 @@ var IK = {
 
     var bits = [];
     for (var i = 0; i < 6; i++)
-      bits = bits.concat(this.moveLeg(i, xBase, xLeg[i], u[i], angles));
+      bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
     
     Servo.moveAll(bits);
     Info.base.rotation = angles;
@@ -135,7 +137,8 @@ var IK = {
 
   },
 
-  moveLeg: function (i, xBase, xLeg, u, angles) {
+  // return [alpha, beta, gamma], from 0 to 1023
+  getLegAngles: function (i, xBase, xLeg, u, angles) {
 
     // Input treatment
     xBase = xBase || math.zeros(3);
@@ -171,9 +174,6 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
-
-   
-
     // Knee joint vector calculation
     var s2 = math.matrix([
       s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
@@ -181,12 +181,9 @@ var IK = {
       s1[2]
     ]);
    
-
     // Knee leg vector calculation
     var l1 = math.subtract(math.add(xBase, math.multiply(R, s2)),u); 
     
-    
-
     // Intermediate angles
     var rho = Math.pow(math.subset(l1, math.index(0)),2) + Math.pow(math.subset(l1, math.index(1)),2);
     rho = Math.sqrt(rho);
@@ -194,7 +191,6 @@ var IK = {
     //Verificar phi se der errado com rotação da base
     var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/c.L[0]);
     
-
     var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
     beta = beta/(2*c.L[1]*math.norm(l1));
     beta = Math.acos(beta) - rho - phi;
@@ -206,7 +202,8 @@ var IK = {
     console.log(gamma);
 
     //console.log([alpha, beta, gamma]);
-    return this.radiansToBits([alpha, beta, gamma]); // rho, phi
+    return this.radiansToBits([alpha, beta, gamma]);
+
   },
 
   radiansToBits: function(radians) {

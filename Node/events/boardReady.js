@@ -3,6 +3,7 @@ module.exports = function(io, five, board, hex) {
 
 	board.on('ready', function() {
 
+		hex.init(board, false)
 	    console.log('board ready');
 	    io.emit('response', 'Board is now ready!');
 

@@ -12,7 +12,7 @@ define("TEMPERATURE", 		43);		// AX_PRESENT_TEMPERATURE
 define("MOVING",			46);		// AX_MOVING
 
 // Dimensions
-define("COXA_LENGTH",		49.716);   	// in mm, 49.716  
+define("COXA_LENGTH",		49.716);   	// in mm 
 define("FEMUR_LENGTH",		82.9);     	// in mm
 define("TIBIA_LENGTH",		144.448);  	// in mm
 define("L",					[exports.COXA_LENGTH, exports.FEMUR_LENGTH, exports.TIBIA_LENGTH]);

@@ -1,13 +1,13 @@
 function [angles] = IK_patte( x_0, i, x_P,u, L, ang)
 %Entradas: 
 %x_0 = Centro do referencial da aranha
-%i = Número da pata
-%x_P = Referencial da pata (sem rotação)
+%i = Nï¿½mero da pata
+%x_P = Referencial da pata (sem rotaï¿½ï¿½o)
 %u = Ponto de contato desejado
 %L = Coxa, femur, tibia (comprimentos)
-%ang = Ângulos de Euler(rotação)
+%ang = ï¿½ngulos de Euler(rotaï¿½ï¿½o)
 
-%%%Cálculo da matrix de rotação
+%%%Cï¿½lculo da matrix de rotaï¿½ï¿½o
 c = ang(3);
 C = [cos(c), sin(c), 0; -sin(c), cos(c), 0; 0, 0, 1];
 clear c
@@ -21,7 +21,7 @@ A = [cos(a), sin(a), 0; -sin(a), cos(a),0; 0, 0, 1];
 clear a
 R = C*B*A;
 
-%%%Ângulo hip (primeiro servo)
+%%%ï¿½ngulo hip (primeiro servo)
 s_i1 = x_P - x_0;
 l_i = x_0 + R*s_i1 - u;
 %Resultado
@@ -42,6 +42,8 @@ p_i = atan(ll_i(3)/div); %interm. angle 1
 %clear div
 phi_i = asin((ll_i(3)-l_i(3))/L(1)); %interm. angle 2
 
+
+
 %%%Solutions (beta and gama)
 beta = (L(2)^2) + norm(ll_i)^2 - (L(3)^2);
 beta = beta/(2*L(2)*norm(ll_i));
@@ -55,4 +57,3 @@ gama = pi - gama;
 
 angles = [alpha; beta; gama; p_i; phi_i];
 end
-

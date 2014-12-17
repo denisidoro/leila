@@ -27,7 +27,7 @@ function initSocket() {
 		// Version date
 		if (msg.date && typeof moment !== 'undefined') {
 			var m = moment(msg.date);
-		    $('#version').html(m.format("YYYYMMDD"));
+		    $('#version').html('v' + m.format("YYYYMMDD"));
 		    $('#time').html(m.format("HHmm"));
 		}
 

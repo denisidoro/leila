@@ -7,12 +7,12 @@ var Info = {
     if (periodicUpdates) {
 
 		var intervals = [];
-		intervals[c.POSITION]     	= 1000;
+		intervals[c.POSITION]     = 1000;
 		intervals[c.SPEED] 		  	= 1000,
-		intervals[c.LOAD] 			= 5000,
+		intervals[c.LOAD] 			  = 5000,
 		intervals[c.VOLTAGE] 	  	= 10000,
-		intervals[c.TEMPERATURE]  	= 25000,
-		intervals[c.MOVING] 		= 1000,
+		intervals[c.TEMPERATURE]  = 25000,
+		intervals[c.MOVING] 		  = 1000,
 
 	  	intervals.forEach(function(interval, code) {
 	    	setInterval(function() { Info.requestUpdate(code); }, interval);

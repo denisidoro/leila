@@ -9,8 +9,18 @@ function initSocket() {
 		socket.emit(tag, msg);
 	}
 
+	// Define custom log function
+	console.log2 = function(data) {
+		console.log(data);
+		logToTable('log', data);
+	}
+
 	// Initialization
 	socket.on('init', function(msg) {
+		if ($('#samples option').length > 0) {
+			location.reload();
+			return;
+		}
 		logToTable('init', msg.ready, 'Server');
 		populateSamplesSelect(msg.samples);
 	});

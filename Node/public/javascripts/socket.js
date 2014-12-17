@@ -25,9 +25,10 @@ function initSocket() {
 		}
 
 		// Version date
-		if (msg.date) {
-		    var d = new Date(msg.date);
-		    $('#version').html("v" + [d.getFullYear(), d.getMonth() + 1, d.getDate()].join(''));
+		if (msg.date && typeof moment !== 'undefined') {
+			var m = moment(msg.date);
+		    $('#version').html('v' + m.format("YYYYMMDD"));
+		    $('#time').html(m.format("HHmm"));
 		}
 
 	    // Populate sample selector

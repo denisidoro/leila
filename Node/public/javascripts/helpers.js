@@ -9,7 +9,7 @@ function scale(x, in_min, in_max, out_min, out_max) {
 function populateSamplesSelect(samples) {
 	$samples = $("#samples");
 	$.each(samples, function() {
-	    $samples.append($("<option />").val(this).text(this));
+	    $samples.append($("<option />").val(this).text(this.replace(/\.[^/.]+$/, "")));
 	});
 	$samples.val('empty.txt').change();
 }

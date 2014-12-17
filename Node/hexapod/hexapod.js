@@ -286,7 +286,12 @@ var Info = {
 	base: {
 	  rotation: math.zeros(3),
 	  position: math.zeros(3),
-	}
+	},
+
+  log: function(data) {
+      console.log(data);
+      io.emit('response', data);
+  }
 
 };
 

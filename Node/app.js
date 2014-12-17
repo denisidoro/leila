@@ -68,5 +68,9 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 var hex = require('./hexapod/hexapod');
+
+// Set globals
+global.io = io;
+
 require('./events/boardReady')(io, five, board, hex);
 require('./events/userConnected')(io, five, board, hex);

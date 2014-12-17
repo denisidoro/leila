@@ -127,8 +127,9 @@ var IK = {
     else if (isNaN(radians))
       return 512;
 
-    radians = radians < 0 ? 360 - radians : radians;
-    var bits = math.round(radians*3072/(5*math.pi));
+    radians = radians < 0 ? 2*math.pi + radians : radians;
+    //console.log(radians);
+    var bits = math.round(radians*3069/(5*math.pi));
     return bits > 1023 ? 1023 : bits;
 
   }

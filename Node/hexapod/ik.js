@@ -15,16 +15,16 @@ var IK = {
 
     if (!u) {
       var u = [];
-      u[0] = [-d2 - 50, d3 + 130, -80];
-      u[1] = [d2 + 50, d3 + 130, -80];
-      u[2] = [-d - 50, 0, - 80];
-      u[3] = [d + 50, 0, - 80];
-      u[4] = [-d2 - 50, -d3 - 130, -80];
-      u[5] = [d2 + 50, -d3 - 130, -80];
+      u[0] = [-d2 - 100, d3 + 50, -80];
+      u[1] = [d2 + 100, d3 + 50, -80];
+      u[2] = [-d - 100, 0, - 80];
+      u[3] = [d + 100, 0, - 80];
+      u[4] = [-d2 - 100, -d3 - 50, -80];
+      u[5] = [d2 + 100, -d3 - 50, -80];
     }
 
-    var xBase = xBase || [0, 30, 45];
-    var angles = angles || [0, math.pi/2, math.pi/20];
+    var xBase = xBase || [0, 0, 0];
+    var angles = angles || [0, 0, 0];
 
     if (!xLeg) {
       var xLeg = [];
@@ -84,6 +84,8 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
+
+
     // Knee joint vector calculation
     var s2 = math.matrix([
       s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
@@ -103,15 +105,33 @@ var IK = {
     
     var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
     beta = beta/(2*c.L[1]*math.norm(l1));
+    if (Math.abs(beta) > 1) { console.log("Unreachable position (beta)")};
     beta = Math.acos(beta) - rho - phi;
 
     var gamma = Math.pow(c.L[1],2) + Math.pow(c.L[2],2) - Math.pow(math.norm(l1),2);
     gamma = gamma/(2*c.L[1]*c.L[2]);
+    if (Math.abs(gamma) > 1) { console.log("Unreachable position (gamma)")};
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
     //console.log(gamma);
 
-    //console.log([alpha, beta, gamma]);
+    if (Math.abs(alpha) > c.ALPHA_LIMIT) {
+      console.log ("Error: alpha exceeded its limit");
+    };
+    if (beta > c.BETA_UPPER_LIMIT) {
+      console.log ("Error: beta exceeded its limit");
+    };
+    if (beta < c.BETA_LOWER_LIMIT) {
+      console.log ("Error: beta exceeded its limit");
+    };
+    if (gamma > c.GAMMA_UPPER_LIMIT) {
+      console.log ("Error: gamma exceeded its limit");
+    };
+    if (gamma < c.GAMMA_LOWER_LIMIT) {
+      console.log ("Error: beta exceeded its limit");
+    };
+
+    console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);
 
   },

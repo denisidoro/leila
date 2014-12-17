@@ -1,8 +1,8 @@
 function [ X, P, R ] = BuildSpider( x_0, rot, U )
-%Dado o centro da estrutura (x_0), os ângulos de Euler (rotação) e a
-%matriz U de posições das patas (posição da pata i = U(i,:)), retorna
+%Dado o centro da estrutura (x_0), os ï¿½ngulos de Euler (rotaï¿½ï¿½o) e a
+%matriz U de posiï¿½ï¿½es das patas (posiï¿½ï¿½o da pata i = U(i,:)), retorna
 %as coordenadas da estrutura rotacionada (X) e as coordenadas das
-%articulações de cada pata (ponto j da pata i: P(i,j, :)).
+%articulaï¿½ï¿½es de cada pata (ponto j da pata i: P(i,j, :)).
 
 %Constantes
     d1 = 43.7865;
@@ -11,7 +11,7 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     d3 = 131.82;
     L = [49.716; 82.9; 144.448]; % (coxa, femur, tibia)
 
-%Matrix de rotação
+%Matrix de rotaï¿½ï¿½o
     c = rot(3);
     C = [cos(c), sin(c), 0; -sin(c), cos(c), 0; 0, 0, 1];
     clear c
@@ -23,7 +23,7 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     clear a
     R = C*B*A;
 
-%Referenciais das patas sem rotação
+%Referenciais das patas sem rotaï¿½ï¿½o
     x_P = zeros(6, 3);
     x_P(1,:) = [x_0(1) - d2; x_0(2) + d3; x_0(3)].';
     x_P(2,:) = [x_0(1) + d2; x_0(2) + d3; x_0(3)].';
@@ -32,7 +32,7 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     x_P(5,:) = [x_0(1) - d2; x_0(2) - d3; x_0(3)].';
     x_P(6,:) = [x_0(1) + d2; x_0(2) - d3; x_0(3)].';
 
-%Referenciais após rotação
+%Referenciais apï¿½s rotaï¿½ï¿½o
     x_Pr = zeros(6,3);
     for i=1:6
         temp = R*(x_P(i,:).' - x_0) + x_0;
@@ -42,9 +42,9 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     
     P = zeros(6,4,3);
     for i=1:6
-        angles = IK_patte( x_0, i, x_P(i,:).', U(i,:).', L, rot);
+        angles = IK_patte( x_0, i, x_P(i,:).', U(i,:).', L, rot); %% **** x_P = x_pp + x0, x_pp = leg coordinates in base frame
         %Print
-        angles(1:3)
+        %angles(1:3)
         s1 = x_P(i,:).' - x_0;
         s2 = [s1(1) + ((-1)^i)*L(1)*cos(angles(1)); s1(2) + ((-1)^i)*L(1)*sin(angles(1)); s1(3)];
         %Ponto 1

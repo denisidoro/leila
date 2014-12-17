@@ -2,6 +2,7 @@
 define("MOVE_AX12", 		0xA0);		// 160
 define("READ_AX12",			0xA1);		// 161
 define("LED_BLINK_TEST",	0x80);		// 128
+define("RESPONSE_TEST",		0x81);		// 129
 
 // Dynamixel-defined
 define("POSITION", 			36);		// AX_PRESENT_POSITION_L

@@ -1,113 +1,8 @@
-/* ==============
-   INIT
-============== */
-
 // Libraries
 const math  = require("mathjs");
-const c     = require("./constants");
-
-// Objects
-var board;
 
 
-
-/* ==============
-   SERVO
-============== */
-
-var Servo = function(id) {
-    this.id = (typeof id == 'undefined') ? Servo.list.length : id;
-    this.position = 512;
-    this.speed = 0;
-    this.load = 0;
-    this.temperature = 0;
-    this.voltage = 0;
-    this.moving = false;
-};
-
-Servo.list = [];
-  
-Servo.add = function(n) {
-  n = n || 1;
-  for (var i = 0; i < n; i++)
-    Servo.list.push(new Servo());
-};
-
-Servo.remove = function(index) {
-  Servo.list.splice(index, 1);
-};
-
-Servo.get = function(code) {
-
-  var res = [], v = {};
-
-  Servo.list.forEach(function(s, i) {
-
-	  switch (code) {
-      case 0:             v = s.id;          break;
-      case c.POSITION:    v = s.position;    break;
-      case c.SPEED:       v = s.speed;       break;
-      case c.LOAD:        v = s.load;        break;
-      case c.VOLTAGE:     v = s.voltage;     break;
-      case c.TEMPERATURE: v = s.temperature; break;
-      case c.MOVING:      v = s.moving;      break;
-    }
-
-	  if (v)
-    	res.push(v);
-
-  });
-  
-  return res;
-
-}
-
-Servo.set = function(code, data) {
-  
-  Servo.list.forEach(function(s, i) {
-  	switch (code) {
-  		case c.POSITION: 		s.position 		= data[i]; break;
-  		case c.SPEED: 			s.speed 			= data[i]; break;
-  		case c.LOAD: 				s.load 				= data[i]; break;
-  		case c.VOLTAGE: 		s.voltage 		= data[i]; break;
-  		case c.TEMPERATURE: s.temperature = data[i]; break;
-  	}
-  });
-
-}
-
-Servo.prototype.move = function(pos, speed) {
-
-  if (!board.io)
-    return false;
-
-  if (speed)
-    board.io.sysex(c.MOVE_AX12, [this.id + 1, pos, speed], [1, 2]);
-  else
-    board.io.sysex(c.MOVE_AX12, [this.id + 1, pos], 1);
-
-}
-
-Servo.moveAll = function(pos, speed) {
-
-	pos = pos || Servo.get(c.POSITION);
-
-  if (!board.io)
-    return false;
-
-  if (speed)
-    board.io.sysex(c.MOVE_AX12, pos.concat(speed), [0, 18], true);
-  else
-    board.io.sysex(c.MOVE_AX12, pos, [0, 17], true);
-  
-}
-
-
-
-/* ============== 	
-	 IK							 	
-============== */ 
-
+// Main
 var IK = {
 
   // move all legs, based on body base
@@ -145,9 +40,9 @@ var IK = {
     for (var i = 0; i < 6; i++)
       bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
     
-    Servo.moveAll(bits);
-    Info.base.rotation = angles;
-    Info.base.position = xBase;
+    hex.Servo.moveAll(bits);
+    hex.Info.base.rotation = angles;
+    hex.Info.base.position = xBase;
     //console.log(bits);
 
   },
@@ -214,7 +109,7 @@ var IK = {
     gamma = gamma/(2*c.L[1]*c.L[2]);
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
-    console.log(gamma);
+    //console.log(gamma);
 
     //console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);
@@ -241,87 +136,4 @@ var IK = {
 };
 
 
-
-/* ==============
-   INFO
-============== */
-
-var Info = {
-
-  init: function(b, periodicUpdates) {
-
-    board = b;			             // set board
-    Servo.add(18);	             // add 18 servos
-
-    if (periodicUpdates) {
-
-	    var intervals = [];
-      intervals[c.POSITION]     = 1000;
-		  intervals[c.SPEED] 			  = 1000,
-		  intervals[c.LOAD] 				= 5000,
-		  intervals[c.VOLTAGE] 		  = 10000,
-		  intervals[c.TEMPERATURE]  = 25000,
-		  intervals[c.MOVING] 			= 1000,
-
-	  	intervals.forEach(function(interval, code) {
-	    	setInterval(function() { Info.requestUpdate(code); }, interval);
-	    });
-
-    }
-
-    console.log('Hexapod initialized');
-
-  },
-
-  requestUpdate: function(code) {
-  	if (board.io)
-  		board.io.sysex(c.READ_AX12, code || c.POSITION);
-  	console.log('updating ' + code);
-  },
-
-  updateCallback: function(res) {
-
-    var callback = {
-      //42: Info.sayHello
-    };
-
-    if (callback[res.code])
-      callback[res.code](res.data);
-    else
-    	Servo.set(res.code, res.data);
-
-  	console.log('updateCallback ' + res.code);
-
-  },
-
-  servos: function(code) {
-  	return Servo.get(code);
-  },
-
-	base: {
-	  rotation: math.zeros(3),
-	  position: math.zeros(3),
-	},
-
-  log: function(data) {
-      console.log(data);
-      io.emit('response', data);
-  }
-
-};
-
-
-
-/* ==============
-   EXPORTS
-============== */
-
-exports.init = function(board, periodicUpdates) { 
-  Info.init(board, periodicUpdates);
-  return exports; 
-};
-
-exports.Servo = Servo;
-exports.Info  = Info;
-exports.IK    = IK;
-exports.c     = c;
+module.exports = IK;

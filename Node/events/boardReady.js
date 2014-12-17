@@ -1,9 +1,9 @@
 
-module.exports = function(io, five, board, hex) {
+module.exports = function(hex) {
 
 	board.on('ready', function() {
 
-		hex.init(board, false)
+		hex.Info.init(false);
 	    console.log('board ready');
 	    io.emit('response', 'Board is now ready!');
 

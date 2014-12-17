@@ -67,10 +67,18 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-var hex = require('./hexapod/hexapod');
+//var hex = require('./hexapod/hexapod');
 
 // Set globals
 global.io = io;
+global.five = five;
+global.board = board;
+global.c = require('./hexapod/constants.js');
+global.hex = {
+    Servo: require('./hexapod/servo.js'),
+    IK: require('./hexapod/ik.js'),
+    Info: require('./hexapod/info.js')
+};
 
-require('./events/boardReady')(io, five, board, hex);
-require('./events/userConnected')(io, five, board, hex);
+require('./events/boardReady')(global.hex);
+require('./events/userConnected')(global.hex);

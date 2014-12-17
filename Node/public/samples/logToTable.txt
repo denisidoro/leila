@@ -1,1 +1,1 @@
-hex.Info.log(hex.c); // log hexapod constants to table below
+hex.Info.log(c); // log constants to table below

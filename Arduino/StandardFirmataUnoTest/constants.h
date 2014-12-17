@@ -9,3 +9,6 @@
 #define MOVE_AX12			0xA0
 #define READ_AX12			0xA1
 #define SET_ID_AX12			0xA2
+
+// Misc
+#define DELAY_TIME			2		// microseconds	

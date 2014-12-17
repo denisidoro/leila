@@ -347,8 +347,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
     break;
 
   case MOVE_AX12:       // move servos
-    //blinkLED(LED_PIN, 2, 100);
-    //blinkLED(LED_PIN, argc, 1000);
     moveAX12(argc, argv);
     break;
 
@@ -754,8 +752,10 @@ void moveAX12(byte argc, byte *argv) {
       break;
 
     case 36: // all servos                18*2
-      for (int i = 0; i < 18; i++)
+      for (int i = 0; i < 18; i++) {
         Dynamixel.moveRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]));
+        delay(DELAY_TIME);
+      }
       Dynamixel.action();
       break;
 
@@ -763,13 +763,12 @@ void moveAX12(byte argc, byte *argv) {
       int speed = byteArrayToInt(argv[36], argv[37]);
       for (int i = 1; i <= 18; i++) {
         Dynamixel.moveSpeedRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]), speed);
+        delay(DELAY_TIME);
       }
       Dynamixel.action();
       break;
 
   }  
-
-  //blinkLED(LED_PIN, 2, 100);
 
 } 
 

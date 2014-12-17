@@ -76,15 +76,30 @@ Servo.set = function(code, data) {
 
 }
 
-Servo.prototype.move = function(pos) {
-  board.io.sysex(c.MOVE_AX12, [this.id + 1, pos], 1);
+Servo.prototype.move = function(pos, speed) {
+
+  if (!board.io)
+    return false;
+
+  if (speed)
+    board.io.sysex(c.MOVE_AX12, [this.id + 1, pos, speed], [1, 2]);
+  else
+    board.io.sysex(c.MOVE_AX12, [this.id + 1, pos], 1);
+
 }
 
-Servo.moveAll = function(pos) {
+Servo.moveAll = function(pos, speed) {
+
 	pos = pos || Servo.get(c.POSITION);
-  if (board.io)
-  	board.io.sysex(c.MOVE_AX12, pos, [0, 17], true);
-  Servo.set(c.POSITION, pos);
+
+  if (!board.io)
+    return false;
+
+  if (speed)
+    board.io.sysex(c.MOVE_AX12, pos.concat(speed), [0, 18], true);
+  else
+    board.io.sysex(c.MOVE_AX12, pos, [0, 17], true);
+  
 }
 
 

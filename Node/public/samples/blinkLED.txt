@@ -1,1 +1,1 @@
-board.io.sysex(0x80, [13, 10, 2]);
+board.io.sysex(0x80, [13, 10, 2]); // pin, times, duration

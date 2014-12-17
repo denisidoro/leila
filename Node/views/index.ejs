@@ -6,15 +6,20 @@
 	</head>
 
 	<body>
-	<h1>LEILA <span id='version'></span></h1>
 
-    <p>
-      <button onclick="sendCode()">Send code</button>
-      <select id="samples"></select>
-    </p>
+    <div id='main-holder'>
 
-    <div id="editor-holder">
-      <div id="editor"></div>
+      <h1>LEILA <span id='version'></span></h1>
+
+      <p>
+        <button onclick="sendCode()">Send code</button>
+        <select id="samples"></select>
+      </p>
+
+      <div id="editor-holder">
+        <div id="editor"></div>
+      </div>
+
     </div>
 
     <div id="log-table-holder">
@@ -35,7 +40,7 @@
 
     </div>
 
-		<% include partials/jsdefaults.ejs %>
+  	<% include partials/jsdefaults.ejs %>
 
 	</body>
 

@@ -1,5 +1,4 @@
-
-module.exports = function(hex) {
+module.exports = function() {
 
 	board.on('ready', function() {
 

@@ -80,5 +80,5 @@ global.hex = {
     Info: require('./hexapod/info.js')
 };
 
-require('./events/boardReady')(global.hex);
-require('./events/userConnected')(global.hex);
+require('./events/boardReady')();
+require('./events/userConnected')();

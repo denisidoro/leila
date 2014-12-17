@@ -21,7 +21,7 @@ function initSocket() {
 			location.reload();
 			return;
 		}
-		logToTable('init', msg.ready, 'Server');
+		logToTable('init', 'board ready: ' + msg.ready, 'Server');
 		populateSamplesSelect(msg.samples);
 	});
 

@@ -16,7 +16,7 @@ $(document).ready(function() {
 	$('#samples').on('change', function() {
 		console.log(this.value);
 		$.get("/samples/" + this.value, function(content) {
-			editor.setValue(content);
+			editor.setValue(content, Number.MAX_VALUE);
 		});
 	});
 

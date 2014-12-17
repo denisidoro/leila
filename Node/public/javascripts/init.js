@@ -11,13 +11,13 @@ $(document).ready(function() {
 	var socket;
 	initSocket();
 
-	logToTable('init', 'Initialization finished', 'Server');
-
 	$('#samples').on('change', function() {
 		$.get("/samples/" + this.value, function(content) {
 			editor.setValue(content + (content ? '\n' : ''), Number.MAX_VALUE);
 			editor.focus();
 		});
 	});
+
+	logToTable('init', 'Initialization finished', 'Server');
 
 });

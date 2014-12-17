@@ -4,9 +4,9 @@ module.exports = function(io, five, board, hex) {
 
 	    console.log('a user connected');
 
-	    var samplesDirectory = require('path').dirname(require.main.filename) + "/public/samples";
-	    
-	    io.emit('init', {ready: board.isReady, samples: require('fs').readdirSync(samplesDirectory)});
+	    var appDir = require('path').dirname(require.main.filename);
+	    var fs = require('fs');
+	    io.emit('init', {ready: board.isReady, samples: fs.readdirSync(appDir + "/public/samples"), date: fs.statSync(appDir + "/../.git/FETCH_HEAD").mtime});
 	    
 	    socket.on('disconnect', function() {
 	        console.log('a user disconnected');

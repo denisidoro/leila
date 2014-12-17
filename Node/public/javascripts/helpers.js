@@ -11,7 +11,7 @@ function populateSamplesSelect(samples) {
 	$.each(samples, function() {
 	    $samples.append($("<option />").val(this).text(this));
 	});
-	$samples.change();
+	$samples.val('empty.txt').change();
 }
 
 // Emit a message to the server and log it to the table

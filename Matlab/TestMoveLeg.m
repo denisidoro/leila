@@ -148,4 +148,5 @@ end
 for i=1:3*frames
     %F(2*frames+i)=F(i);
 end
-movie(F,-3)
+%movie(F,-3)
+movie2avi(F,'myfile.avi');

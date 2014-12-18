@@ -1,6 +1,10 @@
 // Libraries
 const math  = require("mathjs");
 
+// Error
+function IKError(message) {
+  hex.Info.log(message);
+}
 
 // Main
 var IK = {
@@ -49,6 +53,8 @@ var IK = {
 
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
+    
+    throw new IKError("custom")
 
     // Input treatment
     xBase = xBase || math.zeros(3);
@@ -84,8 +90,6 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
-
-
     // Knee joint vector calculation
     var s2 = math.matrix([
       s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
@@ -100,7 +104,8 @@ var IK = {
     var rho = Math.pow(math.subset(l1, math.index(0)),2) + Math.pow(math.subset(l1, math.index(1)),2);
     rho = Math.sqrt(rho);
     rho = Math.atan(math.subset(l1, math.index(2))/rho);
-    //Verificar phi se der errado com rotação da base
+
+    // Verificar phi se der errado com rotação da base
     var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/c.L[0]);
     
     var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
@@ -115,21 +120,12 @@ var IK = {
     gamma = math.pi - gamma;
     //console.log(gamma);
 
-    if (Math.abs(alpha) > c.ALPHA_LIMIT) {
-      console.log ("Error: alpha exceeded its limit");
-    };
-    if (beta > c.BETA_UPPER_LIMIT) {
-      console.log ("Error: beta exceeded its limit");
-    };
-    if (beta < c.BETA_LOWER_LIMIT) {
-      console.log ("Error: beta exceeded its limit");
-    };
-    if (gamma > c.GAMMA_UPPER_LIMIT) {
-      console.log ("Error: gamma exceeded its limit");
-    };
-    if (gamma < c.GAMMA_LOWER_LIMIT) {
-      console.log ("Error: beta exceeded its limit");
-    };
+    if (Math.abs(alpha) > c.ALPHA_LIMIT)
+      throw new IKError("Alpha exceeded its limits")
+    if (beta > c.BETA_UPPER_LIMIT || beta < c.BETA_LOWER_LIMIT)
+      throw new IKError("Beta exceeded its limits")
+    if (gamma > c.GAMMA_UPPER_LIMIT || gamma < c.GAMMA_LOWER_LIMIT)
+      throw new IKError("Gamma exceeded its limits")
 
     //console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);

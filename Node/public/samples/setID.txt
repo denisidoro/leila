@@ -1,0 +1,9 @@
+var newID = 3;
+
+board.io.sysex(c.SET_ID_AX12, [254, 42]);
+var n = Math.floor((Math.random() * 100) + 512 - 50);
+
+setInterval(function() { 
+    board.io.sysex(c.SET_ID_AX12, [42, newID]);
+    board.io.sysex(c.MOVE_AX12, [newID, n], 1);
+}, 3);

@@ -148,8 +148,37 @@ var IK = {
     var bits = math.round(radians*3069/(5*math.pi));
     return bits > 1023 ? 1023 : bits;
 
+  },
+
+  eulerRotation: function(a) {
+
+    var t 
+
+    t = a[2];
+    var C = math.matrix([
+      [Math.cos(t), Math.sin(t), 0], 
+      [-Math.sin(t), Math.cos(t), 0], 
+      [0, 0, 1]
+    ]);
+
+    t = a[1];
+    var B = math.matrix([
+      [1, 0, 0],
+      [0, Math.cos(t), Math.sin(t)],
+      [0, -Math.sin(t), Math.cos(t)]
+    ]);
+
+    t = a[0];
+    var A = math.matrix([
+      [Math.cos(a), Math.sin(a), 0],
+      [-Math.sin(a), Math.cos(a), 0],
+      [0, 0, 1]
+    ]);
+
+    return math.multiply(C, math.multiply(B, A));
+
   }
-  
+
 };
 
 

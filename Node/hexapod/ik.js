@@ -132,20 +132,21 @@ var IK = {
 
   },
 
-  radiansToBits: function(radians) {
+  radiansToBits: function(radians, negative) {
 
     if (Array.isArray(radians)) {
       var bits = [];
       for (var i = 0; i < radians.length; i++)
-        bits[i] = this.radiansToBits(radians[i]);
+        bits[i] = this.radiansToBits(radians[i], (i == 0 ? false : true));
       return bits;
     }
     else if (isNaN(radians))
       return 512;
 
-    radians = radians < 0 ? 2*math.pi + radians : radians;
+    //radians = radians < 0 ? 2*math.pi + radians : radians;
+
     //console.log(radians);
-    var bits = math.round(radians*3069/(5*math.pi));
+    var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;
 
   },

@@ -5,6 +5,8 @@
 **/desktop.ini
 
 Docs/*
+CAD/*
+Design/*
 
 Node/node_modules/*
 Node/node_modules/*/

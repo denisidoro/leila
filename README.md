@@ -1,7 +1,7 @@
 # Hexapod
 
 Source code for the Projet Inno.
-Word, Excel and other documentation files aren't hosted in this repository.
+Documentation, CAD and design files aren't hosted in this repository.
 
 ### Installation
 First install [Node] and [Git].
@@ -9,14 +9,10 @@ First install [Node] and [Git].
 Then, execute the following, in the terminal window:
 ```sh
 $ git clone [git-repo-url] hexapod
-$ cd hexapod/Node
-$ npm install -g bower
-$ npm install
-$ bower install
-$ ../shell/installChanges.sh # if you're on Linux
-$ DEBUG=Node node app.js
+$ ./shell/update.sh # if you're on Linux
+$ ./shell/startServer.sh # if you're on Linux
 ```
-If you're on Windows, move the content from `/Node/node_modules/changes` to `/Node/node_modules/`.
+If you're on Windows or can't execute the shell scripts, see their source codes and try to reproduce the commands.
 Finally, open the following URL in your browser:
 ```
 http://localhost:3000

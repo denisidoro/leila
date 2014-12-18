@@ -110,12 +110,12 @@ var IK = {
     
     var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
     beta = beta/(2*c.L[1]*math.norm(l1));
-    if (Math.abs(beta) > 1) { console.log("Unreachable position (beta)")};
+    if (Math.abs(beta) > 1) { throw new IKError("Unreachable position (beta)")};
     beta = Math.acos(beta) - rho - phi;
 
     var gamma = Math.pow(c.L[1],2) + Math.pow(c.L[2],2) - Math.pow(math.norm(l1),2);
     gamma = gamma/(2*c.L[1]*c.L[2]);
-    if (Math.abs(gamma) > 1) { console.log("Unreachable position (gamma)")};
+    if (Math.abs(gamma) > 1) { throw new IKError("Unreachable position (gamma)")};
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
     //console.log(gamma);
@@ -127,7 +127,7 @@ var IK = {
     if (gamma > c.GAMMA_UPPER_LIMIT || gamma < c.GAMMA_LOWER_LIMIT)
       throw new IKError("Gamma exceeded its limits")
 
-    //console.log([alpha, beta, gamma]);
+    console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);
 
   },

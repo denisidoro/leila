@@ -9,18 +9,13 @@ d3 = 131.82;
 U = zeros(6,3);
 
 
-frames = 15;
+frames = 2;
 F(2*frames) = struct('cdata',[],'colormap',[]);
 x_0 = [0;0;0];
 rot = [0;0;0];
 
-<<<<<<< HEAD
 x_f = [0;0;10];
 rot_f = [pi/6;0;0];
-=======
-x_f = [.1;.2;.3];
-rot_f = [pi/21;pi/23;pi/13];
->>>>>>> 0f04d0454b9c011e0e49a3cc9bcd05e10ad0c180
 
 x_P = zeros(6, 3);
 U(1,:) = [x_0(1) - d2 - 100; x_0(2) + d3 + 50; x_0(3)-80].';
@@ -113,5 +108,5 @@ end
 for i=1:3*frames
     F(2*frames+i)=F(i);
 end
-movie2avi(F,'myfile2.avi')
+movie(F,1)
  

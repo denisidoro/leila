@@ -33,7 +33,7 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     
     P = zeros(6,4,3);
     for i=1:6
-        angles = IK_patte( x_0, i, x_P(i,:).', U(i,:).', L, rot); %% **** x_P = x_pp + x0, x_pp = leg coordinates in base frame
+        angles = IK_patte( x_0, i, x_P(i,:).', U(i,:).', rot); %% **** x_P = x_pp + x0, x_pp = leg coordinates in base frame
         %Print
         %angles(1:3)
         s1 = x_P(i,:).' - x_0;

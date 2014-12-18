@@ -1,4 +1,4 @@
-function [angles] = IK_patte( x_0, i, x_P,u, L, ang)
+function [angles] = IK_patte( x_0, i, x_P,u, ang)
 %Entradas: 
 %x_0 = Centro do referencial da aranha
 %i = N�mero da pata
@@ -6,6 +6,8 @@ function [angles] = IK_patte( x_0, i, x_P,u, L, ang)
 %u = Ponto de contato desejado
 %L = Coxa, femur, tibia (comprimentos)
 %ang = �ngulos de rota��o
+
+L = [49.716; 82.9; 144.448]; % (coxa, femur, tibia)
 
 %%%C�lculo da matrix de rota��o
 R = rotation_xyz(ang);

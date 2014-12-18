@@ -131,7 +131,7 @@ var IK = {
       console.log ("Error: beta exceeded its limit");
     };
 
-    console.log([alpha, beta, gamma]);
+    //console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);
 
   },

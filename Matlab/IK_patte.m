@@ -5,21 +5,10 @@ function [angles] = IK_patte( x_0, i, x_P,u, L, ang)
 %x_P = Referencial da pata (sem rota��o)
 %u = Ponto de contato desejado
 %L = Coxa, femur, tibia (comprimentos)
-%ang = �ngulos de Euler(rota��o)
+%ang = �ngulos de rota��o
 
 %%%C�lculo da matrix de rota��o
-c = ang(3);
-C = [cos(c), sin(c), 0; -sin(c), cos(c), 0; 0, 0, 1];
-clear c
-b = ang(2);
-B = [1, 0, 0; 0, cos(b), sin(b); 0, -sin(b), cos(b)];
-
-clear b
-a = ang(1);
-A = [cos(a), sin(a), 0; -sin(a), cos(a),0; 0, 0, 1];
-
-clear a
-R = C*B*A;
+R = rotation_xyz(ang);
 
 %%%�ngulo hip (primeiro servo)
 s_i1 = x_P - x_0;

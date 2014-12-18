@@ -1,8 +1,8 @@
 function [ T ] = planLegParabola(i, u_i, u_f, x_0, rot, rot2, steps)
 % i : leg number
 %x_0 : Center of the base - Fixed frame
-%rot : Euler angles (base)
-%rot2 : Euler angles (movement frame)
+%rot : Rotation angles (base)
+%rot2 : Rotation angles (movement frame)
 %u_i : Initial contact point (fixed frame)
 %u_f : Final contact point (fixed frame)
 %steps : number of points - 1
@@ -24,8 +24,8 @@ x_P(5,:) = [- d2; - d3; 0].';
 x_P(6,:) = [d2; - d3; 0].';
 
 %Rotation matrices
-R = rotation_euler(rot);
-RR = rotation_euler(rot2);
+R = rotation_xyz(rot);
+RR = rotation_xyz(rot2);
 
 
 %%%Change of coordinates: fixed frame -> movement frame

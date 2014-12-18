@@ -25,8 +25,8 @@ u_f = [x_0(1) - d2 - 100; x_0(2) + d3 + 150; x_0(3)-80]; %Final contact point (f
 steps = 100; %número de pontos
 
 %Rotation matrices
-R = rotation_euler(rot);
-RR = rotation_euler(rot2);
+R = rotation_xyz(rot);
+RR = rotation_xyz(rot2);
 
 %%%Change of coordinates: fixed frame -> movement frame
 x_p1 = (x_P(1,:).') + x_0; %Verify *******

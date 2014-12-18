@@ -1,5 +1,5 @@
 function [ X, P, R ] = BuildSpider( x_0, rot, U )
-%Dado o centro da estrutura (x_0), os �ngulos de Euler (rota��o) e a
+%Dado o centro da estrutura (x_0), os ângulos rotacão (rot) e a
 %matriz U de posi��es das patas (posi��o da pata i = U(i,:)), retorna
 %as coordenadas da estrutura rotacionada (X) e as coordenadas das
 %articula��es de cada pata (ponto j da pata i: P(i,j, :)).
@@ -12,16 +12,7 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     L = [49.716; 82.9; 144.448]; % (coxa, femur, tibia)
 
 %Matrix de rota��o
-    c = rot(3);
-    C = [cos(c), sin(c), 0; -sin(c), cos(c), 0; 0, 0, 1];
-    clear c
-    b = rot(2);
-    B = [1, 0, 0; 0, cos(b), sin(b); 0, -sin(b), cos(b)];
-    clear b
-    a = rot(1);
-    A = [cos(a), sin(a), 0; -sin(a), cos(a),0; 0, 0, 1];
-    clear a
-    R = C*B*A;
+    R = rotation_xyz(rot);
 
 %Referenciais das patas sem rota��o
     x_P = zeros(6, 3);

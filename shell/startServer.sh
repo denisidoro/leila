@@ -8,5 +8,4 @@ else
 	node="node"
 fi
 
-clear
 DEBUG=Node ${node} ${script_dir}/../Node/app.js

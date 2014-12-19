@@ -53,8 +53,6 @@ var IK = {
 
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
-    
-    throw new IKError("custom")
 
     // Input treatment
     xBase = xBase || math.zeros(3);

@@ -18,12 +18,6 @@ function initSocket() {
 	// Initialization
 	socket.on('init', function(msg) {
 
-	    // Reload if already initialized
-		if ($('#samples option').length > 0) {
-			location.reload();
-			return;
-		}
-
 		// Version date
 		if (msg.date && typeof moment !== 'undefined') {
 			var m = moment(msg.date);
@@ -32,7 +26,8 @@ function initSocket() {
 		}
 
 	    // Populate sample selector
-		populateSamplesSelect(msg.samples);
+		if ($('#samples option').length == 0)
+			populateSamplesSelect(msg.samples);
 
 		logToTable('init', 'board ready: ' + msg.ready, 'Server');
 

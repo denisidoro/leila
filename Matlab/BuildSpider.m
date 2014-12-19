@@ -1,4 +1,4 @@
-function [ X, P, R ] = BuildSpider( x_0, rot, U )
+function [ X, P, R, A ] = BuildSpider( x_0, rot, U )
 %Dado o centro da estrutura (x_0), os ângulos rotacão (rot) e a
 %matriz U de posi��es das patas (posi��o da pata i = U(i,:)), retorna
 %as coordenadas da estrutura rotacionada (X) e as coordenadas das
@@ -32,8 +32,10 @@ function [ X, P, R ] = BuildSpider( x_0, rot, U )
     X = x_Pr;
     
     P = zeros(6,4,3);
+    A = zeros(18,1);
     for i=1:6
         angles = IK_patte( x_0, i, x_P(i,:).', U(i,:).', rot); %% **** x_P = x_pp + x0, x_pp = leg coordinates in base frame
+        A(3*i-2:3*i, 1) = angles;
         %Print
         %angles(1:3)
         s1 = x_P(i,:).' - x_0;

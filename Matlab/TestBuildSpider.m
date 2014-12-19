@@ -32,14 +32,14 @@ U(6,:) = [x_0(1) + d2 + 100; x_0(2) - d3 - 50; x_0(3) - 80].';
 %U(5,:) = [ - d2 - 50;  - d3 - 180;  - 80];
 %U(6,:) = [ + d2 + 50;  - d3 - 180;  - 80];
 
-
+A = [];
 for k=1:frames
     
         close all
         figure
 
-        [X, P, R] = BuildSpider(x_0, rot, U);
-        
+        [X, P, R, AA] = BuildSpider(x_0, rot, U);
+        A = [A; AA];
         
         %%Plot normal
         normal = R*[0;0;1];

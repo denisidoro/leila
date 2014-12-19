@@ -46,5 +46,6 @@ gama = gama/(2*L(2)*L(3));
 gama = acos(gama);
 gama = pi - gama;
 
-angles = [alpha; beta; gama; p_i; phi_i];
+%angles = [alpha; beta; gama; p_i; phi_i]
+angles = [alpha; beta; gama];
 end

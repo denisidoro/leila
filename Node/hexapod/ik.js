@@ -157,7 +157,7 @@ var IK = {
 
   eulerRotation: function(a) {
 
-    var t 
+    var t;
 
     t = a[2];
     var C = math.matrix([

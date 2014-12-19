@@ -4,7 +4,31 @@ const math  = require("mathjs");
 // Main
 var IK = {
 
-  // move all legs, based on body base
+ 
+  // planLegParabola: function(i, u_i, u_f, x_0, rot, rot2, n_intervals) {
+  //   var d1 = 43.7865, 
+  //       d2 = 91.82, 
+  //       d = d1 + d2,
+  //       d3 = 131.82;
+
+  //   // Leg coordinates in base frame
+  //   var x_P = math.matrix(
+  //     [- d2,   d3, 0], //x_P1
+  //     [  d2,   d3, 0], //x_P2
+  //     [- d,    0,  0], //x_P3
+  //     [  d,    0,  0], //x_P4
+  //     [- d2, - d3, 0], //x_P5
+  //     [  d2; - d3; 0], //x_P6
+
+  //   );
+
+
+
+
+  // }
+
+
+ // move all legs, based on body base
   move: function(xBase, xLeg, u, angles) {
 
     var d1 = 43.7865, 
@@ -55,11 +79,14 @@ var IK = {
 
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
-
+    var d1 = 43.7865, 
+        d2 = 91.82, 
+        d = d1 + d2,
+        d3 = 131.82;
     // Input treatment
     xBase = xBase || math.zeros(3);
-    xLeg = xLeg || math.zeros(3);
-    u = u || [50, 130, -80];
+    xLeg = xLeg || [  -d,   0, 0];
+    u = u || [  -d - 150,  0  , -80];
     angles = angles || math.zeros(3);
     //console.log([i, xBase, xLeg, u, angles]);
 
@@ -95,10 +122,13 @@ var IK = {
 
     // Knee joint vector calculation
     var s2 = math.matrix([
-      s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
-      s1[1] + (Math.pow(-1, i+1))*c.L[0]*Math.sin(alpha),
-      s1[2]
+      math.subset(s1, math.index(0)) + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
+      math.subset(s1, math.index(1)) + (Math.pow(-1, i+1))*c.L[0]*Math.sin(alpha),
+      math.subset(s1, math.index(2))
     ]);
+
+    console.log(alpha);
+    console.log(s2);
    
     // Knee leg vector calculation
     var l1 = math.subtract(math.add(xBase, math.multiply(R, s2)),u); 
@@ -144,7 +174,7 @@ var IK = {
     if (Array.isArray(radians)) {
       var bits = [];
       for (var i = 0; i < radians.length; i++)
-        bits[i] = this.radiansToBits(radians[i], (i != 0));
+        bits[i] = this.radiansToBits(radians[i], (i > 1));
       return bits;
     }
     else if (isNaN(radians))

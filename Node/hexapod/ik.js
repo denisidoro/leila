@@ -1,11 +1,6 @@
 // Libraries
 const math  = require("mathjs");
 
-// Error
-function IKError(message) {
-  hex.Info.log(message);
-}
-
 // Main
 var IK = {
 
@@ -41,8 +36,15 @@ var IK = {
     }
 
     var bits = [];
-    for (var i = 0; i < 6; i++)
-      bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
+
+    try {
+      for (var i = 0; i < 6; i++)
+        bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
+    }
+    catch (err) {
+      hex.Info.log(["IKError", err.message]);
+      return false;
+    }
     
     hex.Servo.moveAll(bits);
     hex.Info.base.rotation = angles;
@@ -88,6 +90,9 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
+    if (Math.abs(alpha) > c.ALPHA_LIMIT)
+      throw new Error("Limits exceeded (alpha = " + alpha + ")");
+
     // Knee joint vector calculation
     var s2 = math.matrix([
       s1[0] + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
@@ -108,24 +113,28 @@ var IK = {
     
     var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
     beta = beta/(2*c.L[1]*math.norm(l1));
-    if (Math.abs(beta) > 1) { throw new IKError("Unreachable position (beta)")};
+
+    if (Math.abs(beta) > 1)
+      throw new Error("Unreachable position (beta = " + beta + ")");
+
     beta = Math.acos(beta) - rho - phi;
+
+    if (beta > c.BETA_UPPER_LIMIT || beta < c.BETA_LOWER_LIMIT)
+      throw new Error("Limits exceeded (beta = " + beta + ")");
 
     var gamma = Math.pow(c.L[1],2) + Math.pow(c.L[2],2) - Math.pow(math.norm(l1),2);
     gamma = gamma/(2*c.L[1]*c.L[2]);
-    if (Math.abs(gamma) > 1) { throw new IKError("Unreachable position (gamma)")};
+
+    if (Math.abs(gamma) > 1)
+      throw new Error("Unreachable position (gamma = " + gamma + ")");
+
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
-    //console.log(gamma);
 
-    if (Math.abs(alpha) > c.ALPHA_LIMIT)
-      throw new IKError("Alpha exceeded its limits")
-    if (beta > c.BETA_UPPER_LIMIT || beta < c.BETA_LOWER_LIMIT)
-      throw new IKError("Beta exceeded its limits")
     if (gamma > c.GAMMA_UPPER_LIMIT || gamma < c.GAMMA_LOWER_LIMIT)
-      throw new IKError("Gamma exceeded its limits")
+      throw new Error("Limits exceeded (gamma = " + gamma + ")");
 
-    console.log([alpha, beta, gamma]);
+    //console.log([alpha, beta, gamma]);
     return this.radiansToBits([alpha, beta, gamma]);
 
   },
@@ -135,15 +144,12 @@ var IK = {
     if (Array.isArray(radians)) {
       var bits = [];
       for (var i = 0; i < radians.length; i++)
-        bits[i] = this.radiansToBits(radians[i], (i == 0 ? false : true));
+        bits[i] = this.radiansToBits(radians[i], (i != 0));
       return bits;
     }
     else if (isNaN(radians))
       return 512;
 
-    //radians = radians < 0 ? 2*math.pi + radians : radians;
-
-    //console.log(radians);
     var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;
 

@@ -38,12 +38,12 @@ var IK = {
 
     if (!u) {
       var u = [];
-      u[0] = [-d2 - 100, d3 + 50, -80];
-      u[1] = [d2 + 100, d3 + 50, -80];
-      u[2] = [-d - 100, 0, - 80];
-      u[3] = [d + 100, 0, - 80];
-      u[4] = [-d2 - 100, -d3 - 50, -80];
-      u[5] = [d2 + 100, -d3 - 50, -80];
+      u[0] = [-d2 - 150, d3 + 150, -80];
+      u[1] = [d2 + 150, d3 + 150, -80];
+      u[2] = [-d - 150, 0, - 80];
+      u[3] = [d + 150, 0, - 80];
+      u[4] = [-d2 - 150, -d3 - 150, -80];
+      u[5] = [d2 + 150, -d3 - 150, -80];
     }
 
     var xBase = xBase || [0, 0, 0];
@@ -165,7 +165,7 @@ var IK = {
     if (gamma > c.GAMMA_UPPER_LIMIT || gamma < c.GAMMA_LOWER_LIMIT)
       throw new Error("Limits exceeded (gamma = " + gamma + ")");
 
-    console.log([alpha, beta, gamma]);
+    //console.log([alpha, beta, gamma]);
     if (i == 0) {
       alpha = alpha + math.pi/4;
     }
@@ -180,11 +180,12 @@ var IK = {
     }
 
     var result = this.radiansToBits([alpha,beta,gamma]);
+    //console.log(result);
     //Verify alpha, after conversion to bits
-    if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < ALPHA_LOWER_LIMIT_BITS){
-      throw new Error("Limits exceeded (alpha = " + alpha + ")");
+    if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
+      throw new Error("Limits exceeded (alpha = " + result[0] + ")");
     }
-    return results;
+    return result;
 
   },
 
@@ -198,6 +199,7 @@ var IK = {
     }
     else if (isNaN(radians))
       return 512;
+
 
     var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;

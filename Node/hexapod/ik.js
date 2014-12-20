@@ -117,8 +117,9 @@ var IK = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
-    if (Math.abs(alpha) > c.ALPHA_LIMIT)
-      throw new Error("Limits exceeded (alpha = " + alpha + ")");
+    //Alpha is now verified in bits, at the end of the function
+    //if (Math.abs(alpha) > c.ALPHA_LIMIT)
+      //throw new Error("Limits exceeded (alpha = " + alpha + ")");
 
     // Knee joint vector calculation
     var s2 = math.matrix([
@@ -127,8 +128,8 @@ var IK = {
       math.subset(s1, math.index(2))
     ]);
 
-    console.log(alpha);
-    console.log(s2);
+    //console.log(alpha);
+    //console.log(s2);
    
     // Knee leg vector calculation
     var l1 = math.subtract(math.add(xBase, math.multiply(R, s2)),u); 
@@ -164,8 +165,26 @@ var IK = {
     if (gamma > c.GAMMA_UPPER_LIMIT || gamma < c.GAMMA_LOWER_LIMIT)
       throw new Error("Limits exceeded (gamma = " + gamma + ")");
 
-    //console.log([alpha, beta, gamma]);
-    return this.radiansToBits([alpha, beta, gamma]);
+    console.log([alpha, beta, gamma]);
+    if (i == 0) {
+      alpha = alpha + math.pi/4;
+    }
+    else if (i == 4) {
+      alpha = alpha - math.pi/4;
+    }
+    else if (i == 1){
+      alpha = alpha - math.pi/4;
+    }
+    else if ( i == 5){
+      alpha = alpha + math.pi/4;
+    }
+
+    var result = this.radiansToBits([alpha,beta,gamma]);
+    //Verify alpha, after conversion to bits
+    if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < ALPHA_LOWER_LIMIT_BITS){
+      throw new Error("Limits exceeded (alpha = " + alpha + ")");
+    }
+    return results;
 
   },
 
@@ -174,7 +193,7 @@ var IK = {
     if (Array.isArray(radians)) {
       var bits = [];
       for (var i = 0; i < radians.length; i++)
-        bits[i] = this.radiansToBits(radians[i], (i > 1));
+        bits[i] = this.radiansToBits(radians[i], (i != 0));
       return bits;
     }
     else if (isNaN(radians))

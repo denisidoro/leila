@@ -14,9 +14,9 @@ define("TEMPERATURE", 		43);		// AX_PRESENT_TEMPERATURE
 define("MOVING",			46);		// AX_MOVING
 
 // Dimensions
-define("COXA_LENGTH",		49.716);   	// in mm 
-define("FEMUR_LENGTH",		82.9);     	// in mm
-define("TIBIA_LENGTH",		144.448);  	// in mm
+define("COXA_LENGTH",		52);   	// in mm 
+define("FEMUR_LENGTH",		84);     	// in mm
+define("TIBIA_LENGTH",		142.6);  	// in mm
 define("L",					[exports.COXA_LENGTH, exports.FEMUR_LENGTH, exports.TIBIA_LENGTH]);
 
 // Angle limits
@@ -25,6 +25,10 @@ define("BETA_UPPER_LIMIT",	1.5708); 	// in rad (~ 90 degress)
 define("BETA_LOWER_LIMIT",  -0.523599); // in rad (~ -30 degrees)
 define("GAMMA_UPPER_LIMIT",	2.0944);    // in rad (~ 120 degrees)
 define("GAMMA_LOWER_LIMIT", 0);
+
+//Alpha limits in bits
+define("ALPHA_UPPER_LIMIT_BITS",	750);
+define("ALPHA_LOWER_LIMIT_BITS",    270);
 
 // Helper for defining exportable constants
 function define(name, value, obj, writable) {

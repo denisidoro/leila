@@ -3,32 +3,149 @@ const math  = require("mathjs");
 
 // Main
 var IK = {
+  rotationXYZ: function(a) {
+
+    var t;
+
+    t = a[0];
+    var Rx = math.matrix([
+      [1, 0, 0],
+      [0, Math.cos(t), -Math.sin(t)],
+      [0, Math.sin(t), Math.cos(t)]
+      ]);
+
+    t = a[1];
+    var Ry = math.matrix([
+      [Math.cos(t), 0, Math.sin(t)],
+      [0, 1, 0],
+      [-Math.sin(t), 0, Math.cos(t)]
+      ]);
+
+    t = a[2];
+    var Rz = math.matrix([
+      [Math.cos(t), -Math.sin(t), 0],
+      [Math.sin(t), Math.cos(t), 0],
+      [0, 0, 1]
+      ]);
+
+    return math.multiply(Rx, math.multiply(Ry, Rz));
+  },
 
  
-  // planLegParabola: function(i, u_i, u_f, x_0, rot, rot2, n_intervals) {
-  //   var d1 = 43.7865, 
-  //       d2 = 91.82, 
-  //       d = d1 + d2,
-  //       d3 = 131.82;
-
-  //   // Leg coordinates in base frame
-  //   var x_P = math.matrix(
-  //     [- d2,   d3, 0], //x_P1
-  //     [  d2,   d3, 0], //x_P2
-  //     [- d,    0,  0], //x_P3
-  //     [  d,    0,  0], //x_P4
-  //     [- d2, - d3, 0], //x_P5
-  //     [  d2; - d3; 0], //x_P6
-
-  //   );
+  planLegParabola: function(i, u_i, u_f, x_0, rot, rot2, n_intervals) {
+    // Constants
+    var d1 = 43.7865, 
+        d2 = 91.82, 
+        d = d1 + d2,
+        d3 = 131.82;
 
 
+    // Leg coordinates in base frame (constants)
+    var x_P = math.matrix([
+      [- d2,   d3, 0], //x_P1
+      [  d2,   d3, 0], //x_P2
+      [- d,    0,  0], //x_P3
+      [  d,    0,  0], //x_P4
+      [- d2, - d3, 0], //x_P5
+      [  d2, - d3, 0], //x_P6
+    ]);
 
 
-  // }
+    // Rotation matrices
+    var R = this.rotationXYZ(rot);
+    var RR = this.rotationXYZ(rot2);
+
+    // Change of coordinates: fixed frame -> movement frame
+    // Verify here in case of a problem concerning rotations
+    var s = math.subset(x_P, math.index(i, [0,3]));
+    var l = math.subtract(
+      math.add(math.multiply(R, math.transpose(s)), x_0), 
+      u_i);
+    l = math.squeeze(l); //l fica no formato { _data: [ 150, -50, 80 ], _size: [ 3 ] }
+
+    
+    var x_pmov = math.add(math.multiply(math.dot(l, math.multiply(RR, [1,0,0])), [1,0,0]), 
+                 math.multiply(math.dot(l, math.multiply(RR, [0,1,0])), [0,1,0]));
+
+    var u_i_mov = math.multiply(math.inv(RR),math.subtract(u_i, x_pmov));
+    var u_f_mov = math.multiply(math.inv(RR),math.subtract(u_f, x_pmov));
+
+    // Finding x = f(y) and z = g(y)
+    var ui = u_i_mov;
+    var uf = u_f_mov;
+
+    var p = (math.subset(uf, math.index(1)) - math.subset(ui, math.index(1)))/n_intervals;
+    var y = [];
+
+    for(var k = 0; k < n_intervals + 1; k++){
+      y[k] = math.subset(ui, math.index(1)) + k*p;
+    }
+
+    // x = f(y) = ay² + by + c
+    var ym = (math.subset(uf, math.index(1)) + math.subset(ui, math.index(1)))/2;
+    var dif = math.abs(math.subset(uf, math.index(1)) - math.subset(ui, math.index(1)));
+    //Aux---
+    var qq = math.subset(ui, math.index(1));
+    var ww = math.subset(uf, math.index(1));
+    var ss = ym;
+    var kk = math.subset(ui, math.index(0));
+    var ll = math.subset(uf, math.index(0));
+    var mm = kk + Math.pow(-1,i+1)*dif/10;
+    //------
+    var K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
+    var x = [];
+    for(var k = 0; k < n_intervals + 1; k++){
+      x[k] = K[0]*Math.pow(y[k], 2) + K[1]*y[k] + K[2]; //K = [a, b, c]
+    }
+
+    // z = g(y) = ay² + by + c
+    kk = math.subset(ui, math.index(2));
+    ll = math.subset(uf, math.index(2));
+    mm = kk + dif/3;
+    K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
+    var z = [];
+    for(var k = 0; k < n_intervals + 1; k++){
+      z[k] = K[0]*Math.pow(y[k], 2) + K[1]*y[k] + K[2]; //K = [a, b, c]
+    }
+
+    TT = math.matrix([x, y, z]);
+    T = [];
+    // Change of coordinates: movement frame -> fixed frame
+    var tt = [];
+    for(var k = 0; k < n_intervals + 1; k++){
+      tt[0] = math.subset(math.add(math.multiply(RR, 
+                math.subset(TT, math.index([0,3], k))), x_pmov), math.index(0,0));
+      tt[1] = math.subset(math.add(math.multiply(RR, 
+                math.subset(TT, math.index([0,3], k))), x_pmov), math.index(1,0));
+      tt[2] = math.subset(math.add(math.multiply(RR, 
+                math.subset(TT, math.index([0,3], k))), x_pmov), math.index(2,0));
+      T[k] = [tt[0], tt[1], tt[2]];
+    }
+    T = math.matrix(T);
+    T = math.transpose(T);
+    return T;
+  },
 
 
- // move all legs, based on body base
+  //Solve system:
+  // [q² q 1] [A1]   [k]
+  // [w² w 1] [A2] = [l]
+  // [s² s 1] [A3]   [m]
+  solveParabolaSystem: function(q, w, s, k, l, m){
+
+    var A2 = (k - l)/(Math.pow(q,2) - Math.pow(w,2));
+    A2 = (l - m)/(Math.pow(w,2) - Math.pow(s,2)) - A2;
+    A2 = A2*(w + s)*(q + w)/(q - s)
+
+
+    var A1 = (k - l)/(Math.pow(q,2) - Math.pow(w,2))  - A2/(q + w);
+
+    var A3 = m - A1*Math.pow(s,2) - A2*s;
+
+    return [A1, A2, A3];
+  },
+
+// move all legs, based on body base
   move: function(xBase, xLeg, u, angles) {
 
     var d1 = 43.7865, 
@@ -235,7 +352,22 @@ var IK = {
 
   }
 
+  // test: function(){
+  //   console.log("OI!");
+  //   var A = math.matrix([[1,2,3],[4,5,6], [7,8,9]]);
+  //   //console.log(math.multiply(A, 2));
+  //   //console.log(math.subtract([1,2,3],[1,2,1]));
+  //   //var B = math.zeros(3); 
+  //   //B[1] = 2; //não funciona assim :D
+  //   //math.subset(B, math.index(1), 342); //assim também não
+  //   //console.log(B); 
+  //   var T = [];
+  //   T[0] = math.subset(math.add(math.subset(A, math.index([0,3], 0)), [1,1,1]),math.index(1,0));
+  //   //T = math.matrix(T);
+  //   console.log(math.add(math.subset(A, math.index([0,3], 0)), [1,1,1]));
+  //   console.log(T);
+  //   return 1;
+  // }
 };
-
 
 module.exports = IK;

@@ -11,4 +11,4 @@
 #define SET_ID_AX12			0xA2
 
 //Delay time for move functions
-#define DELAY_TIME			100
+#define DELAY_TIME			8

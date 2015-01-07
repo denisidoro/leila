@@ -1,2 +1,2 @@
 var n = Math.floor((Math.random() * 100) + 512 - 50);
-hex.Servo.moveAll([n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n]);
+hex.Servo.moveAll([n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n], 20);

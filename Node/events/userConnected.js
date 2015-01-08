@@ -27,8 +27,8 @@ module.exports = function() {
 
 	        console.log('board socket response functions defined');
 
-	        socket.on('hexapodConfigChange', function(h) {
-	        	hex.IK.move(null, null, null, [h.baseRotX, h.baseRotY, h.baseRotZ]);
+	        socket.on('hexapodConfigChange', function(c) {
+	        	hex.IK.move(null, null, null, [c.rotX, c.rotY, c.rotZ]);
 	            io.emit('response', 'New angles sent to servos');
 	        });
 

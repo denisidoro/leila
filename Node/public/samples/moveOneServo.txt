@@ -1,3 +1,6 @@
-var n = Math.floor((Math.random() * 100) + 512 - 50);
+var id = 0;
+var pos = Math.floor((Math.random() * 100) + 512 - 50);
+var speed = 650;
 
-hex.Servo.list[0].move(n, 650); // position, speed
+hex.Servo.list[id].move(pos, speed);
+// board.io.sysex(c.MOVE_AX12, [id + 1, pos, speed], [1, 2]); // raw

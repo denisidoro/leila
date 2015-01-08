@@ -360,6 +360,11 @@ void sysexCallback(byte command, byte argc, byte *argv)
     Dynamixel.setID(argv[0], argv[1]);
     break;
 
+  case SET_BAUD_RATE:
+    //for (int i = 0; i < 255; i++)
+    //  Dynamixel.setBD(i, 62500);
+    break;
+
   /*============================================================================
    * DEFAULT SYSEX-BASED commands
    *==========================================================================*/
@@ -765,7 +770,6 @@ void moveAX12(byte argc, byte *argv) {
       int speed = byteArrayToInt(argv[36], argv[37]);
       for (int i = 1; i <= 18; i++) {
         Dynamixel.moveSpeedRW(i + 1, byteArrayToInt(argv[2*i], argv[2*i + 1]), speed);
-        //Dynamixel.moveSpeedRW(i + 1, 512, speed);
         delay(DELAY_TIME);
       }
       Dynamixel.action();

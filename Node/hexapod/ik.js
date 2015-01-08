@@ -219,7 +219,7 @@ const math  = require("mathjs");
 
       Uf = math.matrix(Uf); //To be returned
 
-      var T1 = this.planLegParabola(0,
+      var T1 = this.planLegParabola(1,
                                     math.squeeze(math.subset(Ui, math.index(1, [0,3]))),
                                     math.squeeze(math.subset(Uf, math.index(1, [0,3]))),
                                     x_0,
@@ -227,7 +227,7 @@ const math  = require("mathjs");
                                     [0, 0, math.subset(r_i, math.index(2))],
                                     n_intervals);
 
-      var T2 = this.planLegParabola(3,
+      var T2 = this.planLegParabola(2,
                                     math.squeeze(math.subset(Ui, math.index(2, [0,3]))),
                                     math.squeeze(math.subset(Uf, math.index(2, [0,3]))),
                                     x_0,
@@ -235,15 +235,13 @@ const math  = require("mathjs");
                                     [0, 0, math.subset(r_i, math.index(2))],
                                     n_intervals);
 
-      var T5 = this.planLegParabola(4,
+      var T5 = this.planLegParabola(5,
                                     math.squeeze(math.subset(Ui, math.index(5, [0,3]))),
                                     math.squeeze(math.subset(Uf, math.index(5, [0,3]))),
                                     x_0,
                                     r_i,
                                     [0, 0, math.subset(r_i, math.index(2))],
                                     n_intervals);
-
-      //Ok até aqui
 
       for (var i = 0; i < n_intervals + 1; i++){
         // Moving legs:
@@ -314,13 +312,7 @@ const math  = require("mathjs");
       A = math.transpose(A);
     }
    //*********************************************************************************************************************************************
-
-
-
-
-
-
-    return A;
+    return [A, x_f, Uf];
   },
  
   planLegParabola: function(i, u_i, u_f, x_0, rot, rot2, n_intervals) {
@@ -576,7 +568,7 @@ const math  = require("mathjs");
       throw new Error("Limits exceeded (gamma = " + gamma + ")");
 
     //console.log([alpha, beta, gamma]);
-    return [alpha, beta, gamma]
+    //return [alpha, beta, gamma]
     if (i == 0) {
       alpha = alpha + math.pi/4;
     }
@@ -596,7 +588,7 @@ const math  = require("mathjs");
     if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
       throw new Error("Limits exceeded (alpha = " + result[0] + ")");
     }
-    //return result;
+    return result;
     
   },
 

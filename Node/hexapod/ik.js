@@ -45,9 +45,9 @@ const math  = require("mathjs");
     var aux_r = [];
 
 
-    for(var i = 0; i <= n_intervals + 1; i++){
-      aux_x = math.add(x_0, math.multiply(i/(n_intervals+1), delta_x));
-      aux_r = math.add(r_i, math.multiply(i/(n_intervals+1), math.subtract(r_f, r_i)));
+    for(var i = 0; i <= n_intervals; i++){
+      aux_x = math.add(x_0, math.multiply(i/(n_intervals), delta_x));
+      aux_r = math.add(r_i, math.multiply(i/(n_intervals), math.subtract(r_f, r_i)));
 
       x[i] = [math.subset(aux_x, math.index(0)), math.subset(aux_x, math.index(1)),
               math.subset(aux_x, math.index(2))];
@@ -63,7 +63,8 @@ const math  = require("mathjs");
     var A = [];
     var Uf = [];
     var aux = [];
-    // Move {1, 4, 5}
+    //*********************************************************************************************************************************
+    // Move {0, 3, 4}
     if (group == 0) {
     //console.log(r);
       aux = math.add(math.squeeze(math.subset(Ui, math.index(0, [0,3]))), math.squeeze(delta_u));
@@ -146,6 +147,7 @@ const math  = require("mathjs");
                             math.squeeze(math.subset(r, math.index([0,3], i)))             
                         );
 
+
           // Fixed legs:
           var angles1 = this.getLegAngles(
                             1,
@@ -186,6 +188,138 @@ const math  = require("mathjs");
       A = math.matrix(A);
       A = math.transpose(A);
     }
+   //*******************************************************************************************************************************************
+    // Move {1, 2, 5}
+    else if (group == 1) {
+    //console.log(r);
+      aux = math.add(math.squeeze(math.subset(Ui, math.index(1, [0,3]))), math.squeeze(delta_u));
+      Uf[1] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+ 
+      aux = math.add(math.squeeze(math.subset(Ui, math.index(2, [0,3]))), math.squeeze(delta_u));
+      Uf[2] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+
+      aux = math.add(math.squeeze(math.subset(Ui, math.index(5, [0,3]))), math.squeeze(delta_u));
+      Uf[5] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+
+
+      aux = math.squeeze(math.subset(Ui, math.index(0, [0,3])));
+      Uf[0] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+
+      aux = math.squeeze(math.subset(Ui, math.index(3, [0,3])));
+      Uf[3] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+
+      aux = math.squeeze(math.subset(Ui, math.index(4, [0,3])));
+      Uf[4] = [math.subset(aux, math.index(0)), math.subset(aux, math.index(1)),
+                math.subset(aux, math.index(2))];
+
+      Uf = math.matrix(Uf); //To be returned
+
+      var T1 = this.planLegParabola(0,
+                                    math.squeeze(math.subset(Ui, math.index(1, [0,3]))),
+                                    math.squeeze(math.subset(Uf, math.index(1, [0,3]))),
+                                    x_0,
+                                    r_i,
+                                    [0, 0, math.subset(r_i, math.index(2))],
+                                    n_intervals);
+
+      var T2 = this.planLegParabola(3,
+                                    math.squeeze(math.subset(Ui, math.index(2, [0,3]))),
+                                    math.squeeze(math.subset(Uf, math.index(2, [0,3]))),
+                                    x_0,
+                                    r_i,
+                                    [0, 0, math.subset(r_i, math.index(2))],
+                                    n_intervals);
+
+      var T5 = this.planLegParabola(4,
+                                    math.squeeze(math.subset(Ui, math.index(5, [0,3]))),
+                                    math.squeeze(math.subset(Uf, math.index(5, [0,3]))),
+                                    x_0,
+                                    r_i,
+                                    [0, 0, math.subset(r_i, math.index(2))],
+                                    n_intervals);
+
+      //Ok até aqui
+
+      for (var i = 0; i < n_intervals + 1; i++){
+        // Moving legs:
+        try{
+          var angles1 = this.getLegAngles( 
+                            1,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(1, [0,3])))),
+                            math.squeeze(math.subset(T1, math.index([0,3],i))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))            
+                        );
+
+          var angles2 = this.getLegAngles( 
+                            2,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(2, [0,3])))),
+                            math.squeeze(math.subset(T2, math.index([0,3],i))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))             
+                        );
+
+          var angles5 = this.getLegAngles( 
+                            5,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(5, [0,3])))),
+                            math.squeeze(math.subset(T5, math.index([0,3],i))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))             
+                        );
+
+
+          // Fixed legs:
+          var angles0 = this.getLegAngles(
+                            0,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(0, [0,3])))),
+                            math.squeeze(math.subset(Ui, math.index(0, [0,3]))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))
+                        );
+
+          var angles3 = this.getLegAngles(
+                            3,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(3, [0,3])))),
+                            math.squeeze(math.subset(Ui, math.index(3, [0,3]))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))
+                        );
+
+          var angles4 = this.getLegAngles(
+                            4,
+                            math.squeeze(math.subset(x, math.index([0,3], i))),
+                            math.add(math.squeeze(math.subset(x, math.index([0,3], i))), math.squeeze(math.subset(x_P, math.index(4, [0,3])))),
+                            math.squeeze(math.subset(Ui, math.index(4, [0,3]))),
+                            math.squeeze(math.subset(r, math.index([0,3], i)))
+                        );
+        }
+        catch(err){
+          console.log(err);
+        }   
+
+        A[i] =  [ angles0[0], angles0[1], angles0[2],
+                  angles1[0], angles1[1], angles1[2],
+                  angles2[0], angles2[1], angles2[2],
+                  angles3[0], angles3[1], angles3[2],
+                  angles4[0], angles4[1], angles4[2],
+                  angles5[0], angles5[1], angles5[2]
+                ];
+      }
+      A = math.matrix(A);
+      A = math.transpose(A);
+    }
+   //*********************************************************************************************************************************************
+
+
+
+
+
+
     return A;
   },
  
@@ -422,7 +556,7 @@ const math  = require("mathjs");
     beta = beta/(2*c.L[1]*math.norm(l1));
 
     if (Math.abs(beta) > 1)
-      throw new Error("Unreachable position (beta = " + beta + ")");
+      throw new Error("Unreachable position (acos argument = " + beta + ")");
 
     beta = Math.acos(beta) - rho - phi;
 
@@ -433,7 +567,7 @@ const math  = require("mathjs");
     gamma = gamma/(2*c.L[1]*c.L[2]);
 
     if (Math.abs(gamma) > 1)
-      throw new Error("Unreachable position (gamma = " + gamma + ")");
+      throw new Error("Unreachable position (acos argument = " + gamma + ")");
 
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
@@ -442,6 +576,7 @@ const math  = require("mathjs");
       throw new Error("Limits exceeded (gamma = " + gamma + ")");
 
     //console.log([alpha, beta, gamma]);
+    return [alpha, beta, gamma]
     if (i == 0) {
       alpha = alpha + math.pi/4;
     }
@@ -461,9 +596,8 @@ const math  = require("mathjs");
     if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
       throw new Error("Limits exceeded (alpha = " + result[0] + ")");
     }
-    return result;
-    //return [alpha, beta, gamma]
-
+    //return result;
+    
   },
 
   radiansToBits: function(radians, negative) {

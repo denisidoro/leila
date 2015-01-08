@@ -28,6 +28,7 @@
 /* 
  * TODO: use Program Control to load stored profiles from EEPROM
  */
+#define MAX_DATA_BYTES 48
 
 #include <Servo.h>
 #include <Wire.h>

@@ -29,7 +29,7 @@ function initGUI() {
 
 	$.each(controllers, function(i, c) {
 		c.listen().onFinishChange(function(value) {
-			socket.emitWithLog('hexapodConfigChange', configs.base, false, ['rot', i, value]);
+			socket.emitWithLog('hexapodConfigChange', configs.base);
 		});
 	});
 

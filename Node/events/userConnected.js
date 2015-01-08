@@ -28,7 +28,13 @@ module.exports = function() {
 	        console.log('board socket response functions defined');
 
 	        socket.on('hexapodConfigChange', function(c) {
-	        	hex.IK.move(null, null, null, [c.rotX, c.rotY, c.rotZ]);
+	        	// c = {rotX, rotY, rotZ, forward, rigth}
+	        	// rot in degrees
+	        	// forward, right in the range [-4, 4]
+	        	// 4 is the max speed in the considered way
+	        	// -4 is the max speed in the opposite way
+	        	// TODO: what to call here?
+	        	// hex.IK.what(c);
 	            io.emit('response', 'New angles sent to servos');
 	        });
 

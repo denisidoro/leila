@@ -37,7 +37,13 @@ function initGUI() {
 	var controllers = [];
 
 	for (var i = 0; i < 18; i++)
-		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 0, 1023));
+		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 120, 930));
+
+	$.each(controllers, function(i, c) {
+		c.listen().onFinishChange(function(value) {
+			socket.emitWithLog('moveServo', {id: i, pos: value});
+		});
+	});
 
 	//gui.f1.open();
   

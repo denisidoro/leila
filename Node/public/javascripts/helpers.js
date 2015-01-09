@@ -2,7 +2,8 @@ function sendCode() {
 	var text = editor.getValue();
 	if (text.indexOf("//#") == 0)
 		eval(text.substring(3));
-	socket.emitWithLog('eval', editor.getValue(text));
+	//socket.emitWithLog('eval', editor.getValue(text));
+	socket.emit('eval', editor.getValue(text));
 }
 
 function scale(x, in_min, in_max, out_min, out_max) {
@@ -51,5 +52,5 @@ function getServoAngles() {
 	var pos = [];
 	for (var i = 0; i < 18; i++)
 		pos.push(configs.servos['servo' + i]);
-	console.log(pos);
+	return pos;
 }

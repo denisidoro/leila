@@ -375,7 +375,7 @@ const math  = require("mathjs");
     var ss = ym;
     var kk = math.subset(ui, math.index(0));
     var ll = math.subset(uf, math.index(0));
-    var mm = kk + Math.pow(-1,i+1)*dif/10;
+    var mm = kk + Math.pow(-1,i+1)*dif/8;
     //------
     var K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
     var x = [];
@@ -386,7 +386,7 @@ const math  = require("mathjs");
     // z = g(y) = ay² + by + c
     kk = math.subset(ui, math.index(2));
     ll = math.subset(uf, math.index(2));
-    mm = kk + dif/3;
+    mm = kk + dif/6;
     K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
     var z = [];
     for(var k = 0; k < n_intervals + 1; k++){
@@ -471,12 +471,13 @@ const math  = require("mathjs");
       console.table(["IKError", err.message]);
       return false;
     }
-    
+    //console.log(bits);
+
     hex.Servo.moveAll(bits, speed);
     hex.Base.rotation = angles;
     hex.Base.position = xBase;
     //console.log(bits);
-
+    return bits;
   },
 
   // return [alpha, beta, gamma], from 0 to 1023
@@ -492,27 +493,30 @@ const math  = require("mathjs");
     angles = angles || math.zeros(3);
     //console.log([i, xBase, xLeg, u, angles]);
 
-    // Rotation matrix
-    var t;
-    t = math.subset(angles, math.index(2));
-    var C = math.matrix([
-      [Math.cos(t), Math.sin(t), 0], 
-      [-Math.sin(t), Math.cos(t), 0], 
-      [0, 0, 1]
-    ]);
-    t = math.subset(angles, math.index(1));
-    var B = math.matrix([
-      [1, 0, 0], 
-      [0, Math.cos(t), Math.sin(t)], 
-      [0, -Math.sin(t), Math.cos(t)]
-    ]);
-    t = math.subset(angles, math.index(0));
-    var A = math.matrix([
-      [Math.cos(t), Math.sin(t), 0], 
-      [-Math.sin(t), Math.cos(t), 0], 
-      [0, 0, 1]
-    ]);
-    var R = math.multiply(C, math.multiply(B, A));
+    //Rotation matrix
+    // var t;
+    // t = math.subset(angles, math.index(2));
+    // var C = math.matrix([
+    //   [Math.cos(t), Math.sin(t), 0], 
+    //   [-Math.sin(t), Math.cos(t), 0], 
+    //   [0, 0, 1]
+    // ]);
+    // t = math.subset(angles, math.index(1));
+    // var B = math.matrix([
+    //   [1, 0, 0], 
+    //   [0, Math.cos(t), Math.sin(t)], 
+    //   [0, -Math.sin(t), Math.cos(t)]
+    // ]);
+    // t = math.subset(angles, math.index(0));
+    // var A = math.matrix([
+    //   [Math.cos(t), Math.sin(t), 0], 
+    //   [-Math.sin(t), Math.cos(t), 0], 
+    //   [0, 0, 1]
+    // ]);
+    // var R = math.multiply(C, math.multiply(B, A));
+
+    var R = this.rotationXYZ(angles);
+    R = math.matrix(R);
 
     // Hip joint angle calculation
     var s1 = math.subtract(xLeg, xBase);
@@ -548,7 +552,7 @@ const math  = require("mathjs");
     beta = beta/(2*c.L[1]*math.norm(l1));
 
     if (Math.abs(beta) > 1)
-      throw new Error("Unreachable position (acos argument = " + beta + ")");
+      throw new Error("Unreachable position (acos argument - beta = " + beta + ")");
 
     beta = Math.acos(beta) - rho - phi;
 
@@ -559,7 +563,7 @@ const math  = require("mathjs");
     gamma = gamma/(2*c.L[1]*c.L[2]);
 
     if (Math.abs(gamma) > 1)
-      throw new Error("Unreachable position (acos argument = " + gamma + ")");
+      throw new Error("Unreachable position (acos argument - gamma = " + gamma + ")");
 
     gamma = Math.acos(gamma);
     gamma = math.pi - gamma;
@@ -642,21 +646,21 @@ const math  = require("mathjs");
 
     var t;
 
-    t = a[0];
+    t = math.subset(a, math.index(0));
     var Rx = math.matrix([
       [1, 0, 0],
       [0, Math.cos(t), -Math.sin(t)],
       [0, Math.sin(t), Math.cos(t)]
       ]);
 
-    t = a[1];
+    t = math.subset(a, math.index(1));
     var Ry = math.matrix([
       [Math.cos(t), 0, Math.sin(t)],
       [0, 1, 0],
       [-Math.sin(t), 0, Math.cos(t)]
       ]);
 
-    t = a[2];
+    t = math.subset(a, math.index(2));
     var Rz = math.matrix([
       [Math.cos(t), -Math.sin(t), 0],
       [Math.sin(t), Math.cos(t), 0],
@@ -664,32 +668,49 @@ const math  = require("mathjs");
       ]);
 
     return math.multiply(Rx, math.multiply(Ry, Rz));
-  }
+  },
 
-  // test: function(){
-  //   // console.log("OI!");
-  //   // var A = math.matrix([[1,2,3],[4,5,6], [7,8,9]]);
-  //   // //console.log(math.multiply(A, 2));
-  //   // //console.log(math.subtract([1,2,3],[1,2,1]));
-  //   // //var B = math.zeros(3); 
-  //   // //B[1] = 2; //não funciona assim :D
-  //   // //math.subset(B, math.index(1), 342); //assim também não
-  //   // //console.log(B); 
-  //   // var T = [];
-  //   // T[0] = math.subset(math.add(math.subset(A, math.index([0,3], 0)), [1,1,1]),math.index(1,0));
-  //   // //T = math.matrix(T);
-  //   // console.log(math.add(math.subset(A, math.index([0,3], 0)), [1,1,1]));
-  //   // console.log(T);
-  //   //  var A = [[1,2,3],[4,5,6], [7,8,9]];
-  //   // console.log(math.multiply(2, A));
-  //     var A = [[2],[3],[4]];
-  //     var b = math.matrix([[1], [1], [1]]);
-  //     b = math.squeeze(b);
-  //     console.log(A);
-  //     console.log(b);
-  //     console.log(math.subtract(A, b));
-  //     return 1;
-  // }
+  test: function(){
+        var d1 = 43.7865, 
+        d2 = 91.82, 
+        d = d1 + d2,
+        d3 = 131.82;
+
+        var h = -120;
+      var Ui = [];
+      Ui[0] = [-d2 - 120, d3 + 120, h];
+      Ui[1] = [d2 + 120, d3, h];
+      Ui[2] = [-d - 150, 0, h];
+      Ui[3] = [d + 150, 0, h];
+      Ui[4] = [-d2 - 120, -d3 - 120, h];
+      Ui[5] = [d2 + 120, -d3 - 120, h];
+      var x_0 = [0,0,0];
+      var n_intervals = 15;
+      var delta_x = [0,0,0];
+      var delta_u = [0,80,0];
+      var r_i = [0,0,0];
+      var r_f = [0,0,0];
+      var A = hex.IK.straightStep(1, delta_x, x_0, delta_u, Ui, r_i, r_f, n_intervals)
+      //console.log(A[0])
+
+      var T = A[0];
+      var n = 512;
+      console.log(T);
+      var ang1;
+      var ang2;
+      var ang3;
+      console.log("oi");
+      console.log(math.subset(T, math.index(3, 0)));
+
+      for(var i = 0; i <= n_intervals + 1; i++){
+          ang1 = math.subset(T, math.index(3, i));
+          ang2 = math.subset(T, math.index(4, i));
+          ang3 = math.subset(T, math.index(5, i));
+          hex.Servo.moveAll([n, n, n, ang1, ang2, ang3, n, n, n, n, n, n, n, n, n, n, n, n], 20);
+          for(var j= 0; j < 10000000; j++){}
+      }
+      return T;
+  }
 };
 
 module.exports = IK;

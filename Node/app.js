@@ -6,7 +6,7 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser');
 
-var MotorSystem = require('Dynanode/MotorSystem');
+var MotorSystem = require('dynanode/MotorSystem');
 var ms = new MotorSystem();
 
 var routes = require('./routes/index');

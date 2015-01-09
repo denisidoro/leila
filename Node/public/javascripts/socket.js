@@ -35,6 +35,9 @@ function initSocket() {
 
 	// Generic server response
 	socket.on('response', function(msg) {
+		if (!msg)
+			return;
+		console.log(msg);
 		logToTable('serverResponse', msg, 'Server');
 	});
 

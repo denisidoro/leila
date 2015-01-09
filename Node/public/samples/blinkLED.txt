@@ -1,1 +1,0 @@
-board.io.sysex(c.LED_BLINK_TEST, [13, 10, 2]); // pin, times, duration

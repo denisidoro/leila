@@ -1,2 +1,0 @@
-var led13 = new five.Led(13);
-led13.toggle();

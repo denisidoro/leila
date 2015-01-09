@@ -67,7 +67,6 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-
 //----- Socket.io Responses --------------
 io.sockets.on('connection', function (socket) {
     
@@ -117,7 +116,15 @@ global.c = require('./hexapod/constants.js');
 global.hex = {
     Servo: require('./hexapod/servo.js'),
     IK: require('./hexapod/ik.js'),
-    Info: require('./hexapod/info.js')
+    Base: require('./hexapod/base.js')
 };
 
 require('./events/userConnected')();
+
+
+console.table = function(msg) {
+    console.log(msg);
+    io.emit('response', msg);
+}
+
+hex.Base.init();

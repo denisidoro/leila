@@ -468,13 +468,13 @@ const math  = require("mathjs");
         bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
     }
     catch (err) {
-      hex.Info.log(["IKError", err.message]);
+      console.table(["IKError", err.message]);
       return false;
     }
     
     hex.Servo.moveAll(bits, speed);
-    hex.Info.base.rotation = angles;
-    hex.Info.base.position = xBase;
+    hex.Base.rotation = angles;
+    hex.Base.position = xBase;
     //console.log(bits);
 
   },

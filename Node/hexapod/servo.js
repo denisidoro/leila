@@ -4,12 +4,22 @@ var Servo = function(id) {
     this.motor = null;
 
     this.move = function(pos, speed) {
-      
-      if (!this.motor)
-        throw new Error("No motor assigned");
 
-      this.motor.setRegisterValue("movingSpeed", speed || Servo.defaultSpeed);
-      this.motor.setRegisterValue("goalPosition", pos);
+      try {
+
+        if (!this.motor)
+          throw new Error ("Motor " + this.id + " not assigned"); 
+
+        this.motor.setRegisterValue("movingSpeed", speed || Servo.defaultSpeed);
+        this.motor.setRegisterValue("goalPosition", pos);
+
+      }
+
+      catch (err) {
+        console.log(["MotorError", err.message]);
+        //console.table(["MotorError", err.message]);
+        return false;
+      }
 
     }
 
@@ -43,8 +53,8 @@ Servo.moveAll = function(pos, speed) {
     var i = 0;       
 
     function loop() {           
-     setTimeout(function() {   
-        hex.Servo.list[i].move(pos[i], speed || Servo.defaultSpeed);
+     setTimeout(function() { 
+        Servo.list[i].move(pos[i], speed);
         i++;                    
         if (i < 18)          
            loop();
@@ -54,10 +64,11 @@ Servo.moveAll = function(pos, speed) {
     loop();   
 
   }
-  
-  catch(err){
-    console.log(err);
-  }  
+
+  catch (err) {
+    console.table(["MotorError", err.message]);
+    return false;
+  }
 
 }
 

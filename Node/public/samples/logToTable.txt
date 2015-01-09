@@ -1,1 +1,1 @@
-hex.Info.log(c); // log constants to table below
+console.table(c); // log constants to table below

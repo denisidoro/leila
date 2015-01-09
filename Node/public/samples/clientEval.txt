@@ -1,0 +1,3 @@
+//#
+console.log(configs.base);
+alert('hello');

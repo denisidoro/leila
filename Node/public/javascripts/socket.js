@@ -29,7 +29,7 @@ function initSocket() {
 		if ($('#samples option').length == 0)
 			populateSamplesSelect(msg.samples);
 
-		logToTable('init', 'board ready: ' + msg.ready, 'Server');
+		//logToTable('init', 'board ready: ' + msg.ready, 'Server');
 
 	});
 

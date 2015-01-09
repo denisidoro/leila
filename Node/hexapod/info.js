@@ -25,9 +25,9 @@ var Info = {
   },
 
   requestUpdate: function(code) {
-  	if (board.isReady)
-  		board.io.sysex(c.READ_AX12, code || c.POSITION);
-  	console.log('updating ' + code);
+  	// if (board.isReady)
+  	// 	board.io.sysex(c.READ_AX12, code || c.POSITION);
+  	// console.log('updating ' + code);
   },
 
   updateCallback: function(res) {

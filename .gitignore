@@ -12,6 +12,7 @@ Design/*
 Node/node_modules/*
 Node/node_modules/*/
 !Node/node_modules/changes/
+!Node/node_modules/dynanode/
 
 Node/public/bower/*
 

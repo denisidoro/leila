@@ -8,7 +8,7 @@ var configs = new function() {
 configs.base = {rotX: 0, rotY: 0, rotZ: 0, forward: 0, right: 0};
 
 for (var i = 0; i < 18; i++)
-	configs.servos['servo' + i] = 0;
+	configs.servos['servo' + i] = 512;
 
 // GUI
 
@@ -37,7 +37,7 @@ function initGUI() {
 	var controllers = [];
 
 	for (var i = 0; i < 18; i++)
-		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 120, 930));
+		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 0 + 150, 1023 - 150));
 
 	$.each(controllers, function(i, c) {
 		c.listen().onFinishChange(function(value) {

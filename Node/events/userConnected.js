@@ -24,7 +24,7 @@ module.exports = function() {
         });
 
         socket.on('moveServo', function(data) {
-        	hex.Servo.list[data.id].move(data.pos);
+        	hex.Servo.list[data.id].move(data.pos, 150);
         });
 
 	});

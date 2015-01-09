@@ -81,7 +81,7 @@ io.sockets.on('connection', function (socket) {
         var motorid = d.motor;
         var registerName = d.register;
         var value = d.value;
-        Servo.list[motorid - 1].motor.setRegisterValue(registerName,value);
+        hex.Servo.list[motorid - 1].motor.setRegisterValue(registerName,value);
     });
             
 });
@@ -91,7 +91,7 @@ io.sockets.on('connection', function (socket) {
 ms.on("motorAdded",function(m) {
     console.log("motor added - "+m.motor.getID());
     var mid = m.motor.getID();
-    Servo.assignMotor(m.motor.getID());
+    hex.Servo.assignMotor(m.motor);
     
     io.sockets.emit("addMotor",{id:m.motor.getID()});
     io.sockets.emit("addRegisters",{id:m.motor.getID(),registers:m.motor.listRegisters()});
@@ -103,7 +103,7 @@ ms.on("motorAdded",function(m) {
 
 ms.on("motorRemoved",function(m) {
     console.log("motor removed - "+m.id);
-    Servo.list[m.id - 1].motor = null;
+    hex.Servo.list[m.id - 1].motor = null;
     io.sockets.emit("removeMotor",{id:m.id});
 });
 

@@ -1,7 +1,19 @@
 var data = [
-  {time: 0,		pos: [512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512]},
+  {time: 0,		pos: getRandomArray(100)},
   {time: 2500, 	pos: [480, 340, 420, 480, 340, 420, 480, 340, 420, 480, 340, 420, 480, 340, 420, 480, 340, 420]},
-  {time: 5000, 	pos: [580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580, 580]}
+  {time: 5000, 	pos: getRandomArray(180)}
 ];
 
 hex.Action.timedMove(data);
+
+function getRandomArray(amplitude) {
+    var pos = [];
+    for (var i = 0; i < 18; i++)
+        pos.push(getRandom(amplitude));
+    return pos;
+}
+
+function getRandom(amplitude) {
+	var min = 512 - amplitude/2, max = 512 + amplitude/2;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}

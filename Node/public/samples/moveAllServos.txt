@@ -1,2 +1,7 @@
-var n = Math.floor((Math.random() * 100) + 512 - 50);
+var n = getRandom(100);
 hex.Servo.moveAll([n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n], 20);
+
+function getRandom(amplitude) {
+	var min = 512 - amplitude/2, max = 512 + amplitude/2;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}

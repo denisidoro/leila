@@ -1,6 +1,10 @@
 var id = 0;
-var pos = Math.floor((Math.random() * 100) + 512 - 50);
+var pos = getRandom(100);
 var speed = 650;
 
 hex.Servo.list[id].move(pos, speed);
-// board.io.sysex(c.MOVE_AX12, [id + 1, pos, speed], [1, 2]); // raw
+
+function getRandom(amplitude) {
+	var min = 512 - amplitude/2, max = 512 + amplitude/2;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}

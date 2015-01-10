@@ -12,6 +12,12 @@ var Action = {
 			setTimeouts(i);
 		}
 
+	},
+
+	reflect: function(pos) {
+		for (var i = 0; i < pos.length; i++)
+		  pos[i] = 1024 - pos[i];
+		return pos;
 	}
 
 }

@@ -669,12 +669,6 @@ const math  = require("mathjs");
     return math.multiply(Rx, math.multiply(Ry, Rz));
   },
 
-  reflect: function(pos) {
-    for (var i = 0; i < pos.length; i++)
-      pos[i] = 1024 - pos[i];
-    return pos;
-  },
-
   test: function(){
         var d1 = 43.7865, 
         d2 = 91.82, 

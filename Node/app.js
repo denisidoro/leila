@@ -116,7 +116,8 @@ global.c = require('./hexapod/constants.js');
 global.hex = {
     Servo: require('./hexapod/servo.js'),
     IK: require('./hexapod/ik.js'),
-    Base: require('./hexapod/base.js')
+    Base: require('./hexapod/base.js'),
+    Action: require('./hexapod/action.js')
 };
 
 require('./events/userConnected')();

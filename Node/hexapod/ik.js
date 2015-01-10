@@ -607,7 +607,6 @@ const math  = require("mathjs");
     else if (isNaN(radians))
       return 512;
 
-
     var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;
 

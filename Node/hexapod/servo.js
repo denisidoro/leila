@@ -26,7 +26,7 @@ var Servo = function(id) {
 };
 
 Servo.list = [];
-Servo.defaultSpeed = 512;
+Servo.defaultSpeed = 256;
 
 Servo.assignMotor = function(m) {
   //console.log(['assign', m]);

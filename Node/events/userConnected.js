@@ -6,7 +6,9 @@ module.exports = function() {
 
 	    var appDir = require('path').dirname(require.main.filename);
 	    var fs = require('fs');
-	    io.emit('init', {samples: fs.readdirSync(appDir + "/public/samples"), date: fs.statSync(appDir + "/../.git/FETCH_HEAD").mtime});
+        var path = appDir + "/../.git/FETCH_HEAD";
+        var date = fs.existsSync(path) ? fs.statSync(path).mtime : 0;
+	    io.emit('init', {samples: fs.readdirSync(appDir + "/public/samples"), date: date});
 	    
 	    socket.on('disconnect', function() {
 	        console.log('a user disconnected');

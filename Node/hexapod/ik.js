@@ -431,7 +431,7 @@ const math  = require("mathjs");
   },
 
 // move all legs, based on body base
-  move: function(xBase, xLeg, u, angles, speed) {
+  baseMove: function(angles, speed, xBase, xLeg, u) {
 
     var d1 = 43.7865, 
         d2 = 91.82, 
@@ -478,6 +478,7 @@ const math  = require("mathjs");
     hex.Base.position = xBase;
     //console.log(bits);
     return bits;
+
   },
 
   // return [alpha, beta, gamma], from 0 to 1023

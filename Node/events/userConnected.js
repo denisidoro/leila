@@ -26,7 +26,11 @@ module.exports = function() {
         });
 
         socket.on('moveServo', function(data) {
-        	hex.Servo.list[data.id].move(data.pos, 150);
+            hex.Servo.list[data.id].move(data.pos, 150);
+        });
+
+        socket.on('baseChange', function(data) {
+            hex.IK.baseMove([data.rotX, data.rotY, data.rotZ]);
         });
 
 	});

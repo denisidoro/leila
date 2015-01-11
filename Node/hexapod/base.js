@@ -12,7 +12,8 @@ var Base = {
 	rotation: [0, 0, 0],
 	position: [0, 0, 0],
   speed: [0, 0 , 0],
-  acceleration: [0, 0, 0]
+  acceleration: [0, 0, 0],
+  upsideDown: false
 
 };
 

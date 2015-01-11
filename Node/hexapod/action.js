@@ -15,9 +15,15 @@ var Action = {
 	},
 
 	reflect: function(pos) {
-		for (var i = 0; i < pos.length; i++)
-		  pos[i] = 1023 - pos[i];
-		return pos;
+
+		if (Array.isArray(pos)) {
+			for (var i = 0; i < pos.length; i++)
+			  pos[i] = Action.reflect(pos[i]);
+			return pos;
+		}
+		else
+			return 1023 - pos;
+
 	}
 
 }

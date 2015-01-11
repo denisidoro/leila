@@ -11,6 +11,10 @@ var Servo = function(id) {
           throw new Error ("Motor " + this.id + " not assigned"); 
 
         this.motor.setRegisterValue("movingSpeed", speed || Servo.defaultSpeed);
+
+        if (hex.Base.upsideDown)
+          pos = hex.Action.reflect(pos);
+        console.log(pos);
         this.motor.setRegisterValue("goalPosition", pos);
 
       }
@@ -31,6 +35,10 @@ Servo.defaultSpeed = 256;
 Servo.assignMotor = function(m) {
   //console.log(['assign', m]);
   Servo.list[m.getID() - 1].motor = m;
+}
+
+Servo.get = function(id) {
+  return Servo.list[id];
 }
   
 Servo.add = function(n) {

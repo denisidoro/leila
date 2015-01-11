@@ -2,7 +2,7 @@ var id = 0;
 var pos = getRandom(100);
 var speed = 650;
 
-hex.Servo.list[id].move(pos, speed);
+hex.Servo.get(id).move(pos, speed);
 
 function getRandom(amplitude) {
 	var min = 512 - amplitude/2, max = 512 + amplitude/2;

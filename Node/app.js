@@ -68,7 +68,7 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 //----- Socket.io Responses --------------
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
     
     //On Connect: Send Motors + Registers
     var mtrs = ms.getMotors();

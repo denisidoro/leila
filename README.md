@@ -8,9 +8,10 @@ First install [Node] and [Git].
 
 Then, execute the following, in the terminal window:
 ```sh
-$ git clone [git-repo-url] hexapod
-$ ./shell/update.sh # if you're on Linux
-$ ./shell/startServer.sh # if you're on Linux
+$ git clone [git-repo-url] leila
+$ cd leila
+$ sudo ./shell/update.sh # if you're on Linux
+$ sudo ./shell/startServer.sh # if you're on Linux
 ```
 If you're on Windows or can't execute the shell scripts, see their source codes and try to reproduce the commands.
 Finally, open the following URL in your browser:

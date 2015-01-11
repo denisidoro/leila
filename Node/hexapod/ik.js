@@ -15,6 +15,7 @@ const math  = require("mathjs");
     var T, t; 
     var A; 
     var group;
+    var data = {}, cnt = 0;
 
     //Initial position and constants
     var U = [];
@@ -47,9 +48,12 @@ const math  = require("mathjs");
       for(var j = 0; j < n_intervals + 1; j++){
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
-        //Chamar a função mágica do Denis
+        data.push({time: 200*(cnt++), pos: t});
       }
+
     }
+
+    hex.Action.timedMove(data);
 
   },
 

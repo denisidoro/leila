@@ -17,17 +17,13 @@ const math  = require("mathjs");
     var group;
 
     //Initial position and constants
-    var d1 = 43.7865, 
-        d2 = 91.82, 
-        d = d1 + d2,
-        d3 = 131.82;
     var U = [];
-        U[0] = [-d2 - 150, d3 + 150, -80];
-        U[1] = [d2 + 150, d3 + 150, -80];
-        U[2] = [-d - 150, 0, - 80];
-        U[3] = [d + 150, 0, - 80];
-        U[4] = [-d2 - 150, -d3 - 150, -80];
-        U[5] = [d2 + 150, -d3 - 150, -80];
+        U[0] = [-c.X2 - 150, c.Y2 + 150, -80];
+        U[1] = [c.X2 + 150, c.Y2 + 150, -80];
+        U[2] = [-c.X1 - 150, 0, - 80];
+        U[3] = [c.X1 + 150, 0, - 80];
+        U[4] = [-c.X2 - 150, -c.Y2 - 150, -80];
+        U[5] = [c.X2 + 150, -c.Y2 - 150, -80];
 
     for(var i = 0; i < n_steps; i++){
       if(i == 1){
@@ -73,21 +69,15 @@ const math  = require("mathjs");
     // x_f : final position of the base 
     // Uf : final position of the leg tips
 
-    // Constants
-    var d1 = 43.7865, 
-        d2 = 91.82,
-        d = d1 + d2,
-        d3 = 131.82;
-
 
     // Leg coordinates in base frame (constants)
     var x_P = math.matrix([
-      [- d2,   d3, 0], //x_P1
-      [  d2,   d3, 0], //x_P2
-      [- d,    0,  0], //x_P3
-      [  d,    0,  0], //x_P4
-      [- d2, - d3, 0], //x_P5
-      [  d2, - d3, 0], //x_P6
+      [- c.X2,   c.Y2, 0], //x_P1
+      [  c.X2,   c.Y2, 0], //x_P2
+      [- c.X1,    0,  0], //x_P3
+      [  c.X1,    0,  0], //x_P4
+      [- c.X2, - c.Y2, 0], //x_P5
+      [  c.X2, - c.Y2, 0], //x_P6
     ]);
     
     //Trajectory of rotation angles and trajectory of the center
@@ -371,21 +361,15 @@ const math  = require("mathjs");
   planLegParabola: function(i, u_i, u_f, x_0, rot, rot2, n_intervals) {
     // u_i, u_f, x_0: matrix size 3 or array
 
-    // Constants
-    var d1 = 43.7865, 
-        d2 = 91.82,
-        d = d1 + d2,
-        d3 = 131.82;
-
 
     // Leg coordinates in base frame (constants)
     var x_P = math.matrix([
-      [- d2,   d3, 0], //x_P1
-      [  d2,   d3, 0], //x_P2
-      [- d,    0,  0], //x_P3
-      [  d,    0,  0], //x_P4
-      [- d2, - d3, 0], //x_P5
-      [  d2, - d3, 0], //x_P6
+      [- c.X2,   c.Y2, 0], //x_P1
+      [  c.X2,   c.Y2, 0], //x_P2
+      [- c.X1,    0,  0], //x_P3
+      [  c.X1,    0,  0], //x_P4
+      [- c.X2, - c.Y2, 0], //x_P5
+      [  c.X2, - c.Y2, 0], //x_P6
     ]);
 
 
@@ -486,19 +470,15 @@ const math  = require("mathjs");
 // move all legs, based on body base
   baseMove: function(angles, speed, xBase, xLeg, u) {
 
-    var d1 = 43.7865, 
-        d2 = 91.82, 
-        d = d1 + d2,
-        d3 = 131.82;
 
     if (!u) {
       var u = [];
-      u[0] = [-d2 - 150, d3 + 150, -80];
-      u[1] = [d2 + 150, d3 + 150, -80];
-      u[2] = [-d - 150, 0, - 80];
-      u[3] = [d + 150, 0, - 80];
-      u[4] = [-d2 - 150, -d3 - 150, -80];
-      u[5] = [d2 + 150, -d3 - 150, -80];
+      u[0] = [-c.X2 - 150, c.Y2 + 150, -80];
+      u[1] = [c.X2 + 150, c.Y2 + 150, -80];
+      u[2] = [-c.X1 - 150, 0, - 80];
+      u[3] = [c.X1 + 150, 0, - 80];
+      u[4] = [-c.X2 - 150, -c.Y2 - 150, -80];
+      u[5] = [c.X2 + 150, -c.Y2 - 150, -80];
     }
 
     var xBase = xBase || [0, 0, 0];
@@ -506,12 +486,12 @@ const math  = require("mathjs");
 
     if (!xLeg) {
       var xLeg = [];
-      xLeg[0] = [xBase[0] - d2, xBase[1] + d3, xBase[2]];
-      xLeg[1] = [xBase[0] + d2, xBase[1] + d3, xBase[2]];
-      xLeg[2] = [xBase[0] - d, xBase[1], xBase[2]];
-      xLeg[3] = [xBase[0] + d, xBase[1], xBase[2]];
-      xLeg[4] = [xBase[0] - d2, xBase[1] - d3, xBase[2]];
-      xLeg[5] = [xBase[0] + d2, xBase[1] - d3, xBase[2]];      
+      xLeg[0] = [xBase[0] - c.X2, xBase[1] + c.Y2, xBase[2]];
+      xLeg[1] = [xBase[0] + c.X2, xBase[1] + c.Y2, xBase[2]];
+      xLeg[2] = [xBase[0] - c.X1, xBase[1], xBase[2]];
+      xLeg[3] = [xBase[0] + c.X1, xBase[1], xBase[2]];
+      xLeg[4] = [xBase[0] - c.X2, xBase[1] - c.Y2, xBase[2]];
+      xLeg[5] = [xBase[0] + c.X2, xBase[1] - c.Y2, xBase[2]];      
     }
 
     var bits = [];
@@ -536,14 +516,11 @@ const math  = require("mathjs");
 
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
-    var d1 = 43.7865, 
-        d2 = 91.82, 
-        d = d1 + d2,
-        d3 = 131.82;
+
     // Input treatment
     xBase = xBase || math.zeros(3);
-    xLeg = xLeg || [  -d,   0, 0];
-    u = u || [  -d - 150,  0  , -80];
+    xLeg = xLeg || [  -c.X1,   0, 0];
+    u = u || [  -c.X1 - 150,  0  , -80];
     angles = angles || math.zeros(3);
     //console.log([i, xBase, xLeg, u, angles]);
 
@@ -724,19 +701,15 @@ const math  = require("mathjs");
   },
 
   test: function(){
-        var d1 = 43.7865, 
-        d2 = 91.82, 
-        d = d1 + d2,
-        d3 = 131.82;
 
-        var h = -120;
+      var h = -120;
       var Ui = [];
-      Ui[0] = [-d2 - 120, d3 + 120, h];
-      Ui[1] = [d2 + 120, d3, h];
-      Ui[2] = [-d - 150, 0, h];
-      Ui[3] = [d + 150, 0, h];
-      Ui[4] = [-d2 - 120, -d3 - 120, h];
-      Ui[5] = [d2 + 120, -d3 - 120, h];
+      Ui[0] = [-c.X2 - 120, c.Y2 + 120, h];
+      Ui[1] = [c.X2 + 120, c.Y2, h];
+      Ui[2] = [-c.X1 - 150, 0, h];
+      Ui[3] = [c.X1 + 150, 0, h];
+      Ui[4] = [-c.X2 - 120, -c.Y2 - 120, h];
+      Ui[5] = [c.X2 + 120, -c.Y2 - 120, h];
       var x_0 = [0,0,0];
       var n_intervals = 15;
       var delta_x = [0,0,0];

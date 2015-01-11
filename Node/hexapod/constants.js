@@ -3,6 +3,9 @@ define("COXA_LENGTH",		52);   		// in mm
 define("FEMUR_LENGTH",		84);     	// in mm
 define("TIBIA_LENGTH",		142.6);  	// in mm
 define("L",					[exports.COXA_LENGTH, exports.FEMUR_LENGTH, exports.TIBIA_LENGTH]);
+define("X1",				133.6);
+define("X2",				90.41);
+define("Y2",				130.41);
 
 // Angle limits
 define("ALPHA_LIMIT",		1.309); 	// in rad (~ 75 degrees)

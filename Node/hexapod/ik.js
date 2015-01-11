@@ -4,6 +4,59 @@ const math  = require("mathjs");
 // Main
   var IK = {
 
+
+  straightWalk: function(step_size, n_steps, direction, n_intervals){
+
+    //Direction = {1,-1}
+    var step = direction*step_size;
+    var delta_u;
+    var delta_x = [0, 0, 0];
+    var x = [0, 0, 0]
+    var T, t; 
+    var A; 
+    var group;
+
+    //Initial position and constants
+    var d1 = 43.7865, 
+        d2 = 91.82, 
+        d = d1 + d2,
+        d3 = 131.82;
+    var U = [];
+        U[0] = [-d2 - 150, d3 + 150, -80];
+        U[1] = [d2 + 150, d3 + 150, -80];
+        U[2] = [-d - 150, 0, - 80];
+        U[3] = [d + 150, 0, - 80];
+        U[4] = [-d2 - 150, -d3 - 150, -80];
+        U[5] = [d2 + 150, -d3 - 150, -80];
+
+    for(var i = 0; i < n_steps; i++){
+      if(i == 1){
+        delta_u = [0, step/2, 0];
+        delta_x = delta_u;
+      }
+      else if (i == n_steps - 1){
+        delta_u = [0, step/2, 0];
+      }
+      else {
+        delta_u = [0, step, 0];
+        delta_x = [0, step/2, 0];
+      }
+
+      group = i % 2;
+      A = this.straightStep(group, delta_x, x, delta_u, U, [0,0,0], [0,0,0], n_intervals);
+      T = A[0];
+      x = A[1];
+      U = A[2];
+
+      for(var j = 0; j < n_intervals + 1; j++){
+        t = math.subset(T, math.index([0,18],j));
+        t = math.squeeze(t);
+        //Chamar a função mágica do Denis
+      }
+    }
+
+  },
+
   straightStep: function(group, delta_x, x_0, delta_u, Ui, r_i, r_f, n_intervals){
     //  Inputs:
     //  delta_x: displacement of the base (vector)

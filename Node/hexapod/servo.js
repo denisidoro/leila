@@ -51,25 +51,25 @@ Servo.remove = function(index) {
   Servo.list.splice(index, 1);
 };
 
-Servo.moveAll = function(pos, speed) {
+// diff in microsecods
+Servo.moveAll = function(pos, speed, diff) {
 
   try {
 
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-    var i = 0;       
-
-    function loop() {           
-     setTimeout(function() { 
-        Servo.list[i].move(pos[i], speed);
-        i++;                    
-        if (i < 18)          
-           loop();
-     }, 1)
-    }
-
-    loop();   
+      var diff = diff || 200;
+      var i = 0, old = 0;
+      while (i < pos.length) {
+          var time = process.hrtime();
+          var timeMicro = Math.floor((time[0] * 1e9 + time[1])/1000);
+          if (timeMicro - old > diff) {
+              Servo.list[i].move(pos[i], speed);
+              old = timeMicro;
+              i++;
+          }
+      }
 
   }
 

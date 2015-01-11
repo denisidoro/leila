@@ -5,6 +5,7 @@ project.sublime-workspace
 *.log
 **/desktop.ini
 
+Arduino/*
 Docs/*
 CAD/*
 Design/*

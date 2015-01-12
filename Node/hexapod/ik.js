@@ -1,11 +1,13 @@
 // Libraries
 const math  = require("mathjs");
 
+//Constant
+var STEP_TIME = 3000;
 // Main
   var IK = {
 
 
-  straightWalk: function(step_size, n_steps, direction, n_intervals, delay){
+  straightWalk: function(step_size, n_steps, direction, n_intervals){
 
     //Direction = {1,-1}
     var step = direction*step_size; 
@@ -19,15 +21,15 @@ const math  = require("mathjs");
 
     //Initial position and constants
     var U = [];
-        U[0] = [-c.X2 - 150, c.Y2 + 150, -80];
-        U[1] = [c.X2 + 150, c.Y2 + 150, -80];
-        U[2] = [-c.X1 - 150, 0, - 80];
-        U[3] = [c.X1 + 150, 0, - 80];
-        U[4] = [-c.X2 - 150, -c.Y2 - 150, -80];
-        U[5] = [c.X2 + 150, -c.Y2 - 150, -80];
+        U[0] = [-c.X2 - 110, c.Y2 + 110, -120];
+        U[1] = [c.X2 + 110, c.Y2 + 110, -120];
+        U[2] = [-c.X1 - 150, 0, - 120];
+        U[3] = [c.X1 + 150, 0, - 120];
+        U[4] = [-c.X2 - 110, -c.Y2 - 110, -120];
+        U[5] = [c.X2 + 110, -c.Y2 - 110, -120];
 
     for(var i = 0; i < n_steps; i++){
-      if(i == 1){
+      if(i == 0){
         delta_u = [0, step/2, 0];
         delta_x = delta_u;
       }
@@ -41,9 +43,13 @@ const math  = require("mathjs");
 
       group = i % 2;
       A = this.straightStep(group, delta_x, x, delta_u, U, [0,0,0], [0,0,0], n_intervals);
+      console.log(delta_x)
+      console.log(x)
+      console.log(A[0]);
       T = A[0];
       x = A[1];
       U = A[2];
+      console.log(x)
 
       console.log(n_intervals);
 
@@ -51,7 +57,7 @@ const math  = require("mathjs");
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
         console.log([T, t]);
-        data.push({time: (delay || 50)*(cnt++), pos: t._data});
+        data.push({time: j*STEP_TIME/n_intervals, pos: t._data});
       }
 
     }
@@ -431,7 +437,7 @@ const math  = require("mathjs");
     // z = g(y) = ay² + by + c
     kk = math.subset(ui, math.index(2));
     ll = math.subset(uf, math.index(2));
-    mm = kk + dif/6;
+    mm = kk + dif/2;
     K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
     var z = [];
     for(var k = 0; k < n_intervals + 1; k++){
@@ -481,12 +487,12 @@ const math  = require("mathjs");
 
     if (!u) {
       var u = [];
-      u[0] = [-c.X2 - 150, c.Y2 + 150, -80];
-      u[1] = [c.X2 + 150, c.Y2 + 150, -80];
+      u[0] = [-c.X2 - 110, c.Y2 + 110, -80];
+      u[1] = [c.X2 + 110, c.Y2 + 110, -80];
       u[2] = [-c.X1 - 150, 0, - 80];
       u[3] = [c.X1 + 150, 0, - 80];
-      u[4] = [-c.X2 - 150, -c.Y2 - 150, -80];
-      u[5] = [c.X2 + 150, -c.Y2 - 150, -80];
+      u[4] = [-c.X2 - 110, -c.Y2 - 110, -80];
+      u[5] = [c.X2 + 110, -c.Y2 - 110, -80];
     }
 
     var xBase = xBase || [0, 0, 0];

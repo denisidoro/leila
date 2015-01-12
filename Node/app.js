@@ -67,44 +67,24 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-//----- Socket.io Responses --------------
-io.sockets.on('connection', function(socket) {
-    
-    //On Connect: Send Motors + Registers
-    var mtrs = ms.getMotors();
-    for(var i=0; i<mtrs.length; i++) {
-        socket.emit("addMotor",{id:mtrs[i].getID()});
-        socket.emit("addRegisters",{id:mtrs[i].getID(),registers:mtrs[i].listRegisters()});
-    }
-    
-    socket.on("updateRegister",function(d){
-        var motorid = d.motor;
-        var registerName = d.register;
-        var value = d.value;
-        hex.Servo.list[motorid - 1].motor.setRegisterValue(registerName,value);
-    });
-            
-});
-
 
 //------ Motor System Operation ---------
 ms.on("motorAdded",function(m) {
-    console.log("motor added - "+m.motor.getID());
-    var mid = m.motor.getID();
+    
+    //console.log("motor added - " + m.motor.getID());
+    io.sockets.emit("addMotor", {id: m.motor.getID(), count: ms.length});
     hex.Servo.assignMotor(m.motor);
     
-    io.sockets.emit("addMotor",{id:m.motor.getID()});
-    io.sockets.emit("addRegisters",{id:m.motor.getID(),registers:m.motor.listRegisters()});
-    
-    m.motor.on("valueUpdated",function(d) {
-        io.sockets.emit("valueUpdated",{id:mid,register:d.name,value:d.value});
+    m.motor.on("valueUpdated", function(d) {
+        io.sockets.emit("valueUpdated", {id: m.motor.getID(), register: d.name, value: d.value});
     });
+
 });
 
 ms.on("motorRemoved",function(m) {
     console.log("motor removed - "+m.id);
     hex.Servo.list[m.id - 1].motor = null;
-    io.sockets.emit("removeMotor",{id:m.id});
+    io.sockets.emit("removeMotor", {id:m.id});
 });
 
 ms.init();

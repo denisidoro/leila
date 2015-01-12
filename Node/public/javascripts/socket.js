@@ -46,4 +46,18 @@ function initSocket() {
 		logToTable('sysexResponse', msg, 'Arduino');
 	});
 
+	// Motor added
+	socket.on('addMotor', function(data) {
+
+		var msg = "";
+		if (data.count <= 1)
+			msg = "Started adding servos";
+		else if (data.count == 18)
+			msg = "All 18 servos added";
+
+		if (msg)
+			logToTable('motor', msg, 'Motors');
+
+	});
+
 }

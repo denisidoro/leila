@@ -34,6 +34,13 @@ module.exports = function() {
             hex.IK.baseMove([data.rotX, data.rotY, data.rotZ]);
         });
 
+        socket.on("updateRegister", function(d){
+            var motorid = d.motor;
+            var registerName = d.register;
+            var value = d.value;
+            hex.Servo.list[motorid - 1].motor.setRegisterValue(registerName,value);
+        });
+
 	});
 
 }

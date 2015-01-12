@@ -14,7 +14,7 @@ var Servo = function(id) {
 
         if (hex.Base.upsideDown)
           pos = hex.Action.reflect(pos);
-        console.log(pos);
+        //console.log(pos);
         this.motor.setRegisterValue("goalPosition", pos);
 
       }
@@ -59,7 +59,7 @@ Servo.moveAll = function(pos, speed, diff) {
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-      var diff = diff || 200;
+      var diff = diff || 20000;
       var i = 0, old = 0;
       while (i < pos.length) {
           var time = process.hrtime();

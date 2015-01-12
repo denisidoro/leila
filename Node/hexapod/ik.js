@@ -5,17 +5,17 @@ const math  = require("mathjs");
   var IK = {
 
 
-  straightWalk: function(step_size, n_steps, direction, n_intervals){
+  straightWalk: function(step_size, n_steps, direction, n_intervals, delay){
 
     //Direction = {1,-1}
-    var step = direction*step_size;
+    var step = direction*step_size; 
     var delta_u;
     var delta_x = [0, 0, 0];
     var x = [0, 0, 0]
     var T, t; 
     var A; 
     var group;
-    var data = {}, cnt = 0;
+    var data = [], cnt = 0;
 
     //Initial position and constants
     var U = [];
@@ -45,15 +45,19 @@ const math  = require("mathjs");
       x = A[1];
       U = A[2];
 
+      console.log(n_intervals);
+
       for(var j = 0; j < n_intervals + 1; j++){
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
-        data.push({time: 200*(cnt++), pos: t});
+        console.log([T, t]);
+        data.push({time: (delay || 50)*(cnt++), pos: t._data});
       }
 
     }
 
-    hex.Action.timedMove(data);
+    //hex.Action.timedMove(data);
+    return data;
 
   },
 

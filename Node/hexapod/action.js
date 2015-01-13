@@ -1,7 +1,6 @@
-// Libraries
-const tween  = require("tween.js");
-
 var Action = {
+
+	easing: require("./easing.js"),
 
 	timedMove: function(data) {
 
@@ -21,45 +20,35 @@ var Action = {
 	animatedMove: function(start, end, duration, fps, ease) {
 
 		var duration = duration || 1000;
-		var ease = tween.Easing.linear;
+		var ease = Action.easing.linear;
 		var fps = fps || 8;
 
-		var t = new tween.Tween(serialize(start))
-			.to(serialize(end), duration, ease)
-			.onUpdate(function() {
-		  		var data = unserialize(this);
-			    //console.log(data);
-			    hex.Servo.moveAll(data);
-			})
-			.start();
+		var totalFrames = fps * duration/1000;
+		var data = [];
+		start = parametrize(start);
+		end = parametrize(end);
 
-		animate();
+		console.log(start);
 
-		function animate(){
-			tween.update();
-		    var count = 0;
-		    var timer = setInterval(function() {  
-		    	tween.update();
-				count++;
-		    	if (count >= fps * duration/1000)
-		    		clearInterval(timer); 
-		    }, duration/fps);
-		}	
-		
-		function serialize(obj) {
-			if (!obj.pos)
-				obj = {pos: obj};
-			var objS = [];
-			for (var i = 0; i < obj.pos.length; i++)
-				objS.push(obj.pos[i]);
-			objS.push(obj.speed || hex.Servo.defaultSpeed);
-			return objS;
+		for (var i = 0; i <= totalFrames; i++) {
+			var current = {pos: [], speed: 0};
+			for (var j = 0; j < start.pos.length; j++) 
+				current.pos.push(ease(start.pos[j] + (end.pos[j] - start.pos[j])*i/totalFrames));
+			current.speed = ease(start.speed + (end.speed - start.speed)*i/totalFrames)
+			data.push({
+				time: Action.easing.linear(duration*i/totalFrames*0.95), 
+				pos: current.pos, 
+				speed: current.speed
+			});
 		}
 
-		function unserialize(objS) {
-			var obj = {pos: [], speed: objS[objS.length - 2]};
-			for (var i = 0; i < objS.length - 1; i++)
-				obj.pos.push(objS[i]);
+		//console.log(data);
+		Action.timedMove(data);
+		return data;
+
+		function parametrize(obj) {
+			if (!obj.pos)
+				obj = {pos: obj, speed: hex.Servo.defaultSpeed};
 			return obj;
 		}
 

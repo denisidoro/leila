@@ -15,7 +15,7 @@ var Servo = function(id) {
         if (hex.Base.upsideDown)
           pos = hex.Action.reflect(pos);
         //console.log(pos);
-        this.motor.setRegisterValue("goalPosition", pos);
+        this.motor.setRegisterValue("goalPosition", Math.floor(pos));
 
       }
 

@@ -2,7 +2,7 @@
 const math  = require("mathjs");
 
 //Constant
-var STEP_TIME = 3000;
+var STEP_TIME = 1000;
 // Main
   var IK = {
 
@@ -54,7 +54,7 @@ var STEP_TIME = 3000;
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
         //console.log([T, t]);
-        data.push({time: (j + n_intervals*i)*STEP_TIME/n_intervals, pos: t._data});
+        data.push({time: (j + (n_intervals + 1)*i)*STEP_TIME/n_intervals, pos: t._data});
       }
 
     }

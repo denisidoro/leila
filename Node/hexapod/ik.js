@@ -2,12 +2,12 @@
 const math  = require("mathjs");
 
 //Constant
-var STEP_TIME = 8000;
+var STEP_TIME = 3000;
 // Main
   var IK = {
 
 
-  straightWalk: function(step_size, n_steps, direction, n_intervals){
+  straightWalk: function(step_size, n_steps, direction, n_intervals, h){
 
     //Direction = {1,-1}
     var step = direction*step_size; 
@@ -20,13 +20,14 @@ var STEP_TIME = 8000;
     var data = [], cnt = 0;
 
     //Initial position and constants
+    //var h = -100;
     var U = [];
-        U[0] = [-c.X2 - 110, c.Y2 + 110, -120];
-        U[1] = [c.X2 + 110, c.Y2 + 110, -120];
-        U[2] = [-c.X1 - 150, 0, - 120];
-        U[3] = [c.X1 + 150, 0, - 120];
-        U[4] = [-c.X2 - 110, -c.Y2 - 110, -120];
-        U[5] = [c.X2 + 110, -c.Y2 - 110, -120];
+        U[0] = [-c.X2 - 110, c.Y2 + 110, h];
+        U[1] = [c.X2 + 110, c.Y2 + 110,  h];
+        U[2] = [-c.X1 - 150, 0, h];
+        U[3] = [c.X1 + 150, 0, h];
+        U[4] = [-c.X2 - 110, -c.Y2 - 110, h];
+        U[5] = [c.X2 + 110, -c.Y2 - 110,  h];
 
     for(var i = 0; i < n_steps; i++){
       if(i == 0){
@@ -35,7 +36,7 @@ var STEP_TIME = 8000;
       }
       else if (i == n_steps - 1){
         delta_u = [0, step/2, 0];
-        delta_x = [0,0,0];
+        delta_x = [0, 0, 0];
       }
       else {
         delta_u = [0, step, 0];
@@ -44,17 +45,16 @@ var STEP_TIME = 8000;
 
       group = i % 2;
       A = this.straightStep(group, delta_x, x, delta_u, U, [0,0,0], [0,0,0], n_intervals);
+
       T = A[0];
       x = A[1];
       U = A[2];
 
-      console.log(n_intervals);
-
       for(var j = 0; j < n_intervals + 1; j++){
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
-        console.log([T, t]);
-        data.push({time: j*STEP_TIME/n_intervals, pos: t._data});
+        //console.log([T, t]);
+        data.push({time: (j + n_intervals*i)*STEP_TIME/n_intervals, pos: t._data});
       }
 
     }
@@ -172,8 +172,6 @@ var STEP_TIME = 8000;
                                     [0, 0, math.subset(r_i, math.index(2))],
                                     n_intervals);
 
-      //Ok até aqui
-
       for (var i = 0; i < n_intervals + 1; i++){
         // Moving legs:
         try{
@@ -229,6 +227,7 @@ var STEP_TIME = 8000;
         }
         catch(err){
           console.log(err);
+          throw new Error("straightStep: Error in getLegAngles");
         }   
 
         A[i] =  [ angles0[0], angles0[1], angles0[2],
@@ -289,6 +288,7 @@ var STEP_TIME = 8000;
                                     [0, 0, math.subset(r_i, math.index(2))],
                                     n_intervals);
 
+  
       var T5 = this.planLegParabola(5,
                                     math.squeeze(math.subset(Ui, math.index(5, [0,3]))),
                                     math.squeeze(math.subset(Uf, math.index(5, [0,3]))),
@@ -351,7 +351,8 @@ var STEP_TIME = 8000;
                         );
         }
         catch(err){
-          console.log(err);
+          console.log(err)
+          throw new Error("straightStep: Error in getLegAngles");
         }   
 
         A[i] =  [ angles0[0], angles0[1], angles0[2],
@@ -465,17 +466,25 @@ var STEP_TIME = 8000;
   // [w² w 1] [A2] = [l]
   // [s² s 1] [A3]   [m]
   solveParabolaSystem: function(q, w, s, k, l, m){
+    var A = math.matrix([
+            [Math.pow(q,2), q, 1],
+            [Math.pow(w,2), w, 1],
+            [Math.pow(s,2), s, 1]
+            ]);
 
-    var A2 = (k - l)/(Math.pow(q,2) - Math.pow(w,2));
-    A2 = (l - m)/(Math.pow(w,2) - Math.pow(s,2)) - A2;
-    A2 = A2*(w + s)*(q + w)/(q - s)
+    A = math.inv(A);
+    var x = math.multiply(A, [k, l, m]);
+    x = math.squeeze(x);
+    return [math.subset(x, math.index(0)), math.subset(x, math.index(1)), math.subset(x, math.index(2))];
+    // Does not work if q² = w²
+    // var A2 = (k - l)/(Math.pow(q,2) - Math.pow(w,2));
+    // A2 = (l - m)/(Math.pow(w,2) - Math.pow(s,2)) - A2;
+    // A2 = A2*(w + s)*(q + w)/(q - s)
 
+    // var A1 = (k - l)/(Math.pow(q,2) - Math.pow(w,2))  - A2/(q + w);
 
-    var A1 = (k - l)/(Math.pow(q,2) - Math.pow(w,2))  - A2/(q + w);
-
-    var A3 = m - A1*Math.pow(s,2) - A2*s;
-
-    return [A1, A2, A3];
+    // var A3 = m - A1*Math.pow(s,2) - A2*s;
+    // return [A1, A2, A3];
   },
 
 // move all legs, based on body base
@@ -484,12 +493,12 @@ var STEP_TIME = 8000;
 
     if (!u) {
       var u = [];
-      u[0] = [-c.X2 - 110, c.Y2 + 110, -80];
-      u[1] = [c.X2 + 110, c.Y2 + 110, -80];
-      u[2] = [-c.X1 - 150, 0, - 80];
-      u[3] = [c.X1 + 150, 0, - 80];
-      u[4] = [-c.X2 - 110, -c.Y2 - 110, -80];
-      u[5] = [c.X2 + 110, -c.Y2 - 110, -80];
+      u[0] = [-c.X2 - 110, c.Y2 + 110, -120];
+      u[1] = [c.X2 + 110, c.Y2 + 110, -120];
+      u[2] = [-c.X1 - 150, 0, - 120];
+      u[3] = [c.X1 + 150, 0, - 120];
+      u[4] = [-c.X2 - 110, -c.Y2 - 110, -120];
+      u[5] = [c.X2 + 110, -c.Y2 - 110, -120];
     }
 
     var xBase = xBase || [0, 0, 0];
@@ -636,19 +645,6 @@ var STEP_TIME = 8000;
     }
     return result;
     
-  },
-
-  degreesToRadians: function(degrees) {
-
-    if (Array.isArray(degrees)) {
-      var array = [];
-      for (var i = 0; i < degrees.length; i++)
-        array.push(IK.degreesToRadians(degrees[i]));
-      return array;
-    }
-    else
-       return degrees * Math.PI / 180;
-
   },
 
   radiansToBits: function(radians, negative) {

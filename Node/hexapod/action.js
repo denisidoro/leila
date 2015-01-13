@@ -7,7 +7,7 @@ var Action = {
 
 		function setTimeouts(i) {
 		  setTimeout(function() { 
-		  	console.log(data[i].pos);
+		  	//console.log(data[i].pos);
 		    hex.Servo.moveAll(data[i].pos, data[i].speed);
 		  }, data[i].time);
 		}

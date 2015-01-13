@@ -1,0 +1,16 @@
+var start = [512, 490, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512];
+var end = [680, 400, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512];
+var duration = 1000;
+var fps = 2;
+var easing = 'linear';
+
+//listEasings();
+var d = hex.Action.animatedMove(start, end, duration, fps, easing);
+//console.log(d);
+
+function listEasings() {
+    var list = [];
+    for (var p in hex.Action.easing)
+        list.push(p);
+    console.table(list);    
+}

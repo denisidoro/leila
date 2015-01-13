@@ -41,23 +41,25 @@ var Action = {
 	animatedMove: function(start, end, duration, fps, ease) {
 
 		var duration = duration || 1000;
-		var ease = Action.easing.linear;
+		var ease = ease || 'linear';
 		var fps = fps || 8;
+
+		function easeNorm(a, b, x, xMax) {
+			return a + (b - a) * Action.easing[ease](x) / Action.easing[ease](xMax);
+		}
 
 		var totalFrames = fps * duration/1000;
 		var data = [];
 		start = parametrize(start);
 		end = parametrize(end);
 
-		console.log(start);
-
 		for (var i = 0; i <= totalFrames; i++) {
 			var current = {pos: [], speed: 0};
 			for (var j = 0; j < start.pos.length; j++) 
-				current.pos.push(ease(start.pos[j] + (end.pos[j] - start.pos[j])*i/totalFrames));
-			current.speed = ease(start.speed + (end.speed - start.speed)*i/totalFrames)
+				current.pos.push(easeNorm(start.pos[j], end.pos[j], i, totalFrames));
+			current.speed = easeNorm(start.speed, end.speed, i, totalFrames);
 			data.push({
-				time: Action.easing.linear(duration*i/totalFrames*0.95), 
+				time: duration*i/totalFrames*0.98, 
 				pos: current.pos, 
 				speed: current.speed
 			});

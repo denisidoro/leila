@@ -54,6 +54,12 @@ Servo.remove = function(index) {
 // diff in microsecods
 Servo.moveAll = function(pos, speed, diff) {
 
+  if (pos.pos) {
+    pos = pos.pos;
+    speed = pos.speed;
+    diff = pos.diff;
+  }
+
   try {
 
     if (Servo.list.length < pos.length)

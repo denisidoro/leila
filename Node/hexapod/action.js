@@ -17,6 +17,27 @@ var Action = {
 
 	},
 
+	timedMoveMicro: function(data) {
+		
+		function nowMicro() {
+			var time = process.hrtime();
+			return time[0] * 1e9 + time[1];
+		}
+
+		var first = nowMicro();
+		var i = 0;
+
+		while (i < data.length) {
+		  var now = nowMicro();
+		  if (now - first > data[i].time*1e6) {
+			//console.log(data[i].pos)		    
+			hex.Servo.moveAll(data[i].pos, data[i].speed);
+			i++;
+		  }
+		}
+
+	},
+
 	animatedMove: function(start, end, duration, fps, ease) {
 
 		var duration = duration || 1000;
@@ -43,7 +64,7 @@ var Action = {
 		}
 
 		//console.log(data);
-		Action.timedMove(data);
+		Action.timedMoveMicro(data);
 		return data;
 
 		function parametrize(obj) {

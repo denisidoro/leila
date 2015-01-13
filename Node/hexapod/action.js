@@ -21,7 +21,7 @@ var Action = {
 		
 		function nowMicro() {
 			var time = process.hrtime();
-			return time[0] * 1e9 + time[1];
+			return (time[0] * 1e9 + time[1]) / 1000;
 		}
 
 		var first = nowMicro();
@@ -29,8 +29,8 @@ var Action = {
 
 		while (i < data.length) {
 		  var now = nowMicro();
-		  if (now - first > data[i].time*1e6) {
-			//console.log(data[i].pos)		    
+		  if (now - first > data[i].time * 1000) {
+			//console.log(data[i].pos);		    
 			hex.Servo.moveAll(data[i].pos, data[i].speed);
 			i++;
 		  }

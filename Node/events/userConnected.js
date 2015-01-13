@@ -31,7 +31,7 @@ module.exports = function() {
         });
 
         socket.on('baseChange', function(data) {
-            hex.IK.baseMove([data.rotX, data.rotY, data.rotZ]);
+            hex.IK.baseMove(hex.IK.degreesToRadians([data.rotX, data.rotY, data.rotZ]));
         });
 
         socket.on("updateRegister", function(d){

@@ -638,6 +638,19 @@ var STEP_TIME = 8000;
     
   },
 
+  degreesToRadians: function(degrees) {
+
+    if (Array.isArray(degrees)) {
+      var array = [];
+      for (var i = 0; i < degrees.length; i++)
+        array.push(IK.degreesToRadians(degrees[i]));
+      return array;
+    }
+    else
+       return degrees * Math.PI / 180;
+
+  },
+
   radiansToBits: function(radians, negative) {
 
     if (Array.isArray(radians)) {

@@ -2,7 +2,7 @@
 const math  = require("mathjs");
 
 //Constant
-var STEP_TIME = 3000;
+var STEP_TIME = 8000;
 // Main
   var IK = {
 
@@ -35,6 +35,7 @@ var STEP_TIME = 3000;
       }
       else if (i == n_steps - 1){
         delta_u = [0, step/2, 0];
+        delta_x = [0,0,0];
       }
       else {
         delta_u = [0, step, 0];
@@ -43,13 +44,9 @@ var STEP_TIME = 3000;
 
       group = i % 2;
       A = this.straightStep(group, delta_x, x, delta_u, U, [0,0,0], [0,0,0], n_intervals);
-      console.log(delta_x)
-      console.log(x)
-      console.log(A[0]);
       T = A[0];
       x = A[1];
       U = A[2];
-      console.log(x)
 
       console.log(n_intervals);
 

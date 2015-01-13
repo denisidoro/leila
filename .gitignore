@@ -1,20 +1,49 @@
-.DS_Store
-
-*.sublime-workspace
-project.sublime-workspace
-*.log
-**/desktop.ini
+# ------------------------------
+# Project
+# ------------------------------
 
 Arduino/*
 Docs/*
 CAD/*
 Design/*
+# Design/resource/*
+
+
+# ------------------------------
+# Sublime Text
+# ------------------------------
+
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+*.sublime-workspace
+
+# project files should be checked into the repository, unless a significant
+# proportion of contributors will probably not be using SublimeText
+# *.sublime-project
+
+# sftp configuration file
+sftp-config.json
+
+
+# ------------------------------
+# System and hidden files
+# ------------------------------
+
+.DS_Store
+**/desktop.ini
+*.log
+
+
+# ------------------------------
+# Node
+# ------------------------------
 
 Node/node_modules/*
 Node/node_modules/*/
 !Node/node_modules/changes/
 !Node/node_modules/dynanode/
-
 Node/public/bower/*
-
-Design/resource/*

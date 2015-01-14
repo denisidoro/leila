@@ -1,11 +1,278 @@
 // Libraries
 const math  = require("mathjs");
 
-//Constant
-//var STEP_TIME = 1000;
-var EPSILON = 175 //in us
+// Constants
+// var STEP_TIME = 1000;
+var EPSILON = 175; //in u
+var time_frac = 3; // time_move/time_rise
+var delta_h = -20;
+var defaultVerticalSpeed = 100;
+
+// State variables
+var x = [];
+var U = [];
+var r = [];
+
 // Main
 var Motion = {
+
+  initHexapod: function(x_i, U_i, r_i){
+      var h = -110;
+      var u = [];
+        u[0] = [-c.X2 - 110, c.Y2 + 110, h];
+        u[1] = [c.X2 + 110, c.Y2 + 110, h];
+        u[2] = [-c.X1 - 150, 0, h];
+        u[3] = [c.X1 + 150, 0, h];
+        u[4] = [-c.X2 - 110, -c.Y2 - 110, h];
+        u[5] = [c.X2 + 110, -c.Y2 - 110, h];
+
+      // Writing states
+      U = U_i || u;
+      x = x_i || [0, 0, 0];
+      r = r_i || [0,0,0];
+
+      // Moving
+      hex.Servo.moveAll(this.getStateAngles(r, x, U), 80);
+  },
+
+  // xf: final center position
+  // rf: final roation angles
+  // Uf: final contact points (matrix 6x3)
+  // time: movement time in ms
+  changeState: function(xf, rf, Uf, time, starting_time){
+    var movingLegs = [];
+    var interm_Uf = [];
+    var interm_Ui = [];
+    var angles_i = [];
+    var angles_interm_i = [];
+    var angles_interm_f = [];
+    var angles_f = [];
+    var servo_speeds_rise = [];
+    var servo_speeds = [];
+    var servo_speeds_descent = [];
+    var aux = [];
+
+    // Adapting time
+    time = time*time_frac/(time_frac+2);
+
+    for(var i = 0; i < 6; i++){
+      aux = math.subtract(
+              math.subset(Uf, math.index(i, [0,3])),
+              math.subset(U, math.index(i, [0,3]))
+              );
+      aux = math.squeeze(aux);
+      //aux = [math.subset(aux, math.index(0)), 
+      //       math.subset(aux, math.index(1)), 
+      //       math.subset(aux, math.index(2))];
+      if(aux[0] != 0 || aux[1] != 0 || aux[2] != 0)
+        movingLegs.push(i);
+    }
+
+    // Calculate interm_Ui and interm_Uf
+    for(var i = 0; i < movingLegs.length; i++){
+      // interm_Ui
+      aux = math.subset(U, math.index(movingLegs[i], [0,3]));
+      aux = math.squeeze(aux);
+      aux = math.subtract(aux, [0,0, delta_h]);
+      // aux = [math.subset(aux, math.index(0)), 
+      //        math.subset(aux, math.index(1)), 
+      //        math.subset(aux, math.index(2))];
+      aux = math.squeeze(aux);
+      interm_Ui[movingLegs[i]] = aux;
+
+      // interm_Uf
+      aux = math.subset(Uf, math.index(movingLegs[i], [0,3]));
+      aux = math.squeeze(aux);
+      aux = math.subtract(aux, [0,0, delta_h]);
+      // aux = [math.subset(aux, math.index(0)), 
+      //        math.subset(aux, math.index(1)), 
+      //        math.subset(aux, math.index(2))];
+      aux = math.squeeze(aux);
+      interm_Uf[movingLegs[i]] = aux;
+    }
+
+    for(var i = 0; i < 6; i++){
+      // i not in movingLegs
+      if(movingLegs.indexOf(i) == -1){
+        aux = math.subset(U, math.index(i, [0,3]));
+        aux = math.squeeze(aux);
+        // aux = [math.subset(aux, math.index(0)), 
+        //        math.subset(aux, math.index(1)), 
+        //        math.subset(aux, math.index(2))];
+        interm_Ui[i] = aux;
+
+        aux = math.subset(Uf, math.index(i, [0,3]));
+        aux = math.squeeze(aux);
+        // aux = [math.subset(aux, math.index(0)), 
+        //        math.subset(aux, math.index(1)), 
+        //        math.subset(aux, math.index(2))];
+        interm_Uf[i] = aux;
+      }
+    }
+ 
+    // Getting angles
+    angles_i = this.getStateAngles(r, x, U);
+    if(!angles_i) throw new Error("Angles error 1 in changeState");
+
+    angles_interm_i = this.getStateAngles(r, x, interm_Ui);
+    if(!angles_interm_i) throw new Error("Angles error 1 in changeState");
+
+    angles_interm_f = this.getStateAngles(rf, xf, interm_Uf);
+    if(!angles_interm_f) throw new Error("Angles error 1 in changeState");
+
+    angles_f = this.getStateAngles(rf, xf, Uf);
+    if(!angles_f) throw new Error("Angles error 1 in changeState");
+
+    // console.log("angles_i")
+    // console.log(angles_i)
+    // console.log("angles_interm_i")
+    // console.log(angles_interm_i)
+    // console.log("angles_interm_f")
+    // console.log(angles_interm_f)
+    // console.log("angles_f")
+    // console.log(angles_f)   
+
+
+    // Calculating servo speeds
+    for(var i = 0; i < 18; i++){
+      //servo_speeds_rise[i] = defaultVerticalSpeed; //in "speed bits"
+      //servo_speeds_descent[i] = defaultVerticalSpeed; //in "speed bits"
+      // Consider rise and descent times for better precision
+
+      servo_speeds_rise[i] = math.abs(angles_interm_i[i] - angles_i[i])/(0.001*time/time_frac);
+      servo_speeds_rise[i] *= (0.35*1023/258);
+      servo_speeds_rise[i] = Math.round(servo_speeds_rise[i]) ;
+
+      servo_speeds[i] = math.abs(angles_interm_f[i] - angles_interm_i[i])/(0.001*time); //in "angle bits"/s 
+      servo_speeds[i] *= 0.35; //in degrees/s
+      servo_speeds[i] *= (1023/258); //in "speed bits"
+      servo_speeds[i] = Math.round(servo_speeds[i]);
+
+      servo_speeds_descent[i] = math.abs(angles_interm_f[i] - angles_f[i])/(0.001*time/time_frac);
+      servo_speeds_descent[i] *= (0.35*1023/258);
+      servo_speeds_descent[i] = Math.round(servo_speeds_descent[i]) ;
+
+      if (servo_speeds[i] > 1023 || servo_speeds_rise[i] > 1023 || servo_speeds_descent[i] > 1023){
+        throw new Error("Speed error");
+      }
+    }
+
+    var data = [
+        {time: starting_time, pos: angles_interm_i, speed: servo_speeds_rise},
+        {time: starting_time + time/time_frac, pos: angles_interm_f, speed: servo_speeds},
+        {time: starting_time + time + time/time_frac , pos: angles_f, speed: servo_speeds_descent}
+      ];
+      //console.table(data);
+      x = xf;
+      r = rf;
+      U = Uf;
+      hex.Action.timedMove(data);
+      console.log(servo_speeds);
+  },
+
+  tripodSimpleWalk: function(step_size, n_steps, direction, step_time){
+    var step = direction*step_size;
+    var delta_u;
+    var delta_x = [0, 0, 0];
+    var group; 
+    var aux = [];
+    var Uf = [];
+    var xx; // x before change state
+
+    //Initial position
+    this.initHexapod();
+    for(var i = 0; i < n_steps; i++){
+
+      if(i == 0){
+        delta_u = [0, step/2, 0];
+        delta_x = delta_u;
+      }
+      else if (i == n_steps - 1){
+        delta_u = [0, step/2, 0];
+        delta_x = [0, 0, 0];
+      }
+      else {
+        delta_u = [0, step, 0];
+        delta_x = [0, step/2, 0];
+      }
+
+      group = i % 2;
+
+      xx = math.add(x, delta_x);
+      xx = math.squeeze(xx);
+      // Move 0, 3, 4
+      if(group == 0){
+        aux = math.subset(U, math.index(0, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+
+        aux = math.subset(U, math.index(3, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(4, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(1, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(2, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(5, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+      }
+
+      // Move 1, 2, 5
+      else{
+        aux = math.subset(U, math.index(1, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(2, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(5, [0,3]));
+        aux = math.squeeze(aux);
+        aux = math.add(aux, delta_u);
+        aux = math.squeeze(aux);
+        Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(0, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(3, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+
+        aux = math.subset(U, math.index(4, [0,3]));
+        aux = math.squeeze(aux);
+        Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+      }
+      console.log(xx);
+      console.log(Uf);
+    this.changeState(xx, [0,0,0], Uf, step_time,100 + i*5000);
+    x = xx;
+    U = Uf;
+    }
+  },
 
   //step_time in us
   straightWalk: function(step_size, n_steps, direction, n_intervals, step_time, h){
@@ -502,9 +769,7 @@ var Motion = {
   },
 
 // move all legs, based on body base
-  baseMove: function(angles, speed, xBase, xLeg, u) {
-
-
+  getStateAngles: function(angles, xBase, u, xLeg) {
     if (!u) {
       var u = [];
       u[0] = [-c.X2 - 110, c.Y2 + 110, -120];
@@ -540,12 +805,11 @@ var Motion = {
     }
     //console.log(bits);
 
-    hex.Servo.moveAll(bits, speed);
-    hex.Base.rotation = angles;
-    hex.Base.position = xBase;
+    //hex.Servo.moveAll(bits, speed);
+    //hex.Base.rotation = angles;
+    //hex.Base.position = xBase;
     //console.log(bits);
     return bits;
-
   },
 
   // return [alpha, beta, gamma], from 0 to 1023
@@ -732,6 +996,10 @@ var Motion = {
       ]);
 
     return math.multiply(Rx, math.multiply(Ry, Rz));
+  },
+
+  degreesToRadians: function(degrees){
+    return degrees*math.pi/180;
   },
 
   test: function(){

@@ -2,12 +2,13 @@
 const math  = require("mathjs");
 
 //Constant
-var STEP_TIME = 1000;
+//var STEP_TIME = 1000;
+var EPSILON = 175 //in us
 // Main
   var IK = {
 
-
-  straightWalk: function(step_size, n_steps, direction, n_intervals, h){
+  //step_time in us
+  straightWalk: function(step_size, n_steps, direction, n_intervals, step_time, h){
 
     //Direction = {1,-1}
     var step = direction*step_size; 
@@ -18,6 +19,7 @@ var STEP_TIME = 1000;
     var A; 
     var group;
     var data = [], cnt = 0;
+    var v = []; //Speed of servos (array, size 18)
 
     //Initial position and constants
     //var h = -100;
@@ -50,18 +52,30 @@ var STEP_TIME = 1000;
       x = A[1];
       U = A[2];
 
+      // Data: time, position and speed
       for(var j = 0; j < n_intervals + 1; j++){
         t = math.subset(T, math.index([0,18],j));
         t = math.squeeze(t);
-        //console.log([T, t]);
-        data.push({time: (j + (n_intervals + 1)*i)*STEP_TIME/n_intervals, pos: t._data});
+        // Calculating speeds
+        for(var m = 0; m < 18; m++){
+          if(j == 0){
+            v[m] = hex.Servo.defaultSpeed;
+          }
+          else{
+            v[m] = Math.abs(math.subset(T, math.index(m,j)) - math.subset(T, math.index(m, j-1)));
+            v[m] = 1.387791*(1 + n_intervals*EPSILON/step_time)*v[m]/(step_time/n_intervals);
+            v[m] = 1000000*v[m]; //from (microseconds)^-1 to (seconds)^-1
+            v[m] = Math.round(v[m]);
+          }
+        }
+         //console.log([T, t]);
+        data.push({time: (j + (n_intervals + 1)*i)*step_time/n_intervals, pos: t._data,
+                  speed: v});
+        console.log(v);
       }
-
     }
-
     //hex.Action.timedMove(data);
     return data;
-
   },
 
   straightStep: function(group, delta_x, x_0, delta_u, Ui, r_i, r_f, n_intervals){
@@ -424,7 +438,7 @@ var STEP_TIME = 1000;
     var ss = ym;
     var kk = math.subset(ui, math.index(0));
     var ll = math.subset(uf, math.index(0));
-    var mm = kk + Math.pow(-1,i+1)*dif/8;
+    var mm = kk + Math.pow(-1,i+1)*dif/4;
     //------
     var K = this.solveParabolaSystem(qq, ww, ss, kk, ll, mm);
     var x = [];

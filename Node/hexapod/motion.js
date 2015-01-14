@@ -5,7 +5,7 @@ const math  = require("mathjs");
 //var STEP_TIME = 1000;
 var EPSILON = 175 //in us
 // Main
-  var IK = {
+var Motion = {
 
   //step_time in us
   straightWalk: function(step_size, n_steps, direction, n_intervals, step_time, h){
@@ -535,7 +535,7 @@ var EPSILON = 175 //in us
         bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
     }
     catch (err) {
-      console.table(["IKError", err.message]);
+      console.table(["MotionError", err.message]);
       return false;
     }
     //console.log(bits);
@@ -750,7 +750,7 @@ var EPSILON = 175 //in us
       var delta_u = [0,80,0];
       var r_i = [0,0,0];
       var r_f = [0,0,0];
-      var A = hex.IK.straightStep(1, delta_x, x_0, delta_u, Ui, r_i, r_f, n_intervals)
+      var A = hex.Motion.straightStep(1, delta_x, x_0, delta_u, Ui, r_i, r_f, n_intervals)
       //console.log(A[0])
 
       var T = A[0];
@@ -773,4 +773,4 @@ var EPSILON = 175 //in us
   }
 };
 
-module.exports = IK;
+module.exports = Motion;

@@ -95,7 +95,7 @@ global.io = io;
 global.c = require('./hexapod/constants.js');
 global.hex = {
     Servo: require('./hexapod/servo.js'),
-    IK: require('./hexapod/ik.js'),
+    Motion: require('./hexapod/motion.js'),
     Base: require('./hexapod/base.js'),
     Action: require('./hexapod/action.js')
 };

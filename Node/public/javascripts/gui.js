@@ -23,9 +23,9 @@ function initGUI() {
 
 	controllers.push(gui.f1.add(configs.base, 'forward', -4, 4));
 	controllers.push(gui.f1.add(configs.base, 'right', -4, 4));
-	controllers.push(gui.f1.add(configs.base, 'rotX', -90, 90));
-	controllers.push(gui.f1.add(configs.base, 'rotY', -90, 90));
-	controllers.push(gui.f1.add(configs.base, 'rotZ', -90, 90));
+	controllers.push(gui.f1.add(configs.base, 'rotX', -20, 20));
+	controllers.push(gui.f1.add(configs.base, 'rotY', -20, 20));
+	controllers.push(gui.f1.add(configs.base, 'rotZ', -20, 20));
 
 	$.each(controllers, function(i, c) {
 		c.listen().onFinishChange(function(value) {

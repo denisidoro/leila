@@ -51,7 +51,9 @@ var Motion = {
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
   changeState: function(xf, rf, Uf, time, starting_time){
-    console.log("HUEHUHEUHEUHU")
+
+    var Uf = Uf || this.clone(U);
+    
     var movingLegs = [];
     var interm_Uf = [];
     var interm_Ui = [];
@@ -1034,6 +1036,12 @@ var Motion = {
   },
 
   degreesToRadians: function(degrees){
+    if (Array.isArray(degrees)) {
+      var r = [];
+      for (var i = 0; i < degrees.length; i++)
+        r.push(Motion.degreesToRadians(degrees[i]));
+      return r;
+    }
     return degrees*math.pi/180;
   },
 

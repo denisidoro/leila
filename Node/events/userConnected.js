@@ -32,8 +32,14 @@ module.exports = function() {
 
         socket.on('baseChange', function(data) {
             var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
+            console.log(r);
             //hex.Motion.baseMove(hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]));
-            hex.Motion.changeState([0,0,0], r, u, 1000, 100);
+            try {
+                hex.Motion.changeState([0,0,110], r, false, 1000, 100);
+            }
+            catch(e) {
+                console.log(e);
+            }
         });
 
         socket.on("updateRegister", function(d){

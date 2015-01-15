@@ -200,7 +200,7 @@ var Motion = {
 //delta_x movimento do centro da base
       if(i == 0){
         delta_u = math.multiply(0.5, step);
-        delta_x = math.multiply(0.5, step);
+        delta_x = math.multiply(0.25, step);
       //delta_u = [0, step/2, 0];  //OMAR
        // delta_x = delta_u; //OMAR
         // delta_x = [0, step/6, 0];
@@ -208,7 +208,7 @@ var Motion = {
       }
       else if (i == n_steps - 1){
         delta_u = math.multiply(0.5, step);
-        delta_x = [0, 0, 0];
+        delta_x = math.multiply(0.25, step);
         //delta_u = [0, step/2, 0]; //OMAR
         //delta_x = [0, 0, 0]; //OMAR
         // delta_x = [0, step*2/3, 0];

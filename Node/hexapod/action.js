@@ -96,12 +96,8 @@ var Action = {
 	swap: function(x) {
 		
 		var y = [];
-
-		for (var i = 0; i < x.length; i += 2) {
-			y.push(x[i + 1]);
-			y.push(x[i]);
-		}
-
+		for (var i = 0; i < 18; i++)
+			y.push(x[i + 3*((i%3)%2 == i%2 ? 1 : -1)]);
 		return y;
 
 	}

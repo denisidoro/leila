@@ -78,7 +78,7 @@ Servo.moveAll = function(pos, speed, diff) {
         var time = process.hrtime();
         var timeMicro = Math.floor((time[0] * 1e9 + time[1])/1000);
         if (timeMicro - old > diff) {
-            Servo.list[i].move(pos[i], (Array.isArray(speed) ? speed[i] : speed));
+            Servo.get(i).move(pos[i], (Array.isArray(speed) ? speed[i] : speed));
             old = timeMicro;
             i++;
             if (pos[i] < 0 || (Array.isArray(speed) && speed[i] <= 0))

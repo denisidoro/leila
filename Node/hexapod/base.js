@@ -7,7 +7,7 @@ var Base = {
   },
 
   getServo: function(id) {
-  	return hex.Servo.list[id];
+  	return hex.Servo.get(id);
   },
 
 	rotation: [0, 0, 0],

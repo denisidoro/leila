@@ -6,9 +6,6 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser');
 
-var MotorSystem = require('dynanode/MotorSystem');
-var ms = new MotorSystem();
-
 var routes = require('./routes/index');
 
 var app = express();
@@ -67,35 +64,7 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-
-//------ Motor System Operation ---------
-ms.on("motorAdded",function(m) {
-    
-    var id = m.motor.getID();
-    var count = ms.length;
-    
-    io.emit("addMotor", {id: id, count: count});
-    hex.Servo.assignMotor(m.motor);
-    
-    m.motor.on("valueUpdated", function(d) {
-        io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
-    });
-
-    if (count == 18)
-        hex.Motion.moveToInit();
-
-});
-
-ms.on("motorRemoved",function(m) {
-    console.log("motor removed - "+m.id);
-    hex.Servo.list[m.id - 1].motor = null;
-    io.emit("removeMotor", {id:m.id});
-});
-
-ms.init();
-
-
-// Set globals
+// set globals
 global.io = io;
 global.c = require('./hexapod/constants.js');
 global.hex = {
@@ -105,12 +74,9 @@ global.hex = {
     Action: require('./hexapod/action.js')
 };
 
+// event requirements
+require('./events/serverStarted')();
 require('./events/userConnected')();
 
 
-console.table = function(msg) {
-    console.log(msg);
-    io.emit('response', msg);
-}
 
-hex.Base.init();

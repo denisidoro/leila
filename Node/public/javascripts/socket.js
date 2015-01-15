@@ -61,4 +61,10 @@ function initSocket() {
 
 	});
 
+	// Motor value updated
+	socket.on('valueUpdated', function(data) {
+    	console.log('motor value updated');
+    	console.log(data);
+    });
+
 }

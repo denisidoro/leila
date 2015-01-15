@@ -27,15 +27,13 @@ module.exports = function() {
         });
 
         socket.on('moveServo', function(data) {
-            hex.Servo.list[data.id].move(data.pos, 150);
+            hex.Servo.get(data.id).move(data.pos, 150);
         });
 
         socket.on('baseChange', function(data) {
-            var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
-            console.log(r);
-            //hex.Motion.baseMove(hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]));
             try {
-                hex.Motion.changeState([0,0,110], r, false, 1000, 100);
+                var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
+                hex.Motion.changeState([0, 0, 110], r, false, 1000, 100);
             }
             catch(e) {
                 console.log(e);
@@ -46,7 +44,7 @@ module.exports = function() {
             var motorid = d.motor;
             var registerName = d.register;
             var value = d.value;
-            hex.Servo.list[motorid - 1].motor.setRegisterValue(registerName,value);
+            hex.Servo.get(motorid - 1).motor.setRegisterValue(registerName,value);
         });
 
 	});

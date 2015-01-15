@@ -18,27 +18,6 @@ var Action = {
 
 	},
 
-	timedMoveMicro: function(data) {
-		
-		function nowMicro() {
-			var time = process.hrtime();
-			return (time[0] * 1e9 + time[1]) / 1000;
-		}
-
-		var first = nowMicro();
-		var i = 0;
-
-		while (i < data.length) {
-		  var now = nowMicro();
-		  if (now - first > data[i].time * 1000) {
-			//console.log(data[i].pos);		    
-			hex.Servo.moveAll(data[i].pos, data[i].speed);
-			i++;
-		  }
-		}
-
-	},
-
 	animatedMove: function(start, end, duration, fps, ease) {
 
 		var duration = duration || 1000;
@@ -66,8 +45,7 @@ var Action = {
 			});
 		}
 
-		//console.log(data);
-		Action.timedMoveMicro(data);
+		Action.timedMove(data);
 		return data;
 
 		function parametrize(obj) {
@@ -78,6 +56,7 @@ var Action = {
 
 	},
 
+	// get complementar angles
 	reflect: function(x, swap) {
 
 		if (swap)
@@ -93,13 +72,12 @@ var Action = {
 
 	},
 
+	// swap information for moveAll() in case of reflection
 	swap: function(x) {
-		
 		var y = [];
 		for (var i = 0; i < 18; i++)
 			y.push(x[i + 3*((i%3)%2 == i%2 ? 1 : -1)]);
 		return y;
-
 	}
 
 }

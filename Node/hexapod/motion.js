@@ -16,15 +16,6 @@ var r = [];
 // Main
 var Motion = {
 
-  toVector: function(aux) {
-    var v = [];
-    aux = math.squeeze(aux);
-    var size = math.size(aux);
-    for (var i = 0; i < size._data[0]; i++)
-      v.push(math.subset(aux, math.index(i)));
-    return v;
-  },
-
   initHexapod: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
@@ -43,7 +34,6 @@ var Motion = {
   moveToInit: function(){
       // Moving
       hex.Servo.moveAll(this.getStateAngles(r, x, U), 80);
-
   },
 
   // xf: final center position
@@ -168,20 +158,21 @@ var Motion = {
     }
 
     var data = [
-        {time: starting_time , pos: angles_interm_i, speed: servo_speeds_rise},
-        {time: starting_time + time/time_frac, pos: angles_interm_f, speed: servo_speeds},
-        {time: starting_time + time + time/time_frac, pos: angles_f, speed: servo_speeds_descent}
-      ];
-      //console.table(data);
-      x = this.clone(xf);
-      r = this.clone(rf);
-      U = this.clone(Uf);
-      hex.Action.timedMove(data);
-      console.log(servo_speeds);
+      {time: starting_time , pos: angles_interm_i, speed: servo_speeds_rise},
+      {time: starting_time + time/time_frac, pos: angles_interm_f, speed: servo_speeds},
+      {time: starting_time + time + time/time_frac, pos: angles_f, speed: servo_speeds_descent}
+    ];
+    //console.table(data);
+    x = this.clone(xf);
+    r = this.clone(rf);
+    U = this.clone(Uf);
+    hex.Action.timedMove(data);
+    console.log(servo_speeds);
+
   },
 
   clone: function(a){
-    return JSON.parse( JSON.stringify(a) );
+    return JSON.parse(JSON.stringify(a));
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time){

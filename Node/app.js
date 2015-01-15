@@ -82,7 +82,7 @@ ms.on("motorAdded",function(m) {
     });
 
     if (count == 18)
-        hex.Motion.initHexapod();
+        hex.Motion.moveToInit();
 
 });
 

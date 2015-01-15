@@ -16,6 +16,15 @@ var r = [];
 // Main
 var Motion = {
 
+  toVector: function(aux) {
+    var v = [];
+    aux = math.squeeze(aux);
+    var size = math.size(aux);
+    for (var i = 0; i < size._data[0]; i++)
+      v.push(math.subset(aux, math.index(i)));
+    return v;
+  },
+
   initHexapod: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
@@ -25,14 +34,16 @@ var Motion = {
         u[3] = [c.X1 + 150, 0, 0];
         u[4] = [-c.X2 - 110, -c.Y2 - 110, 0];
         u[5] = [c.X2 + 110, -c.Y2 - 110, 0];
-
       // Writing states
       U = U_i || u;
       x = x_i || [0, 0, h];
       r = r_i || [0,0,0];
+  },
 
+  moveToInit: function(){
       // Moving
       hex.Servo.moveAll(this.getStateAngles(r, x, U), 80);
+
   },
 
   // xf: final center position
@@ -181,6 +192,7 @@ var Motion = {
     var xx; // x before change state
     //Initial position
     //this.initHexapod();
+
     for(var i = 0; i < n_steps; i++){
 //delta_u movimento da pata que esta no alto
 //delta_x movimento do centro da base

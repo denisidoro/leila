@@ -3,9 +3,9 @@ const math  = require("mathjs");
 
 // Constants
 // var STEP_TIME = 1000;
-var EPSILON = 175; //in u
-var time_frac = 3; // time_move/time_rise
-var delta_h = -20;
+var EPSILON = 100; //in ms
+var time_frac = 6; // time_move/time_rise
+var delta_h = 20;
 var defaultVerticalSpeed = 100;
 
 // State variables
@@ -16,19 +16,28 @@ var r = [];
 // Main
 var Motion = {
 
+  toVector: function(aux) {
+    var v = [];
+    aux = math.squeeze(aux);
+    var size = math.size(aux);
+    for (var i = 0; i < size._data[0]; i++)
+      v.push(math.subset(aux, math.index(i)));
+    return v;
+  },
+
   initHexapod: function(x_i, U_i, r_i){
-      var h = -110;
+      var h = 110;
       var u = [];
-        u[0] = [-c.X2 - 110, c.Y2 + 110, h];
-        u[1] = [c.X2 + 110, c.Y2 + 110, h];
-        u[2] = [-c.X1 - 150, 0, h];
-        u[3] = [c.X1 + 150, 0, h];
-        u[4] = [-c.X2 - 110, -c.Y2 - 110, h];
-        u[5] = [c.X2 + 110, -c.Y2 - 110, h];
+        u[0] = [-c.X2 - 110, c.Y2 + 110, 0];
+        u[1] = [c.X2 + 110, c.Y2 + 110, 0];
+        u[2] = [-c.X1 - 150, 0, 0];
+        u[3] = [c.X1 + 150, 0, 0];
+        u[4] = [-c.X2 - 110, -c.Y2 - 110, 0];
+        u[5] = [c.X2 + 110, -c.Y2 - 110, 0];
 
       // Writing states
       U = U_i || u;
-      x = x_i || [0, 0, 0];
+      x = x_i || [0, 0, h];
       r = r_i || [0,0,0];
 
       // Moving
@@ -40,6 +49,7 @@ var Motion = {
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
   changeState: function(xf, rf, Uf, time, starting_time){
+    console.log("HUEHUHEUHEUHU")
     var movingLegs = [];
     var interm_Uf = [];
     var interm_Ui = [];
@@ -73,7 +83,7 @@ var Motion = {
       // interm_Ui
       aux = math.subset(U, math.index(movingLegs[i], [0,3]));
       aux = math.squeeze(aux);
-      aux = math.subtract(aux, [0,0, delta_h]);
+      aux = math.add(aux, [0,0, delta_h]);
       // aux = [math.subset(aux, math.index(0)), 
       //        math.subset(aux, math.index(1)), 
       //        math.subset(aux, math.index(2))];
@@ -83,7 +93,7 @@ var Motion = {
       // interm_Uf
       aux = math.subset(Uf, math.index(movingLegs[i], [0,3]));
       aux = math.squeeze(aux);
-      aux = math.subtract(aux, [0,0, delta_h]);
+      aux = math.add(aux, [0,0, delta_h]);
       // aux = [math.subset(aux, math.index(0)), 
       //        math.subset(aux, math.index(1)), 
       //        math.subset(aux, math.index(2))];
@@ -114,6 +124,12 @@ var Motion = {
     angles_i = this.getStateAngles(r, x, U);
     if(!angles_i) throw new Error("Angles error 1 in changeState");
 
+    // console.log("*******************************");
+    // console.log([r, x, U])
+    // console.log("--------------------------------")
+    // console.log([rf, xf, Uf])
+    // console.log("********************************")
+
     angles_interm_i = this.getStateAngles(r, x, interm_Ui);
     if(!angles_interm_i) throw new Error("Angles error 1 in changeState");
 
@@ -123,16 +139,6 @@ var Motion = {
     angles_f = this.getStateAngles(rf, xf, Uf);
     if(!angles_f) throw new Error("Angles error 1 in changeState");
 
-    // console.log("angles_i")
-    // console.log(angles_i)
-    // console.log("angles_interm_i")
-    // console.log(angles_interm_i)
-    // console.log("angles_interm_f")
-    // console.log(angles_interm_f)
-    // console.log("angles_f")
-    // console.log(angles_f)   
-
-
     // Calculating servo speeds
     for(var i = 0; i < 18; i++){
       //servo_speeds_rise[i] = defaultVerticalSpeed; //in "speed bits"
@@ -140,16 +146,16 @@ var Motion = {
       // Consider rise and descent times for better precision
 
       servo_speeds_rise[i] = math.abs(angles_interm_i[i] - angles_i[i])/(0.001*time/time_frac);
-      servo_speeds_rise[i] *= (0.35*1023/258);
+      servo_speeds_rise[i] *= (0.3*1023/258);
       servo_speeds_rise[i] = Math.round(servo_speeds_rise[i]) ;
 
       servo_speeds[i] = math.abs(angles_interm_f[i] - angles_interm_i[i])/(0.001*time); //in "angle bits"/s 
-      servo_speeds[i] *= 0.35; //in degrees/s
-      servo_speeds[i] *= (1023/258); //in "speed bits"
+      servo_speeds[i] *= 0.3; //in degrees/s
+      servo_speeds[i] *= (1023/306); //in "speed bits"
       servo_speeds[i] = Math.round(servo_speeds[i]);
 
       servo_speeds_descent[i] = math.abs(angles_interm_f[i] - angles_f[i])/(0.001*time/time_frac);
-      servo_speeds_descent[i] *= (0.35*1023/258);
+      servo_speeds_descent[i] *= (0.3*1023/306);
       servo_speeds_descent[i] = Math.round(servo_speeds_descent[i]) ;
 
       if (servo_speeds[i] > 1023 || servo_speeds_rise[i] > 1023 || servo_speeds_descent[i] > 1023){
@@ -158,16 +164,20 @@ var Motion = {
     }
 
     var data = [
-        {time: starting_time, pos: angles_interm_i, speed: servo_speeds_rise},
+        {time: starting_time , pos: angles_interm_i, speed: servo_speeds_rise},
         {time: starting_time + time/time_frac, pos: angles_interm_f, speed: servo_speeds},
-        {time: starting_time + time + time/time_frac , pos: angles_f, speed: servo_speeds_descent}
+        {time: starting_time + time + time/time_frac, pos: angles_f, speed: servo_speeds_descent}
       ];
       //console.table(data);
-      x = xf;
-      r = rf;
-      U = Uf;
+      x = this.clone(xf);
+      r = this.clone(rf);
+      U = this.clone(Uf);
       hex.Action.timedMove(data);
       console.log(servo_speeds);
+  },
+
+  clone: function(a){
+    return JSON.parse( JSON.stringify(a) );
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time){
@@ -178,9 +188,8 @@ var Motion = {
     var aux = [];
     var Uf = [];
     var xx; // x before change state
-
     //Initial position
-    this.initHexapod();
+    //this.initHexapod();
     for(var i = 0; i < n_steps; i++){
 
       if(i == 0){
@@ -200,6 +209,7 @@ var Motion = {
 
       xx = math.add(x, delta_x);
       xx = math.squeeze(xx);
+
       // Move 0, 3, 4
       if(group == 0){
         aux = math.subset(U, math.index(0, [0,3]));
@@ -207,7 +217,6 @@ var Motion = {
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
         Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
-
 
         aux = math.subset(U, math.index(3, [0,3]));
         aux = math.squeeze(aux);
@@ -266,11 +275,9 @@ var Motion = {
         aux = math.squeeze(aux);
         Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
       }
-      console.log(xx);
-      console.log(Uf);
-    this.changeState(xx, [0,0,0], Uf, step_time,100 + i*5000);
-    x = xx;
-    U = Uf;
+
+    this.changeState(xx, [0,0,0], Uf, step_time, 50 + i*step_time);
+
     }
   },
 
@@ -338,7 +345,7 @@ var Motion = {
          //console.log([T, t]);
         data.push({time: (j + (n_intervals + 1)*i)*step_time/n_intervals, pos: t._data,
                   speed: v});
-        console.log(v);
+        //console.log(v);
       }
     }
     //hex.Action.timedMove(data);

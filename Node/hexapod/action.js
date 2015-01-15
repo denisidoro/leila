@@ -8,6 +8,7 @@ var Action = {
 		  setTimeout(function() { 
 		  	//console.log(data[i].pos);
 		    hex.Servo.moveAll(data[i].pos, data[i].speed);
+		    //console.log(data[i])
 		  }, data[i].time);
 		}
 

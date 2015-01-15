@@ -1,0 +1,21 @@
+      var h = -110;
+      var u = [];
+      u[0] = [-c.X2 - 110, c.Y2 + 110, h];
+      u[1] = [c.X2 + 110, c.Y2 + 110, h];
+      u[2] = [-c.X1 - 150, 0, h];
+      u[3] = [c.X1 + 150, 0, h];
+      u[4] = [-c.X2 - 110, -c.Y2 - 110, h];
+      u[5] = [c.X2 + 110, -c.Y2 - 110, h];
+      
+      var angX = 0;
+      var angY = 0; 
+      var angZ = 0;
+      
+hex.IK.baseMove([angX, angY , angZ], 200, false, false, u)
+//straightWalk: function(step_size, n_steps, direction, n_intervals, h)
+
+var K = hex.IK.straightWalk(100, 4, 1, 5, h);
+hex.Servo.defaultSpeed = 300;
+hex.Action.timedMove(K);
+console.log(K)
+

@@ -2,4 +2,4 @@ hex.Base.upsideDown = false
 hex.Motion.initHexapod()
 
 // (step_size, n_steps, direction, step_time)
-hex.Motion.tripodSimpleWalk(150, 3, 3.14149/2, 1000)
+hex.Motion.tripodSimpleWalk(150, 3, 90, 1000)

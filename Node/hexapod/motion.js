@@ -849,6 +849,7 @@ var Motion = {
     xLeg = xLeg || [  -c.X1,   0, 0];
     u = u || [  -c.X1 - 150,  0  , -80];
     angles = angles || math.zeros(3);
+    var L = [c.COXA_LENGTH, c.FEMUR_LENGTH, c.TIBIA_LENGTH];
     //console.log([i, xBase, xLeg, u, angles]);
 
     //Rotation matrix
@@ -887,8 +888,8 @@ var Motion = {
 
     // Knee joint vector calculation
     var s2 = math.matrix([
-      math.subset(s1, math.index(0)) + (Math.pow(-1, i+1))*c.L[0]*Math.cos(alpha),
-      math.subset(s1, math.index(1)) + (Math.pow(-1, i+1))*c.L[0]*Math.sin(alpha),
+      math.subset(s1, math.index(0)) + (Math.pow(-1, i+1))*L[0]*Math.cos(alpha),
+      math.subset(s1, math.index(1)) + (Math.pow(-1, i+1))*L[0]*Math.sin(alpha),
       math.subset(s1, math.index(2))
     ]);
 
@@ -904,10 +905,10 @@ var Motion = {
     rho = Math.atan(math.subset(l1, math.index(2))/rho);
 
     // Verificar phi se der errado com rotação da base
-    var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/c.L[0]);
+    var phi = Math.asin((math.subset(l1, math.index(2)) - math.subset(l, math.index(2)))/L[0]);
     
-    var beta = Math.pow(c.L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(c.L[2],2);
-    beta = beta/(2*c.L[1]*math.norm(l1));
+    var beta = Math.pow(L[1],2) + Math.pow(math.norm(l1),2) - Math.pow(L[2],2);
+    beta = beta/(2*L[1]*math.norm(l1));
 
     if (Math.abs(beta) > 1)
       throw new Error("Unreachable position (acos argument - beta = " + beta + ")");
@@ -917,8 +918,8 @@ var Motion = {
     if (beta > c.BETA_UPPER_LIMIT || beta < c.BETA_LOWER_LIMIT)
       throw new Error("Limits exceeded (beta = " + beta + ")");
 
-    var gamma = Math.pow(c.L[1],2) + Math.pow(c.L[2],2) - Math.pow(math.norm(l1),2);
-    gamma = gamma/(2*c.L[1]*c.L[2]);
+    var gamma = Math.pow(L[1],2) + Math.pow(L[2],2) - Math.pow(math.norm(l1),2);
+    gamma = gamma/(2*L[1]*L[2]);
 
     if (Math.abs(gamma) > 1)
       throw new Error("Unreachable position (acos argument - gamma = " + gamma + ")");

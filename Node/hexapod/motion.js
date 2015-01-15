@@ -216,31 +216,37 @@ var Motion = {
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[0] = aux;
 
         aux = math.subset(U, math.index(3, [0,3]));
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[3] = aux;
 
         aux = math.subset(U, math.index(4, [0,3]));
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[4] = aux;
 
         aux = math.subset(U, math.index(1, [0,3]));
         aux = math.squeeze(aux);
-        Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[1] = aux;
 
         aux = math.subset(U, math.index(2, [0,3]));
         aux = math.squeeze(aux);
-        Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[2] = aux;
 
         aux = math.subset(U, math.index(5, [0,3]));
         aux = math.squeeze(aux);
-        Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[5] = aux;
       }
 
       // Move 1, 2, 5
@@ -249,31 +255,37 @@ var Motion = {
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[1] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[1] = aux;
 
         aux = math.subset(U, math.index(2, [0,3]));
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[2] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[2] = aux;
 
         aux = math.subset(U, math.index(5, [0,3]));
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);
         aux = math.squeeze(aux);
-        Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[5] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[5] = aux;
 
         aux = math.subset(U, math.index(0, [0,3]));
         aux = math.squeeze(aux);
-        Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[0] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[0] = aux;
 
         aux = math.subset(U, math.index(3, [0,3]));
         aux = math.squeeze(aux);
-        Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[3] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[3] = aux;
 
         aux = math.subset(U, math.index(4, [0,3]));
         aux = math.squeeze(aux);
-        Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        //Uf[4] = [math.subset(aux,math.index(0)), math.subset(aux,math.index(1)),math.subset(aux,math.index(2))];
+        Uf[4] = aux;
       }
 
     this.changeState(xx, [0,0,0], Uf, step_time, 50 + i*step_time);

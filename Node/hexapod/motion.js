@@ -181,7 +181,7 @@ var Motion = {
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time){
-    var step = direction*step_size;
+    var step = [step_size*Math.sin(direction), step_size*Math.cos(direction), 0];
     var delta_u;
     var delta_x = [0, 0, 0];
     var group; 
@@ -191,18 +191,31 @@ var Motion = {
     //Initial position
     //this.initHexapod();
     for(var i = 0; i < n_steps; i++){
-
+//delta_u movimento da pata que esta no alto
+//delta_x movimento do centro da base
       if(i == 0){
-        delta_u = [0, step/2, 0];
-        delta_x = delta_u;
+        delta_u = math.multiply(0.5, step);
+        delta_x = math.multiply(0.5, step);
+      //delta_u = [0, step/2, 0];  //OMAR
+       // delta_x = delta_u; //OMAR
+        // delta_x = [0, step/6, 0];
+        // delta_u = [0, step/3, 0]
       }
       else if (i == n_steps - 1){
-        delta_u = [0, step/2, 0];
+        delta_u = math.multiply(0.5, step);
         delta_x = [0, 0, 0];
+        //delta_u = [0, step/2, 0]; //OMAR
+        //delta_x = [0, 0, 0]; //OMAR
+        // delta_x = [0, step*2/3, 0];
+        // delta_u = [0, step/3, 0];
       }
       else {
-        delta_u = [0, step, 0];
-        delta_x = [0, step/2, 0];
+        delta_u = step;
+        delta_x = math.multiply(0.5, step);
+        // delta_u = [0, step, 0]; //OMAR
+        // delta_x = [0, step/2, 0]; //OMAR
+        // delta_x = [0, step/3, 0];
+        // delta_u = [0, step, 0];
       }
 
       group = i % 2;

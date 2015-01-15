@@ -31,7 +31,9 @@ module.exports = function() {
         });
 
         socket.on('baseChange', function(data) {
-            hex.Motion.baseMove(hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]));
+            var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
+            //hex.Motion.baseMove(hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]));
+            hex.Motion.changeState([0,0,0], r, u, 1000, 100);
         });
 
         socket.on("updateRegister", function(d){

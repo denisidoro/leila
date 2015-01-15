@@ -71,13 +71,18 @@ module.exports = app;
 //------ Motor System Operation ---------
 ms.on("motorAdded",function(m) {
     
-    //console.log("motor added - " + m.motor.getID());
-    io.sockets.emit("addMotor", {id: m.motor.getID(), count: ms.length});
+    var id = m.motor.getID();
+    var count = ms.length;
+    
+    io.sockets.emit("addMotor", {id: id, count: count});
     hex.Servo.assignMotor(m.motor);
     
     m.motor.on("valueUpdated", function(d) {
-        io.sockets.emit("valueUpdated", {id: m.motor.getID(), register: d.name, value: d.value});
+        io.sockets.emit("valueUpdated", {id: id, register: d.name, value: d.value});
     });
+
+    if (count == 18)
+        hex.Motion.initHexapod();
 
 });
 

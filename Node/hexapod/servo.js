@@ -8,12 +8,12 @@ var Servo = function(id) {
       try {
 
         if (!this.motor)
-          throw new Error ("Motor " + this.id + " not assigned"); 
+          throw new Error("Motor " + this.id + " not assigned"); 
+        else if (speed <= 0 || pos < 0 || pos > 1023)
+          throw new Error("Impossible position or speed for motor " + this.id);
 
         this.motor.setRegisterValue("movingSpeed", speed || Servo.defaultSpeed);
 
-        if (hex.Base.upsideDown)
-          pos = hex.Action.reflect(pos);
         //console.log(pos);
         this.motor.setRegisterValue("goalPosition", Math.floor(pos));
 
@@ -54,6 +54,7 @@ Servo.remove = function(index) {
 // diff in microsecods
 Servo.moveAll = function(pos, speed, diff) {
 
+  // Treat case where input is only one object
   if (pos.pos) {
     pos = pos.pos;
     speed = pos.speed;
@@ -64,6 +65,12 @@ Servo.moveAll = function(pos, speed, diff) {
 
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
+
+    if (hex.Base.upsideDown) {
+      pos = hex.Action.reflect(pos, true);
+      if (Array.isArray(speed))
+        speed = hex.Action.swap(speed);
+    }
 
     var diff = diff || 20000;
     var i = 0, old = 0;

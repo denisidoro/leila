@@ -16,15 +16,6 @@ var r = [];
 // Main
 var Motion = {
 
-  toVector: function(aux) {
-    var v = [];
-    aux = math.squeeze(aux);
-    var size = math.size(aux);
-    for (var i = 0; i < size._data[0]; i++)
-      v.push(math.subset(aux, math.index(i)));
-    return v;
-  },
-
   initHexapod: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];

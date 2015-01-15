@@ -78,15 +78,31 @@ var Action = {
 
 	},
 
-	reflect: function(pos) {
+	reflect: function(x, swap) {
 
-		if (Array.isArray(pos)) {
-			for (var i = 0; i < pos.length; i++)
-			  pos[i] = Action.reflect(pos[i]);
-			return pos;
+		if (swap)
+			x = Action.swap(x);
+
+		if (Array.isArray(x)) {
+			for (var i = 0; i < x.length; i++)
+			  x[i] = Action.reflect(x[i]);
+			return x;
 		}
 		else
-			return 1023 - pos;
+			return 1023 - x;
+
+	},
+
+	swap: function(x) {
+		
+		var y = [];
+
+		for (var i = 0; i < x.length; i += 2) {
+			y.push(x[i + 1]);
+			y.push(x[i]);
+		}
+
+		return y;
 
 	}
 

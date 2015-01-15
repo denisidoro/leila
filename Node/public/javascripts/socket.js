@@ -49,6 +49,7 @@ function initSocket() {
 	// Motor added
 	socket.on('addMotor', function(data) {
 
+		console.log(data);
 		var msg = "";
 		if (data.count <= 1)
 			msg = "Started adding servos";

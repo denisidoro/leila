@@ -20,4 +20,8 @@ $(document).ready(function() {
 
 	logToTable('init', 'Initialization finished', 'Server');
 
+	window.onbeforeunload = function() {
+    	return 'Are you sure you want to quit?';
+	};
+
 });

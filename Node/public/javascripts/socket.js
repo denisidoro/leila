@@ -10,7 +10,7 @@ function initSocket() {
 	}
 
 	// Define custom log function
-	console.log2 = function(data) {
+	console.table = function(data) {
 		console.log(data);
 		logToTable('log', data);
 	}

@@ -74,11 +74,11 @@ ms.on("motorAdded",function(m) {
     var id = m.motor.getID();
     var count = ms.length;
     
-    io.sockets.emit("addMotor", {id: id, count: count});
+    io.emit("addMotor", {id: id, count: count});
     hex.Servo.assignMotor(m.motor);
     
     m.motor.on("valueUpdated", function(d) {
-        io.sockets.emit("valueUpdated", {id: id, register: d.name, value: d.value});
+        io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
     });
 
     if (count == 18)
@@ -89,7 +89,7 @@ ms.on("motorAdded",function(m) {
 ms.on("motorRemoved",function(m) {
     console.log("motor removed - "+m.id);
     hex.Servo.list[m.id - 1].motor = null;
-    io.sockets.emit("removeMotor", {id:m.id});
+    io.emit("removeMotor", {id:m.id});
 });
 
 ms.init();

@@ -78,5 +78,14 @@ global.hex = {
 require('./events/serverStarted')();
 require('./events/userConnected')();
 
+// exit
+process.on('SIGINT', function() {
+    if (server != undefined) {
+        console.log("closing server");
+        server.close(function (e) {
+            if (e) { throw 'error on closing server ' + e; }
+        });
+    }
+});
 
 

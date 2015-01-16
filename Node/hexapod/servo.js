@@ -9,7 +9,7 @@ var Servo = function(id) {
 
         if (!this.motor)
           throw new Error("Motor " + this.id + " not assigned"); 
-        else if (speed <= 0 || speed > 1023 || pos < 0 || pos > 1023)
+        else if (speed < 0 || speed > 1023 || pos < 0 || pos > 1023)
           throw new Error("Impossible position or speed for motor " + this.id + ": [" + pos + ", " + speed + "]");
 
         this.motor.setRegisterValue("movingSpeed", Math.floor(speed) || Servo.defaultSpeed);

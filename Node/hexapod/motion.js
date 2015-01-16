@@ -153,7 +153,7 @@ var Motion = {
       servo_speeds_descent[i] = Math.round(servo_speeds_descent[i]) ;
 
       if (servo_speeds[i] > 1023 || servo_speeds_rise[i] > 1023 || servo_speeds_descent[i] > 1023){
-        throw new Error("Speed error");
+        //throw new Error("Speed error");
       }
     }
 
@@ -168,14 +168,9 @@ var Motion = {
     U = this.clone(Uf);
     hex.Action.timedMove(data);
     console.log(servo_speeds);
-
   },
 
-  clone: function(a){
-    return JSON.parse(JSON.stringify(a));
-  },
-
-  tripodSimpleWalk: function(step_size, n_steps, direction, step_time){
+  tripodSimpleWalk: function(step_size, n_steps, direction, step_time, starting_time){
     direction = Motion.degreesToRadians(direction);
     var step = [step_size*Math.sin(direction), step_size*Math.cos(direction), 0];
     var delta_u;
@@ -298,7 +293,7 @@ var Motion = {
         Uf[4] = aux;
       }
 
-    this.changeState(xx, [0,0,0], Uf, step_time, 50 + i*step_time);
+    this.changeState(xx, [0,0,0], Uf, step_time, starting_time + i*step_time);
 
     }
   },
@@ -458,7 +453,6 @@ var Motion = {
       throw new Error("Limits exceeded (alpha = " + result[0] + ")");
     }
     return result;
-    
   },
 
   radiansToBits: function(radians, negative) {
@@ -474,7 +468,6 @@ var Motion = {
 
     var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;
-
   },
 
   rotationXYZ: function(a) {
@@ -513,7 +506,12 @@ var Motion = {
       return r;
     }
     return degrees*math.pi/180;
+  },
+
+  clone: function(a){
+    return JSON.parse(JSON.stringify(a));
   }
+
 };
 
 module.exports = Motion;

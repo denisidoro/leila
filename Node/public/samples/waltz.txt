@@ -1,0 +1,20 @@
+// VALSA!!!!
+// https://www.youtube.com/results?search_query=shostakovich+waltz+2
+
+var TIME = 950; //in ms
+var STEP_SIZE = 100; //in mm
+
+//tripodSimpleWalk: function(step_size, n_steps, direction, step_time, starting_time)
+
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 1, 180, (2/3)*STEP_TIME   ,10); //starts at 10ms 
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 1, 0, 	(2/3)*STEP_TIME	  ,STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 0, 	(2/3)*STEP_TIME	,2*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 30, 	(2/3)*STEP_TIME	,3*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, -90, (2/3)*STEP_TIME	,4*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 0, 	(2/3)*STEP_TIME	,5*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, -90, (2/3)*STEP_TIME	,6*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, -120,(2/3)*STEP_TIME	,7*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 180, (2/3)*STEP_TIME	,8*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 90, 	(2/3)*STEP_TIME	,9*STEP_TIME);
+hex.Motion.tripodSimpleWalk(STEP_SIZE, 2, 120,	(2/3)*STEP_TIME	,10*STEP_TIME);
+

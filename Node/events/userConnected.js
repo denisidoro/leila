@@ -30,10 +30,20 @@ module.exports = function() {
             hex.Servo.get(data.id).move(data.pos, 150);
         });
 
-        socket.on('baseChange', function(data) {
+        socket.on('changeState', function(data) {
             try {
+                var p = [data.posX, data.posY, data.posZ];
                 var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
-                hex.Motion.changeState([0, 0, 110], r, false, 1000, 100);
+                hex.Motion.changeState(p, r, null, 1000, 50);
+            }
+            catch(e) {
+                console.log(e);
+            }
+        });
+
+        socket.on('tripodSimpleWalk', function(data) {
+            try {
+                hex.Motion.tripodSimpleWalk(data.stepSize, 1, data.walkAngle, 1000);
             }
             catch(e) {
                 console.log(e);

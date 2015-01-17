@@ -1,5 +1,9 @@
 function initGamepad() {
 
+  var changeState = function() {
+    gui.__folders.Base.__controllers[0].__onChange();
+  }
+
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
     logToTable('gamepad', 'Gamepad connected');
     if (typeof gui.gamepadStarted == 'undefined')
@@ -25,9 +29,11 @@ function initGamepad() {
         configs.base.posX += 5;
         break;
     }
+    changeState();
   });
 
   gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
+    var def = true;
     var s = gamepad.gamepads[0].state;
     switch (e.axis) {
       case "LEFT_STICK_X":
@@ -38,6 +44,7 @@ function initGamepad() {
         configs.base.walkAngle = a;
         var d = Math.sqrt(Math.pow(s.LEFT_STICK_X, 2) + Math.pow(s.LEFT_STICK_Y, 2));
         configs.base.stepSize = scale(d, 0, Math.sqrt(2) * 0.95, 30, 200);
+        def = false;
         break;
       case "RIGHT_STICK_Y":
           configs.base.rotY = scale(e.value, 1, -1, -20, 20);
@@ -50,9 +57,11 @@ function initGamepad() {
         if (e.gamepad.state.RIGHT_TOP_SHOULDER == 1)
           configs.base.rotZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -20, 20);  
         else
-          configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -150, 150);
+          configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, 40, 160);
         break;
     }
+    if (def)
+      changeState();
   });
 
   if (!gamepad.init()) {

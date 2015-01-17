@@ -1,15 +1,15 @@
 $(document).ready(function() {
 
+	// Socket
+	var socket;
+	initSocket();
+
 	// GUI
 	initGUI();
 
 	// Gamepad
 	window.gamepad = new Gamepad();
 	initGamepad();
-
-	// Socket
-	var socket;
-	initSocket();
 
 	$('#samples').on('change', function() {
 		$.get("/samples/" + this.value, function(content) {

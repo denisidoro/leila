@@ -1,15 +1,25 @@
+var timeouts = [];
+
 var Action = {
 
 	easing: require("./easing.js"),
 
-	timedMove: function(data) {
+	timedMove: function(data, notClear) {
+
+		if (!notClear) { // if clear
+			timeouts.forEach(function(e, i) {
+				clearTimeout(e);
+			})
+			timeouts = [];
+		}
 
 		function setTimeouts(i) {
-		  setTimeout(function() { 
+		  var t = setTimeout(function() { 
 		  	//console.log(data[i].pos);
 		    hex.Servo.moveAll(data[i].pos, data[i].speed);
 		    //console.log(data[i])
 		  }, data[i].time);
+		  timeouts.push(t);
 		}
 
 		for (var i = 0; i < data.length; i++) {

@@ -4,8 +4,8 @@ const math  = require("mathjs");
 // Constants
 // var STEP_TIME = 1000;
 var EPSILON = 100; //in ms
-var time_frac = 6; // time_move/time_rise
-var delta_h = 20;
+var time_frac = 4; // time_move/time_rise
+var delta_h = 40;
 var defaultVerticalSpeed = 100;
 
 // State variables
@@ -40,7 +40,7 @@ var Motion = {
   // rf: final roation angles
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
-  changeState: function(xf, rf, Uf, time, starting_time){
+  changeState: function(xf, rf, Uf, time, starting_time, step){
 
     var Uf = Uf || this.clone(U);
     
@@ -166,8 +166,8 @@ var Motion = {
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
-    hex.Action.timedMove(data);
-    console.log(servo_speeds);
+    hex.Action.timedMove(data, step > 0);
+    //console.log(servo_speeds);
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time, starting_time){
@@ -293,9 +293,23 @@ var Motion = {
         Uf[4] = aux;
       }
 
-    this.changeState(xx, [0,0,0], Uf, step_time, starting_time + i*step_time);
+    this.changeState(xx, [0,0,0], Uf, step_time, starting_time + i*step_time, i);
 
     }
+  },
+
+  // Angles: relative rotation
+  turn: function(angles, direction) {
+    var U1 = [];
+    var U2 = [];
+    var R  = [];
+    var aux = [];
+    //First step - legs 0, 3 and 4
+
+
+    aux = math.subset(U, math.index(0, [0,3]));
+
+
   },
 
 // move all legs, based on body base

@@ -27,8 +27,13 @@ var Servo = function(id) {
 
 };
 
+
+// Static properties
 Servo.list = [];
 Servo.defaultSpeed = 256;
+Servo.lastMovement = 0;
+Servo.minimumGap = 100;
+Servo.init = false;
 
 Servo.assignMotor = function(m) {
   //console.log(['assign', m]);

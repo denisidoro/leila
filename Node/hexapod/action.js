@@ -1,15 +1,25 @@
+var timeouts = [];
+
 var Action = {
 
 	easing: require("./easing.js"),
 
-	timedMove: function(data) {
+	timedMove: function(data, continuePreviousMovements) {
+
+		if (!continuePreviousMovements) {
+			timeouts.forEach(function(e, i) {
+				clearTimeout(e);
+			})
+			timeouts = [];
+		}
 
 		function setTimeouts(i) {
-		  setTimeout(function() { 
+		  var t = setTimeout(function() { 
 		  	//console.log(data[i].pos);
 		    hex.Servo.moveAll(data[i].pos, data[i].speed);
 		    //console.log(data[i])
 		  }, data[i].time);
+		  timeouts.push(t);
 		}
 
 		for (var i = 0; i < data.length; i++) {
@@ -23,10 +33,6 @@ var Action = {
 		var duration = duration || 1000;
 		var ease = ease || 'linear';
 		var fps = fps || 8;
-
-		function easeNorm(a, b, x, xMax) {
-			return a + (b - a) * Action.easing[ease](x) / Action.easing[ease](xMax);
-		}
 
 		var totalFrames = fps * duration/1000;
 		var data = [];
@@ -47,6 +53,10 @@ var Action = {
 
 		Action.timedMove(data);
 		return data;
+
+		function easeNorm(a, b, x, xMax) {
+			return a + (b - a) * Action.easing[ease](x) / Action.easing[ease](xMax);
+		}
 
 		function parametrize(obj) {
 			if (!obj.pos)
@@ -76,7 +86,7 @@ var Action = {
 	swap: function(x) {
 		var y = [];
 		for (var i = 0; i < 18; i++)
-			y.push(x[i + 3*((i%3)%2 == i%2 ? 1 : -1)]);
+			y.push(x[i + ((i%3)%2 == i%2 ? 3 : -3)]);
 		return y;
 	}
 

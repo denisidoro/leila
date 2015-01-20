@@ -4,11 +4,12 @@ module.exports = function() {
 
     var MotorSystem = require('dynanode/MotorSystem');
     var ms = new MotorSystem();
+    var count = 0;
 
     ms.on("motorAdded",function(m) {
         
         var id = m.motor.getID();
-        var count = ms.length;
+        count++;
         
         io.emit("addMotor", {id: id, count: count});
         hex.Servo.assignMotor(m.motor);
@@ -17,8 +18,10 @@ module.exports = function() {
             //io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
         });
 
-        if (count == 18)
+        if (count == 18) {
             hex.Motion.moveToInit();
+            hex.Servo.init = true;
+        }
 
     });
 

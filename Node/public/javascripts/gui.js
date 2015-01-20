@@ -5,7 +5,12 @@ var configs = new function() {
 	this.servos = {};
 }
 
-configs.base = {rotX: 0, rotY: 0, rotZ: 0, forward: 0, right: 0};
+configs.base = {
+	rotX: 0, rotY: 0, rotZ: 0, 
+	posX: 0, posY: 0, posZ: 110,
+	stepSize: 150, walkAngle: 0,
+	changeStateTime: 1000
+};
 
 for (var i = 0; i < 18; i++)
 	configs.servos['servo' + i] = 512;
@@ -17,19 +22,32 @@ var gui;
 function initGUI() {
 
 	gui = new dat.GUI();
-
 	gui.f1 = gui.addFolder('Base');
+	
+	// rotation
 	var controllers = [];
-
-	controllers.push(gui.f1.add(configs.base, 'forward', -4, 4));
-	controllers.push(gui.f1.add(configs.base, 'right', -4, 4));
 	controllers.push(gui.f1.add(configs.base, 'rotX', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'rotY', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'rotZ', -20, 20));
-
+	controllers.push(gui.f1.add(configs.base, 'posX', -40, 40));
+	controllers.push(gui.f1.add(configs.base, 'posY', -40, 40));
+	controllers.push(gui.f1.add(configs.base, 'posZ', 40, 160));
 	$.each(controllers, function(i, c) {
-		c.listen().onFinishChange(function(value) {
-			socket.emitWithLog('baseChange', configs.base);
+		c.listen().onChange(function(value) {
+			console.log('change base');
+			socket.emit('changeState', configs.base);
+		});
+	});
+	controllers.push(gui.f1.add(configs.base, 'changeStateTime', 500, 2500));
+
+	// walking
+	controllers = [];
+	controllers.push(gui.f1.add(configs.base, 'stepSize', 30, 200));
+	controllers.push(gui.f1.add(configs.base, 'walkAngle', 0, 360));
+	$.each(controllers, function(i, c) {
+		c.listen().onChange(function(value) {	
+			console.log('walk')
+			socket.emit('tripodSimpleWalk', configs.base);
 		});
 	});
 
@@ -37,15 +55,17 @@ function initGUI() {
 	var controllers = [];
 
 	for (var i = 0; i < 18; i++)
-		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 0 + 150, 1023 - 150).step(1));
+		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 0 + 100, 1023 - 100).step(1));
 
 	$.each(controllers, function(i, c) {
-		c.listen().onFinishChange(function(value) {
-			socket.emitWithLog('moveServo', {id: i, pos: value});
+		$.each(controllers, function(i, c) {
+			c.listen().onFinishChange(function(value) {
+				socket.emit('moveServo', {id: i, pos: configs.base['pos' + i]});
+			});
 		});
 	});
 
-	//gui.f1.open();
+	gui.f1.open();
   
 };
 
@@ -53,14 +73,14 @@ function initGamepadGUI() {
 
 	gui.gamepadStarted = true;
 
-	gui.f2 = gui.addFolder('Controller');
+	gui.f3 = gui.addFolder('Controller');
 	var controllers = [];
 
 	for (var p in gamepad.gamepads[0].state) {
 		if (p.toLowerCase().indexOf('stick') != -1 || p.toLowerCase().indexOf('bottom_shoulder') != -1)
-			controllers.push(gui.f2.add(gamepad.gamepads[0].state, p, -1, 1));
+			controllers.push(gui.f3.add(gamepad.gamepads[0].state, p, -1, 1));
 		else
-			controllers.push(gui.f2.add(gamepad.gamepads[0].state, p, false));
+			controllers.push(gui.f3.add(gamepad.gamepads[0].state, p, false));
 	}
 
 	$.each(controllers, function(i, c) {

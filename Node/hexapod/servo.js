@@ -54,7 +54,13 @@ Servo.remove = function(index) {
   Servo.list.splice(index, 1);
 };
 
-// diff in microsecods
+/**
+ * Move all servos
+ * @param  int[]        pos       array of positions for each servo
+ * @param  int, int[]   speed     speed for all servos or an array of speeds for each servo
+ * @param  int          diff      time between the movement of two servos
+ * @return bool         success   false in case of an error
+ */
 Servo.moveAll = function(pos, speed, diff) {
 
   // Treat case where input is only one object

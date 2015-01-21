@@ -4,6 +4,12 @@ var Action = {
 
 	easing: require("./easing.js"),
 
+	/**
+	 * Execute an array of movements asynchronously
+	 * @param  object 	data                      array of objects containing the time of execution and array of positions
+	 * @param  bool		continuePreviousMovements false to stop previous movements
+	 * @return void
+	 */
 	timedMove: function(data, continuePreviousMovements) {
 
 		if (!continuePreviousMovements) {

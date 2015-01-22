@@ -20,6 +20,8 @@
     "dat.gui": "*",
     "gamepad": "https://github.com/kallaspriit/HTML5-JavaScript-Gamepad-Controller-Library.git#master",
     "ace-builds": "~1.1.8",
-    "moment": "~2.8.4"
+    "moment": "~2.8.4",
+    "threejs-build": "*",
+    "threejs-examples": "*"
   }
 }

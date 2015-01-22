@@ -7,6 +7,9 @@ $(document).ready(function() {
 	// GUI
 	initGUI();
 
+	// 3D model
+	var model;
+
 	// Gamepad
 	window.gamepad = new Gamepad();
 	initGamepad();

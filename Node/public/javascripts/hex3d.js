@@ -48,7 +48,7 @@ var Leg = function() {
 
 Leg.createReference = function() {
 
-	var geometry = new THREE.SphereGeometry(0.05);
+	var geometry = new THREE.SphereGeometry(0.05, 3);
 	var material = new THREE.MeshBasicMaterial( { 
 		color: 0xffffff,
 		wireframe: true
@@ -91,7 +91,7 @@ var Hexapod = function() {
 		var geometry = new THREE.SphereGeometry(0.6);
 		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, x));
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0x9A1A9A,
+			color: 0x7FFF7F,
 			wireframe: true
 		} );
 		var head = new THREE.Mesh( geometry, material );
@@ -103,7 +103,7 @@ var Hexapod = function() {
 
 		var geometry = new THREE.SphereGeometry(1, 6);
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0xFD9CAB,
+			color: 0x9A1A32,
 			wireframe: true
 		} );
 		var sphere = new THREE.Mesh( geometry, material );
@@ -129,7 +129,6 @@ var Hexapod = function() {
 
 		var h = new THREE.Object3D();
 
-		//h.add(Leg.createReference());
 		h.add(createBase());
 		h.add(createHead(x[2]));
 

@@ -81,6 +81,9 @@ var Hexapod = function() {
 	this.move = function(pos) {
 
 		this.pos = jQuery.extend({}, pos);
+		pos.forEach(function(p, i) {
+			configs.servos['servo'+i] = p;
+		});
 
 		for (var i = 0; i < pos.length; i++)
 			pos[i] = bitsToRadians(pos[i], i%3 == 2);
@@ -115,7 +118,7 @@ var Hexapod = function() {
 	function createHead(x) {
 
 		var geometry = new THREE.SphereGeometry(0.6);
-		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, x));
+		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, x/8, x));
 		var material = new THREE.MeshBasicMaterial( { 
 			color: 0x7FFF7F,
 			wireframe: true

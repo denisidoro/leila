@@ -330,7 +330,7 @@ var Motion = {
         bits = bits.concat(this.getLegAngles(i, xBase, xLeg[i], u[i], angles));
     }
     catch (err) {
-      console.table(["MotionError", err.message]);
+      console.log(["MotionError", err.message]);
       return false;
     }
     //console.log(bits);

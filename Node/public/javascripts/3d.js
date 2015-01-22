@@ -2,11 +2,11 @@ $(document).ready(function() {
 
 
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 1, 10000 );
 			var controls;
 
 			var renderer = new THREE.WebGLRenderer({alpha: true});
-			renderer.setSize( window.innerWidth * .4, window.innerHeight * .4 );
+			renderer.setSize( window.innerWidth * .8, window.innerHeight * .8 );
 			document.getElementById('threejs').appendChild( renderer.domElement );
 
 			camera.position.x = 5;

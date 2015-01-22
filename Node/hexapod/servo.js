@@ -70,18 +70,18 @@ Servo.moveAll = function(pos, speed, diff) {
     pos = pos.pos;
   }
 
-  io.emit('moveAll', {pos: pos, speed: speed});
-
   try {
-
-    if (Servo.list.length < pos.length)
-      throw new Error("Not enough motors");
 
     if (hex.Base.upsideDown) {
       pos = hex.Action.reflect(pos, true);
       if (Array.isArray(speed))
         speed = hex.Action.swap(speed);
     }
+
+  	io.emit('moveAll', {pos: pos, speed: speed});
+
+    if (Servo.list.length < pos.length)
+      throw new Error("Not enough motors");
 
     var diff = diff || 20000;
     var i = 0, old = 0;

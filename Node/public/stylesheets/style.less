@@ -20,6 +20,7 @@ h1 {
 	width: 100%;
 	bottom: 0;
     overflow-y: auto;
+    z-index: -1;
     table {
 	    .number	{ width: 75px; }
 	    th:first-child, td:first-child { text-align: right; }
@@ -45,6 +46,7 @@ h1 {
 	width: 100%;
 	max-width: 750px;
 	height: 300px;
+	z-index: 2;
 }
 
 #editor { 
@@ -59,11 +61,11 @@ h1 {
 
 #threejs {
 	position: absolute;
-	width: 40%;
-	height: 40%;
+	width: 80%;
+	height: 80%;
 	right: 0;
 	bottom: 0;
-	z-index: 4;
+	z-index: 0;
 	margin: 0;
 	overflow: hidden;
 }

@@ -86,6 +86,19 @@ var Hexapod = function() {
 
 	}
 
+	function createHead(x) {
+
+		var geometry = new THREE.SphereGeometry(0.6);
+		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, x));
+		var material = new THREE.MeshBasicMaterial( { 
+			color: 0xffff00,
+			wireframe: true
+		} );
+		var head = new THREE.Mesh( geometry, material );
+		return head;
+
+	}
+
 	function createBase() {
 
 		var geometry = new THREE.SphereGeometry(1, 6);
@@ -118,6 +131,7 @@ var Hexapod = function() {
 
 		//h.add(Leg.createReference());
 		h.add(createBase());
+		h.add(createHead(x[2]));
 
 		for (var i = 0; i < 6; i++) {
 			var leg = new Leg();

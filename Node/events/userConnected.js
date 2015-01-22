@@ -40,7 +40,13 @@ module.exports = function() {
         });
 
         socket.on('moveServo', function(data) {
-            hex.Servo.get(data.id).move(data.pos, 150);
+            if (!check())
+                return false;
+            try {
+                hex.Servo.get(data.id).move(data.pos, 150);
+            } catch(e) {
+                console.log(e);
+            }
         });
 
         socket.on('changeState', function(data) {

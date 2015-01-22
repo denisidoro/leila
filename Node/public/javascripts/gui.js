@@ -59,7 +59,7 @@ function initGUI() {
 
 	$.each(controllers, function(i, c) {
 		$.each(controllers, function(i, c) {
-			c.listen().onFinishChange(function(value) {
+			c.listen().onChange(function(value) {
 				var pos = [];
 				for (var i = 0; i < 18; i++)
 					pos.push(configs.servos['servo' + i]);

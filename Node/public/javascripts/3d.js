@@ -5,8 +5,8 @@ $(document).ready(function() {
 			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 0.1, 1000 );
 			var controls;
 
-			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth * .3, window.innerHeight * .3 );
+			var renderer = new THREE.WebGLRenderer({alpha: true});
+			renderer.setSize( window.innerWidth * .4, window.innerHeight * .4 );
 			document.getElementById('threejs').appendChild( renderer.domElement );
 
 			camera.position.x = 3;

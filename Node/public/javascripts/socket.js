@@ -66,4 +66,9 @@ function initSocket() {
     	//console.log(data);
     });
 
+	// Servo.moveall called
+	socket.on('moveAll', function(data) {
+    	model.animate(data.pos);
+    });
+
 }

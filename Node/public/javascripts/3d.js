@@ -9,11 +9,11 @@ $(document).ready(function() {
 			renderer.setSize( window.innerWidth * .4, window.innerHeight * .4 );
 			document.getElementById('threejs').appendChild( renderer.domElement );
 
-			camera.position.x = 3;
-			camera.position.y = 6;
-			camera.position.z = 10;
+			camera.position.x = 5;
+			camera.position.y = 8;
+			camera.position.z = 15;
 
-			// scene.add(Utils.buildAxes(10));
+			//scene.add(Utils.buildAxes(10));
 			model = new Hexapod();
 			scene.add(model.mesh);
 
@@ -22,12 +22,8 @@ $(document).ready(function() {
 			//controls.addEventListener( 'change', render );
 
 			var render = function () {
-				requestAnimationFrame( render );
+				requestAnimationFrame(render);
 				controls.update();
-
-				//cube.rotation.x += 0.1;
-				//cube.rotation.y += 0.1;
-
 				renderer.render(scene, camera);
 			};
 

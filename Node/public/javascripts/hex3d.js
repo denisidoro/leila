@@ -74,15 +74,41 @@ var Hexapod = function() {
 
 	var self = this;
 	this.legs = [];
+	this.pos = [];
+	this.t = {};
 	this.mesh = createMesh();
 
 	this.move = function(pos) {
 
+		this.pos = jQuery.extend({}, pos);
+
 		for (var i = 0; i < pos.length; i++)
-			pos[i] = bitsToRadians(pos[i]);
+			pos[i] = bitsToRadians(pos[i], i%3 == 2);
 
 		for (var i = 0; i < self.legs.length; i++)
 			self.legs[i].move(pos.slice(3*i, 3*i + 3));
+
+	}
+
+	this.animate = function(target, duration) {
+
+
+		var duration = duration || 200;
+		var pos0 = this.pos;
+		var deltaT = 25, iteration = 0, totalIterations = duration/deltaT;
+
+		clearInterval(this.t);
+		t = setInterval(function() {
+			var pos = [];
+			for (var i = 0; i < target.length; i++)
+				pos.push((target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
+			self.move(pos);
+			iteration++;
+			if (iteration > totalIterations)
+				clearInterval(t);
+		}, deltaT);
+
+		this.t = t;
 
 	}
 
@@ -141,12 +167,16 @@ var Hexapod = function() {
 			self.legs.push(leg);
 		}
 
+		for (var i = 0; i < 18; i++)
+			self.pos.push(512);
+
 		return h;
 
 	}
 
-	function bitsToRadians(bits) {
-		var bits = 1023 - bits;
+	function bitsToRadians(bits, invert) {
+		if (invert)
+			bits = 1023 - bits;
 		return (300/1023)*(512-bits)*(3.1415/180);
 	}
 

@@ -65,10 +65,12 @@ Servo.moveAll = function(pos, speed, diff) {
 
   // Treat case where input is only one object
   if (pos.pos) {
-    pos = pos.pos;
     speed = pos.speed;
     diff = pos.diff;
+    pos = pos.pos;
   }
+
+  io.emit('moveAll', {pos: pos, speed: speed});
 
   try {
 

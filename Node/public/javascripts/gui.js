@@ -54,8 +54,14 @@ function initGUI() {
 	gui.f2 = gui.addFolder('Servos');
 	var controllers = [];
 
+	var limits = [
+		[270, 750],
+		[100, 980],	// [205, 615]
+		[100, 980]	// [24, 512]
+	];
+
 	for (var i = 0; i < 18; i++)
-		controllers.push(gui.f2.add(configs.servos, 'servo' + i, 0 + 100, 1023 - 100).step(1));
+		controllers.push(gui.f2.add(configs.servos, 'servo' + i, limits[i%3][0], limits[i%3][1]).step(1));
 
 	$.each(controllers, function(i, c) {
 		$.each(controllers, function(i, c) {

@@ -11,14 +11,17 @@
 
       <h1>LEILA <span id='version'></span><span id='time'></span></h1>
 
-      <p>
-        <button onclick="sendCode()">Send code</button>
-        <select id="samples"></select>
-      </p>
-
-      <div id="editor-holder">
-        <div id="editor"></div>
-      </div>
+      <span id="coding-holder">
+        <p>
+          <div class="btn-group btn-group-sm" role="group" aria-label="...">
+            <button type="button" class="btn btn-default" onclick="sendCode()">Send code</button>
+            <select id="samples" class="selectpicker" data-style="btn btn-sm btn-default"></select>
+          </div>
+        </p>
+        <div id="editor-holder">
+          <div id="editor"></div>
+        </div>
+      </span>
 
     </div>
 

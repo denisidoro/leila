@@ -1,27 +1,29 @@
 $(document).ready(function() {
 
+			var width = window.innerWidth, height = window.innerHeight;
 
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 1, 10000 );
+			var camera = new THREE.PerspectiveCamera( 10, width/height, 1, 10000 );
 			var controls;
 
 			var renderer = new THREE.WebGLRenderer({alpha: true});
-			renderer.setSize( window.innerWidth * .8, window.innerHeight * .8 );
+			renderer.setSize(width, height);
 			document.getElementById('threejs').appendChild( renderer.domElement );
 
-			camera.position.x = 5;
-			camera.position.y = 8;
-			camera.position.z = 15;
+			camera.position.set(  80, 80, 110 );
+			camera.lookAt( scene.position );
 
 			//scene.add(Utils.buildAxes(10));
 			model = new Hexapod();
 			scene.add(model.mesh);
 
 			controls = new THREE.OrbitControls( camera, renderer.domElement );
-			controls.damping = 0.2;
+			controls.damping = 20;
 			//controls.addEventListener( 'change', render );
 
-			var render = function () {
+			render = function () {
+				if (!configs.ui.model)
+					return false;
 				requestAnimationFrame(render);
 				controls.update();
 				renderer.render(scene, camera);

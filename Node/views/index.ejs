@@ -5,45 +5,59 @@
 		<% include partials/head.ejs %>
 	</head>
 
-	<body>
+  <body>
 
     <div id='main-holder'>
 
-      <h1>LEILA <span id='version'></span><span id='time'></span></h1>
+      <section>
 
-      <span id="coding-holder">
-        <p>
-          <div class="btn-group btn-group-sm" role="group" aria-label="...">
-            <button type="button" class="btn btn-default" onclick="sendCode()">Send code</button>
-            <select id="samples" class="selectpicker" data-style="btn btn-sm btn-default"></select>
+        <h1>LEILA <span id='version'></span><span id='time'></span></h1>
+
+        <span id="coding-holder">
+          <p>
+            <div class="btn-group btn-group-sm" role="group" aria-label="...">
+              <button type="button" class="btn btn-default" onclick="sendCode()">Send code</button>
+              <select id="samples" class="selectpicker" data-style="btn btn-sm btn-default"></select>
+            </div>
+          </p>
+          <div id="editor-holder">
+            <div id="editor"></div>
           </div>
-        </p>
-        <div id="editor-holder">
-          <div id="editor"></div>
+        </span>
+
+      </section>
+
+      <section>
+
+        <div id="log-table-holder">
+
+          <table id="log-table" class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="number">#</th>
+                <th class="time">Time</th>
+                <th class="from">From</th>
+                <th class="tag">Tag</th>
+                <th char="message">Message</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+
         </div>
-      </span>
+
+      </section>
+
+      <section>
+    
+        <div id='threejs'></div>
+
+      </section>
 
     </div>
 
-    <div id='threejs'></div>
-
-    <div id="log-table-holder">
-
-      <table id="log-table" class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="number">#</th>
-            <th class="time">Time</th>
-            <th class="from">From</th>
-            <th class="tag">Tag</th>
-            <th char="message">Message</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-
-    </div>
+    <div id='gui'></div>
 
   	<% include partials/jsdefaults.ejs %>
 

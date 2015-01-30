@@ -23,6 +23,7 @@
     "moment": "~2.8.4",
     "threejs-build": "*",
     "threejs-examples": "*",
-    "bootstrap-select": "~1.6.3"
+    "bootstrap-select": "~1.6.3",
+    "onepage-scroll": "~1.3.1"
   }
 }

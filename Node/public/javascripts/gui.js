@@ -3,7 +3,6 @@
 var configs = new function() {
 	this.base = {};
 	this.servos = {};
-	this.ui = {};
 }
 
 configs.base = {
@@ -12,12 +11,6 @@ configs.base = {
 	stepSize: 150, walkAngle: 0,
 	changeStateTime: 1000
 };
-
-configs.ui = {
-	editor: true,
-	log: true,
-	model: false
-}
 
 for (var i = 0; i < 18; i++)
 	configs.servos['servo' + i] = 512;
@@ -29,23 +22,6 @@ var gui;
 function initGUI() {
 
 	gui = new dat.GUI();
-
-	gui.f0 = gui.addFolder('UI');
-
-	var controllers = [];
-	$.each(configs.ui, function(c) {
-		controllers.push(gui.f0.add(configs.ui, c, configs.ui[c]));
-	});
-	$.each(controllers, function(i, c) {
-		c.listen().onChange(function(value) {
-			var ids = {editor: 'coding-holder', log: 'log-table', model: 'threejs'};
-			var id = ids[this.property];
-			if (id != 'threejs')
-				$("#" + ids[this.property]).toggle(); 
-			else
-				render();
-		});
-	});
 
 	gui.f1 = gui.addFolder('Base');
 	
@@ -100,7 +76,7 @@ function initGUI() {
 		});
 	});
 
-	gui.f1.open();
+	//gui.f1.open();
   
 };
 

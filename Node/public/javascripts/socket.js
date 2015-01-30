@@ -18,6 +18,8 @@ function initSocket() {
 	// Initialization
 	socket.on('init', function(msg) {
 
+		console.log(msg);
+
 		// Version date
 		if (msg.date && typeof moment !== 'undefined') {
 			var m = moment(msg.date);

@@ -27,4 +27,11 @@ $(document).ready(function() {
     	return 'Are you sure you want to quit?';
 	};
 
+	$(document).ready(function(){ 
+ 		$("#main-holder").onepage_scroll({
+ 			direction: 'horizontal'
+ 		});
+ 		init3d();
+	});
+
 });

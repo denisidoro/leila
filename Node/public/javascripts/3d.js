@@ -10,7 +10,7 @@ function init3d() {
 	renderer.setSize(width, height);
 	document.getElementById('threejs').appendChild( renderer.domElement );
 
-	camera.position.set( 80, 80, 110 );
+	camera.position.set(  80, 80, 110 );
 	camera.lookAt( scene.position );
 
 	//scene.add(Utils.buildAxes(10));

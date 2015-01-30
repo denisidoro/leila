@@ -29,7 +29,14 @@ $(document).ready(function() {
 
 	$(document).ready(function(){ 
  		$("#main-holder").onepage_scroll({
- 			direction: 'horizontal'
+ 			direction: 'horizontal',
+		    beforeMove: function(index) {
+		      console.log(index);
+		      if (index == 3)
+		      	$("#threejs").removeClass('preview');
+		      else if (index == 1)
+		      	$("#threejs").addClass('preview');
+		    }
  		});
  		init3d();
 	});

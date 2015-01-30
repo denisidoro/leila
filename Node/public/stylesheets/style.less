@@ -1,5 +1,6 @@
 @import (css) "bootstrap.darkly.theme.css";
 @import (css) "../bower/onepage-scroll/onepage-scroll.css";
+@import (less) "../bower/lesshat/build/lesshat.less";
 
 body, html {
   background: linear-gradient(130deg, #543958 0%,#a06060 25%,#bea27b 50%,#9ca898 75%,#506d8d 100%) no-repeat center center fixed; 
@@ -55,6 +56,13 @@ h1 {
 	z-index: 0;
 	margin: 0;
 	overflow: hidden;
+	//background: green;
+	&.preview {
+		@s: .60;
+		.scale(@s, @s); 
+		position: fixed;
+		top: (.45/@s)*20%; left: (.45/@s)*40%;
+	}
 }
 
 #main-holder {

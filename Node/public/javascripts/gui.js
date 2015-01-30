@@ -76,6 +76,12 @@ function initGUI() {
 		});
 	});
 
+	gui.f4 = gui.addFolder('3D');
+
+	gui.f4.add(camera, 'fov', 1, 30).step(1).onChange(function(value) {
+  		camera.updateProjectionMatrix();
+	});	
+
 	//gui.f1.open();
   
 };

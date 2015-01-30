@@ -18,7 +18,7 @@ function initSocket() {
 	// Initialization
 	socket.on('init', function(msg) {
 
-		console.log(msg);
+		//console.log(msg);
 
 		// Version date
 		if (msg.date && typeof moment !== 'undefined') {
@@ -69,6 +69,7 @@ function initSocket() {
     });
 
 	// Servo.moveall called
+	// maybe remove it when valueUpdated is implemented?
 	socket.on('moveAll', function(data) {
     	model.animate(data.pos);
     });

@@ -4,11 +4,12 @@ $(document).ready(function() {
 	var socket;
 	initSocket();
 
+	// 3D model
+	var model, camera, render;
+ 	init3d();
+
 	// GUI
 	initGUI();
-
-	// 3D model
-	var model, render;
 
 	// Gamepad
 	window.gamepad = new Gamepad();
@@ -38,7 +39,6 @@ $(document).ready(function() {
 		      	$("#threejs").addClass('preview');
 		    }
  		});
- 		init3d();
 	});
 
 });

@@ -3,7 +3,7 @@ function init3d() {
 	var width = window.innerWidth, height = window.innerHeight;
 
 	var scene = new THREE.Scene();
-	var camera = new THREE.PerspectiveCamera( 10, width/height, 1, 10000 );
+	camera = new THREE.PerspectiveCamera( 10, width/height, 1, 10000 );
 	var controls;
 
 	var renderer = new THREE.WebGLRenderer({alpha: true});

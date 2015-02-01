@@ -32,7 +32,7 @@ $(document).ready(function() {
  		$("#main-holder").onepage_scroll({
  			direction: 'horizontal',
 		    beforeMove: function(index) {
-		      console.log(index);
+		      //console.log(index);
 		      if (index == 3)
 		      	$("#threejs").removeClass('preview');
 		      else if (index == 1)

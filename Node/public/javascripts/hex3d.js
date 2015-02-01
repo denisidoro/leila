@@ -7,9 +7,9 @@ var Leg = function() {
 	this.mesh = createLeg();
 
 	this.move = function(pos) { 
-		this.mesh.children[0].rotation.y = pos[0];
-		this.mesh.children[0].children[0].rotation.z = pos[1];
-		this.mesh.children[0].children[0].children[0].rotation.z = pos[2];
+		if (pos[0] != null) this.mesh.children[0].rotation.y = pos[0];
+		if (pos[1] != null) this.mesh.children[0].children[0].rotation.z = pos[1];
+		if (pos[2] != null) this.mesh.children[0].children[0].children[0].rotation.z = pos[2];
 	}
 
 	function createLeg() {
@@ -80,13 +80,15 @@ var Hexapod = function() {
 
 	this.move = function(pos) {
 
-		this.pos = jQuery.extend({}, pos);
 		pos.forEach(function(p, i) {
+			if (p != null)
+				self.pos[i] = p;
 			configs.servos['servo'+i] = p;
 		});
 
 		for (var i = 0; i < pos.length; i++)
-			pos[i] = bitsToRadians(pos[i], i%3 == 2);
+			if (pos[i] != null)
+				pos[i] = bitsToRadians(pos[i], i%3 == 2);
 
 		for (var i = 0; i < self.legs.length; i++)
 			self.legs[i].move(pos.slice(3*i, 3*i + 3));
@@ -103,7 +105,7 @@ var Hexapod = function() {
 		t = setInterval(function() {
 			var pos = [];
 			for (var i = 0; i < target.length; i++)
-				pos.push((target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
+				pos.push(target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
 			self.move(pos);
 			iteration++;
 			if (iteration > totalIterations)

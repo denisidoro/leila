@@ -1,6 +1,5 @@
 var utils = require('./utils'),
   Servo = utils.require('servo'),
-  ease = require('component-ease'),
   temporal = require('temporal');
 
 
@@ -24,7 +23,7 @@ var temporalTask = function(kf) {
 		try {
 			if (!Array.isArray(kf.movement))
 				kf.movement = [kf.movement, []];
-			console.log(kf.movement);
+			//console.log(kf.movement);
 			module.parent.exports.Movement[kf.movement[0]].apply(this, kf.movement[1] || []);
 		}
 		catch (e) {
@@ -39,11 +38,13 @@ var temporalTask = function(kf) {
 	var pos = [], speed = [];
 	for (var i = 0; i < Servo.list.length; i++) {
 		var p = interpret(kf.pos, i, -1, lastPos[i]);
-		lastPos[i] = p;
+		if (p > 0)
+			lastPos[i] = p;
 		pos.push(p);
 		if (kf.speed) {
 			var s = interpret(kf.speed, i, Servo.defaultSpeed, lastSpeed[i]);
-			lastSpeed[i] = s;
+			if (s > 0)
+				lastSpeed[i] = s;
 			speed.push(p);
 		}
 	}

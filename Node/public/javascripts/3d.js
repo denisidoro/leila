@@ -1,36 +1,33 @@
-$(document).ready(function() {
+function init3d() {
 
+	var width = window.innerWidth, height = window.innerHeight;
 
-			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 0.1, 1000 );
-			var controls;
+	var scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera( 10, width/height, 1, 10000 );
+	var controls;
 
-			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth * .3, window.innerHeight * .3 );
-			document.getElementById('threejs').appendChild( renderer.domElement );
+	var renderer = new THREE.WebGLRenderer({alpha: true});
+	renderer.setSize(width, height);
+	document.getElementById('threejs').appendChild( renderer.domElement );
 
-			camera.position.x = 3;
-			camera.position.y = 6;
-			camera.position.z = 10;
+	camera.position.set(  80, 80, 110 );
+	camera.lookAt( scene.position );
 
-			// scene.add(Utils.buildAxes(10));
-			model = new Hexapod();
-			scene.add(model.mesh);
+	//scene.add(Utils.buildAxes(10));
+	model = new Hexapod();
+	scene.add(model.mesh);
 
-			controls = new THREE.OrbitControls( camera, renderer.domElement );
-			controls.damping = 0.2;
-			//controls.addEventListener( 'change', render );
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	controls.noZoom = true;
+	controls.damping = 20;
+	//controls.addEventListener( 'change', render );
 
-			var render = function () {
-				requestAnimationFrame( render );
-				controls.update();
+	render = function () {
+		requestAnimationFrame(render);
+		//controls.update();
+		renderer.render(scene, camera);
+	};
 
-				//cube.rotation.x += 0.1;
-				//cube.rotation.y += 0.1;
+	render();
 
-				renderer.render(scene, camera);
-			};
-
-			render();
-
-});
+};

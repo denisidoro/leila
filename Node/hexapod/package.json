@@ -1,0 +1,20 @@
+{
+  "name": "hexapod",
+  "version": "0.2.0",
+  "description": "Library for controlling Leila, an hexapod robot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hexapod",
+    "leila",
+    "robot"
+  ],
+  "author": "Denis Isidoro",
+  "license": "ISC",
+  "dependencies": {
+    "mathjs": "^1.2.0",
+    "temporal": "^0.4.0"
+  }
+}

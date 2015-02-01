@@ -19,7 +19,7 @@ module.exports = function() {
         });
 
         if (count == 18) {
-            hex.Motion.moveToInit();
+            hex.Movements.moveToInit();
             hex.Servo.init = true;
         }
 
@@ -31,16 +31,17 @@ module.exports = function() {
         io.emit("removeMotor", {id:m.id});
     });
 
-    // Initialization
-
-    ms.init();
-    hex.Base.init();
-
     // Custom functions
 
     console.table = function(msg) {
         console.log(msg);
         io.emit('response', msg);
     }
+
+    // Initialization
+
+    ms.init();
+    hex.Base.init();
+
 
 }

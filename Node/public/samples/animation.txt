@@ -1,0 +1,15 @@
+var data = {
+    points: [0, 300, 800, 2000, 2500, 3000],
+    keyframes: [
+        {movement: 'moveToInit'},
+        {pos: {2: 512}},
+        {pos: {3: {step: -80}, 4: {step: 40}, 5: {to: 200}, 6: 600}},
+        {pos: [512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310]},
+        {movement: ['allEqual', [10]]},
+        {movement: 'raise'}
+    ]
+};
+
+hex.Animation.stop();
+hex.Animation.queue(data);
+

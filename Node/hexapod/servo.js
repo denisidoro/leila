@@ -1,3 +1,6 @@
+var utils = require('./utils'),
+  servoUtils = require('./servoUtils');
+
 var Servo = function(id) {
 
     this.id = (typeof id == 'undefined') ? Servo.list.length : id;
@@ -18,7 +21,7 @@ var Servo = function(id) {
       }
 
       catch (err) {
-        console.log(["MotorError", err.message]);
+        //console.log(["MotorError", err.message]);
         //console.table(["MotorError", err.message]);
         return false;
       }
@@ -33,6 +36,7 @@ Servo.list = [];
 Servo.defaultSpeed = 256;
 Servo.lastMovement = 0;
 Servo.minimumGap = 100;
+Servo.invert = false;
 Servo.init = false;
 
 Servo.assignMotor = function(m) {
@@ -65,21 +69,23 @@ Servo.moveAll = function(pos, speed, diff) {
 
   // Treat case where input is only one object
   if (pos.pos) {
-    pos = pos.pos;
     speed = pos.speed;
     diff = pos.diff;
+    pos = pos.pos;
   }
 
   try {
 
+    if (Servo.invert) {
+      pos = servoUtils.reflect(pos, true);
+      if (Array.isArray(speed))
+        speed = servoUtils.swap(speed);
+    }
+
+  	io.emit('moveAll', {pos: pos, speed: speed});
+
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
-
-    if (hex.Base.upsideDown) {
-      pos = hex.Action.reflect(pos, true);
-      if (Array.isArray(speed))
-        speed = hex.Action.swap(speed);
-    }
 
     var diff = diff || 20000;
     var i = 0, old = 0;

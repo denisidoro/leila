@@ -6,13 +6,13 @@ module.exports = function() {
 
 	    var appDir = require('path').dirname(require.main.filename);
 	    var fs = require('fs');
-        var path = appDir + "/../.git/FETCH_HEAD";
+        var path = appDir + "/../.git/index";
         var date = fs.existsSync(path) ? fs.statSync(path).mtime : 0;
 	    io.emit('init', {samples: fs.readdirSync(appDir + "/public/samples"), date: date});
 
         var check = function() {
-            if (!hex.Servo.init)
-                return false;
+            //if (!hex.Servo.init)
+            //    return false;
             var now = Date.now();
             //console.log([now, hex.Servo.lastMovement]);
             if (now - hex.Servo.lastMovement < hex.Servo.minimumGap) {

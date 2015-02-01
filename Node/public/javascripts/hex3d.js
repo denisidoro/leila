@@ -7,9 +7,9 @@ var Leg = function() {
 	this.mesh = createLeg();
 
 	this.move = function(pos) { 
-		this.mesh.children[0].rotation.y = pos[0];
-		this.mesh.children[0].children[0].rotation.z = pos[1];
-		this.mesh.children[0].children[0].children[0].rotation.z = pos[2];
+		if (pos[0] != null) this.mesh.children[0].rotation.y = pos[0];
+		if (pos[1] != null) this.mesh.children[0].children[0].rotation.z = pos[1];
+		if (pos[2] != null) this.mesh.children[0].children[0].children[0].rotation.z = pos[2];
 	}
 
 	function createLeg() {
@@ -48,7 +48,7 @@ var Leg = function() {
 
 Leg.createReference = function() {
 
-	var geometry = new THREE.SphereGeometry(0.05);
+	var geometry = new THREE.SphereGeometry(0.05, 3);
 	var material = new THREE.MeshBasicMaterial( { 
 		color: 0xffffff,
 		wireframe: true
@@ -74,15 +74,58 @@ var Hexapod = function() {
 
 	var self = this;
 	this.legs = [];
+	this.pos = [];
+	this.t = {};
 	this.mesh = createMesh();
 
 	this.move = function(pos) {
 
+		pos.forEach(function(p, i) {
+			if (p != null)
+				self.pos[i] = p;
+			configs.servos['servo'+i] = p;
+		});
+
 		for (var i = 0; i < pos.length; i++)
-			pos[i] = bitsToRadians(pos[i]);
+			if (pos[i] != null)
+				pos[i] = bitsToRadians(pos[i], i%3 == 2);
 
 		for (var i = 0; i < self.legs.length; i++)
 			self.legs[i].move(pos.slice(3*i, 3*i + 3));
+
+	}
+
+	this.animate = function(target, duration) {
+
+		var duration = duration || 200;
+		var pos0 = this.pos;
+		var deltaT = 25, iteration = 0, totalIterations = duration/deltaT;
+
+		clearInterval(this.t);
+		t = setInterval(function() {
+			var pos = [];
+			for (var i = 0; i < target.length; i++)
+				pos.push(target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
+			self.move(pos);
+			iteration++;
+			if (iteration > totalIterations)
+				clearInterval(t);
+		}, deltaT);
+
+		this.t = t;
+
+	}
+
+	function createHead(x) {
+
+		var geometry = new THREE.SphereGeometry(0.6);
+		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, x/8, x));
+		var material = new THREE.MeshBasicMaterial( { 
+			color: 0xffd0ff,
+			wireframe: true
+		} );
+		var head = new THREE.Mesh( geometry, material );
+		return head;
 
 	}
 
@@ -90,7 +133,7 @@ var Hexapod = function() {
 
 		var geometry = new THREE.SphereGeometry(1, 6);
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0xffffff,
+			color: 0xffd0ff,
 			wireframe: true
 		} );
 		var sphere = new THREE.Mesh( geometry, material );
@@ -116,8 +159,8 @@ var Hexapod = function() {
 
 		var h = new THREE.Object3D();
 
-		//h.add(Leg.createReference());
 		h.add(createBase());
+		h.add(createHead(x[2]));
 
 		for (var i = 0; i < 6; i++) {
 			var leg = new Leg();
@@ -128,12 +171,16 @@ var Hexapod = function() {
 			self.legs.push(leg);
 		}
 
+		for (var i = 0; i < 18; i++)
+			self.pos.push(512);
+
 		return h;
 
 	}
 
-	function bitsToRadians(bits) {
-		var bits = 1023 - bits;
+	function bitsToRadians(bits, invert) {
+		if (invert)
+			bits = 1023 - bits;
 		return (300/1023)*(512-bits)*(3.1415/180);
 	}
 

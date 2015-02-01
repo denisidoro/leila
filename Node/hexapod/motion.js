@@ -4,8 +4,8 @@ const math  = require("mathjs");
 // Constants
 // var STEP_TIME = 1000;
 var EPSILON = 100; //in ms
-var time_frac = 4; // time_move/time_rise
-var delta_h = 40;
+var time_frac = 6; // time_move/time_rise
+var delta_h = 20;
 var defaultVerticalSpeed = 100;
 
 // State variables

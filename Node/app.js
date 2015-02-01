@@ -66,13 +66,7 @@ module.exports = app;
 
 // set globals
 global.io = io;
-global.c = require('./hexapod/constants.js');
-global.hex = {
-    Servo: require('./hexapod/servo.js'),
-    Motion: require('./hexapod/motion.js'),
-    Base: require('./hexapod/base.js'),
-    Action: require('./hexapod/action.js')
-};
+global.hex = require('./hexapod');
 
 // event requirements
 require('./events/serverStarted')();

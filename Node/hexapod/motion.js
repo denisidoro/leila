@@ -1,5 +1,9 @@
 // Libraries
-const math  = require("mathjs");
+var utils = require('./utils'),
+  c = utils.require('constants'),
+  Servo = utils.require('servo'),
+  Action = utils.require('action');
+var math  = require("mathjs");
 
 // Constants
 // var STEP_TIME = 1000;
@@ -33,7 +37,7 @@ var Motion = {
 
   moveToInit: function(){
       // Moving
-      hex.Servo.moveAll(this.getStateAngles(r, x, U), 80);
+      Servo.moveAll(this.getStateAngles(r, x, U), 80);
   },
 
   // xf: final center position
@@ -166,7 +170,7 @@ var Motion = {
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
-    hex.Action.timedMove(data, step > 0);
+    Action.timedMove(data, step > 0);
     //console.log(servo_speeds);
   },
 
@@ -255,7 +259,7 @@ var Motion = {
       }
 
       // Move 1, 2, 5
-      else{
+      else {
         aux = math.subset(U, math.index(1, [0,3]));
         aux = math.squeeze(aux);
         aux = math.add(aux, delta_u);

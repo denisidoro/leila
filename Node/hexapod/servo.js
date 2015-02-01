@@ -1,3 +1,6 @@
+var utils = require('./utils'),
+  servoUtils = require('./servoUtils');
+
 var Servo = function(id) {
 
     this.id = (typeof id == 'undefined') ? Servo.list.length : id;
@@ -33,6 +36,7 @@ Servo.list = [];
 Servo.defaultSpeed = 256;
 Servo.lastMovement = 0;
 Servo.minimumGap = 100;
+Servo.invert = false;
 Servo.init = false;
 
 Servo.assignMotor = function(m) {
@@ -72,10 +76,10 @@ Servo.moveAll = function(pos, speed, diff) {
 
   try {
 
-    if (hex.Base.upsideDown) {
-      pos = hex.Action.reflect(pos, true);
+    if (Servo.invert) {
+      pos = servoUtils.reflect(pos, true);
       if (Array.isArray(speed))
-        speed = hex.Action.swap(speed);
+        speed = servoUtils.swap(speed);
     }
 
   	io.emit('moveAll', {pos: pos, speed: speed});

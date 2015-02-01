@@ -2,11 +2,11 @@
 var utils = require('./utils'),
   c = utils.require('constants'),
   Servo = utils.require('servo'),
-  Action = utils.require('action');
+  Animation = utils.require('animation');
 var math  = require("mathjs");
 
 // Constants
-// var STEP_TIME = 1000;
+var STEP_TIME = 1000;
 var EPSILON = 100; //in ms
 var time_frac = 6; // time_move/time_rise
 var delta_h = 20;
@@ -161,17 +161,23 @@ var Motion = {
       }
     }
 
-    var data = [
-      {time: starting_time , pos: angles_interm_i, speed: servo_speeds_rise},
-      {time: starting_time + time/time_frac, pos: angles_interm_f, speed: servo_speeds},
-      {time: starting_time + time + time/time_frac, pos: angles_f, speed: servo_speeds_descent}
-    ];
+    var data = {
+        points: [starting_time, starting_time + time/time_frac, starting_time + time + time/time_frac],
+        keyframes: [ 
+            {pos: angles_interm_i, speed: servo_speeds_rise},
+            {pos: angles_interm_f, speed: servo_speeds},
+            {pos: angles_f, speed: servo_speeds_descent},
+            {3: {step: 5}, 4: {to: 5}, 10: 5}
+        ]
+    };
+
     //console.table(data);
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
-    Action.timedMove(data, step > 0);
+    Animation.queue(data);
     //console.log(servo_speeds);
+    
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time, starting_time){

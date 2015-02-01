@@ -11,8 +11,8 @@ var utils = require('./utils')
 module.exports = {
 	c: require('./constants'), 				
 	Servo: require('./servo'), 		
-	Action: require('./action'),					
-	Motion: require('./motion'),			
-	Base: require('./base'),				
-	//Animation: require('./animation'),	
+	Action: require('./action'),				
+	Animation: require('./animation'),					
+	Motion: require('./motion'),		
+	Base: require('./base')
 }

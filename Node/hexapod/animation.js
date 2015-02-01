@@ -5,6 +5,7 @@ var utils = require('./utils'),
 
 
 // Init buffer array
+var temporals = {};
 var lastPos = [];
 var lastSpeed = [];
 for (var i = 0; i < 18; i++) {
@@ -35,6 +36,7 @@ var temporalTask = function(kf) {
 	}
 
 	Servo.moveAll(pos, speed);
+	//console.log(pos);
 
 }
 
@@ -63,8 +65,6 @@ var Animation = {
 
 	queue: function(data) {
 
-		console.log(data);
-
 		var tdata = [], time = 0, previousTime = 0;
 
 		if (!data.duration)
@@ -72,7 +72,9 @@ var Animation = {
 		data.points = normalize(data.points);
 
 		data.points.forEach(function(p, i) {
-			time = p * data.duration;
+			if (i >= data.keyframes.length)
+				return false;
+			time = (data.startingTime || 0) + p * data.duration;
 			tdata.push({
 				delay: time - previousTime,
 				task: function() {
@@ -82,8 +84,14 @@ var Animation = {
 			previousTime = time;
 		})
 
-		temporal.queue(tdata);
+		temporals[data.tag || 'default'] = temporal.queue(tdata);
 
+	},
+
+	stop: function(tag) {
+		var tag = tag || 'default';
+		temporals[tag].stop();
+		delete temporals[tag];
 	}
 
 };

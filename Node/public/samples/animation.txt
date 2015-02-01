@@ -1,0 +1,11 @@
+var data = {
+    points: [0, 1000, 2000, 3000],
+    keyframes: [
+        {0: 1},
+        {0: 2},
+        {0: 3}
+    ]
+};
+
+hex.Animation.stop();
+hex.Animation.queue(data);

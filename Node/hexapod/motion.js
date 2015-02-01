@@ -175,6 +175,8 @@ var Motion = {
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
+    
+    Animation.stop();
     Animation.queue(data);
     //console.log(servo_speeds);
     

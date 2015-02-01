@@ -15,7 +15,7 @@ function populateSamplesSelect(samples) {
 	$.each(samples, function() {
 	    $samples.append($("<option />").val(this).text(this.replace(/\.[^/.]+$/, "")));
 	});
-	$samples.val('empty.txt').change();
+	$samples.selectpicker('refresh').selectpicker('val', 'empty.txt').change();
 }
 
 // Emit a message to the server and log it to the table

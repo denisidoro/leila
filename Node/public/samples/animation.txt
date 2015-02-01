@@ -1,9 +1,10 @@
 var data = {
     points: [0, 1000, 2000, 3000],
     keyframes: [
-        {0: 1},
-        {0: 2},
-        {0: 3}
+        {movement: 'moveToInit'},
+        {movement: ['allEqual', [100]]},
+        {pos: [512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310]},
+        {movement: 'moveToInit'}
     ]
 };
 

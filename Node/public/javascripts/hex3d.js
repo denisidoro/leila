@@ -95,7 +95,6 @@ var Hexapod = function() {
 
 	this.animate = function(target, duration) {
 
-
 		var duration = duration || 200;
 		var pos0 = this.pos;
 		var deltaT = 25, iteration = 0, totalIterations = duration/deltaT;

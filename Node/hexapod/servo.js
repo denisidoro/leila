@@ -21,7 +21,7 @@ var Servo = function(id) {
       }
 
       catch (err) {
-        console.log(["MotorError", err.message]);
+        //console.log(["MotorError", err.message]);
         //console.table(["MotorError", err.message]);
         return false;
       }

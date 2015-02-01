@@ -12,6 +12,7 @@ module.exports = {
 	c: require('./constants'), 				
 	Servo: require('./servo'), 					
 	Animation: require('./animation'),					
-	Motion: require('./motion'),		
+	Motion: require('./motion'),						
+	Movement: require('./movement'),		
 	Base: require('./base')
 }

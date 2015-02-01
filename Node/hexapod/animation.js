@@ -20,6 +20,19 @@ var onComplete = function() {
 
 var temporalTask = function(kf) {
 
+	if (kf.movement) {
+		try {
+			if (!Array.isArray(kf.movement))
+				kf.movement = [kf.movement, []];
+			console.log(kf.movement);
+			module.parent.exports.Movement[kf.movement[0]].apply(this, kf.movement[1] || []);
+		}
+		catch (e) {
+			console.log(e);
+		}
+		return;
+	}
+
 	if (!kf.pos)
 		kf = {pos: kf};
 
@@ -90,6 +103,8 @@ var Animation = {
 
 	stop: function(tag) {
 		var tag = tag || 'default';
+		if (!temporals[tag])
+			return false;
 		temporals[tag].stop();
 		delete temporals[tag];
 	}

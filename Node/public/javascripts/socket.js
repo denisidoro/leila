@@ -71,6 +71,7 @@ function initSocket() {
 	// Servo.moveall called
 	// maybe remove it when valueUpdated is implemented?
 	socket.on('moveAll', function(data) {
+		//console.log(data.pos);
     	model.animate(data.pos);
     });
 

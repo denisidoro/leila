@@ -183,6 +183,7 @@ var Motion = {
   },
 
   tripodSimpleWalk: function(step_size, n_steps, direction, step_time, starting_time){
+    var starting_time = starting_time || 0;
     direction = Motion.degreesToRadians(direction);
     var step = [step_size*Math.sin(direction), step_size*Math.cos(direction), 0];
     var delta_u;

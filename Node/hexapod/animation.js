@@ -19,6 +19,8 @@ var onComplete = function() {
 
 var temporalTask = function(kf) {
 
+	console.log(kf);
+
 	if (kf.movement) {
 		try {
 			if (!Array.isArray(kf.movement))
@@ -80,6 +82,14 @@ var Animation = {
 	queue: function(data) {
 
 		var tdata = [], time = 0, previousTime = 0;
+		var initialNPoints = data.keyframes.length;
+
+		if (data.back) {
+			for (var i = initialNPoints - 2; i >= 0; i--) {
+				data.keyframes.push(data.keyframes[i]);
+				data.points.push(data.points[data.points.length - 1] + data.points[i + 1] - data.points[i]);
+			}
+		}
 
 		if (!data.duration)
 			data.duration = data.points[data.points.length - 1];
@@ -89,12 +99,13 @@ var Animation = {
 			if (i >= data.keyframes.length)
 				return false;
 			time = (data.startingTime || 0) + p * data.duration;
-			tdata.push({
-				delay: time - previousTime,
+			var tdatai = {
 				task: function() {
 					temporalTask(data.keyframes[i]);
 				}
-			})
+			};
+			tdatai[data.loop ? 'loop' : 'delay'] = time - previousTime;
+			tdata.push(tdatai);
 			previousTime = time;
 		})
 

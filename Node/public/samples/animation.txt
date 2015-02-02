@@ -7,9 +7,9 @@ var data = {
         {pos: [512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310]},
         {movement: ['allEqual', [10]]},
         {movement: 'raise'}
-    ]
+    ],
+    back: false
 };
 
 hex.Animation.stop();
 hex.Animation.queue(data);
-

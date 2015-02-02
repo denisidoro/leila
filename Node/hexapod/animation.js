@@ -19,8 +19,6 @@ var onComplete = function() {
 
 var temporalTask = function(kf) {
 
-	console.log(kf);
-
 	if (kf.movement) {
 		try {
 			if (!Array.isArray(kf.movement))
@@ -117,6 +115,7 @@ var Animation = {
 		var tag = tag || 'default';
 		if (!temporals[tag])
 			return false;
+		//console.log(temporals[tag]);
 		temporals[tag].stop();
 		delete temporals[tag];
 	}

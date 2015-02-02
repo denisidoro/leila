@@ -1,5 +1,5 @@
-hex.Base.upsideDown = false
-hex.Motion.initHexapod()
+hex.Base.upsideDown(false);
+hex.Motion.initHexapod();
 
 // (step_size, n_steps, direction, step_time)
 hex.Motion.tripodSimpleWalk(150, 3, 90, 1000)

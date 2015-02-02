@@ -43,6 +43,8 @@ module.exports = function() {
             if (!check())
                 return false;
             try {
+                hex.Animation.stop();
+                console.log(data);
                 hex.Servo.get(data.id).move(data.pos, 150);
             } catch(e) {
                 console.log(e);
@@ -54,6 +56,7 @@ module.exports = function() {
             if (!check())
                 return false;
             try {
+                hex.Animation.stop();
                 var p = [data.posX, data.posY, data.posZ];
                 var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
                 hex.Motion.changeState(p, r, null, data.changeStateTime, 5);
@@ -67,6 +70,7 @@ module.exports = function() {
             if (!check())
                 return false;   
             try {
+                hex.Animation.stop();
                 hex.Motion.tripodSimpleWalk(data.stepSize, 1, data.walkAngle, 1000);
             }
             catch(e) {

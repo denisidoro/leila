@@ -6,7 +6,7 @@ var utils = require('./utils'),
 var math  = require("mathjs");
 
 // Constants
-var STEP_TIME = 1000;
+//var STEP_TIME = 1000;
 var EPSILON = 100; //in ms
 var time_frac = 6; // time_move/time_rise
 var delta_h = 20;
@@ -44,7 +44,7 @@ var Motion = {
   // rf: final roation angles
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
-  changeState: function(xf, rf, Uf, time, starting_time, step){
+  changeState: function(xf, rf, Uf, time, starting_time, step) {
 
     var Uf = Uf || this.clone(U);
     
@@ -166,8 +166,7 @@ var Motion = {
         keyframes: [ 
             {pos: angles_interm_i, speed: servo_speeds_rise},
             {pos: angles_interm_f, speed: servo_speeds},
-            {pos: angles_f, speed: servo_speeds_descent},
-            {3: {step: 5}, 4: {to: 5}, 10: 5}
+            {pos: angles_f, speed: servo_speeds_descent}
         ]
     };
 
@@ -176,7 +175,8 @@ var Motion = {
     r = this.clone(rf);
     U = this.clone(Uf);
     
-    Animation.stop();
+    //Animation.stop();
+    //console.table(data);
     Animation.queue(data);
     //console.log(servo_speeds);
     

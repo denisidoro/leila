@@ -46,10 +46,46 @@ var Motion = {
   },
 
 
-    // movingLegs: vector containing the legs that are moving (from 0 to 5)
+  //step_size: in mm
+  //direction: in degrees
+  //step_time: in ms
+  //starting_time in ms
+  //isRelativeDirection: true or false
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, isRelativeDirection){
+  },
+
+
+
+  // group = 0 -> legs: 0, 3, 4
+  // group = 1 -> legs: 1, 2, 5
+  // legsDisplacement: vector 3x3 (line i: displacement of a leg)
+  tripodStep: function(group, legsDisplacement, xf, rf, stepTime, startingTime){
+    var movingLegs = [];
+    var displacement = [];
+    var U1 = [];
+    var U2 = [];
+    var U3 = [];
+    var Uf = []; 
+
+    if(group == 0) movingLegs = [0, 3, 4];
+    else movingLegs = [1, 2, 5];
+
+    Uf = Motion.getNewLegPositions(movingLegs, legsDisplacement);
+
+    U1 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]]);
+
+    U3 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]], Uf);
+
+    U2 = math.add(U1, U3);
+    U2 = math.multiply(1/2, U2);
+
+
+  },
+  // movingLegs: vector containing the legs that are moving (from 0 to 5)
   // diplacement: matrix (movingLegs.length x 3) containing the displacement of each leg in the vector movingLegs
   // returns Uf, calculated from U and the displacement
-  getNewLegPositions: function(movingLegs, displacement){
+  getNewLegPositions: function(movingLegs, displacement, Ui){
+    Ui = Ui || U;
     var delta_U = [];
 
     for(var i = 0; i < 6; i++){
@@ -61,24 +97,33 @@ var Motion = {
         delta_U[i] = [0,0,0];
       }
     }
-    return math.add(U, delta_U)
+    return math.add(Ui, delta_U)
   },
 
   // New version of changeState()
   // Move to new position
   // xf: final center position
-  // rf: final roation angles
+  // rf: final roation angles (in degrees)
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
   // if the movement is relative, xf is seen as delta_x
-  moveTo: function(xf, rf, Uf, time, startingTime, isRelative){
+  moveTo: function(xf, rf, Uf, time, startingTime, isRelative_x, isRelative_r, isRelative_U){
+    rf = Motion.degreesToRadians(rf);
     
     xf = xf || Motion.clone(x);
     rf = rf || Motion.clone(rf);
     Uf = Uf || Motion.clone(U);
 
-    if(isRelative){
+    if(isRelative_x){
       xf = math.add(x, xf);
+    }
+
+    if(isRelative_r){
+      rf = math.add(r, rf);
+    }
+
+    if(isRelative_U){
+      Uf = math.add(U, Uf);
     }
 
     var angles_i;

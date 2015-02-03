@@ -58,7 +58,8 @@ module.exports = function() {
             try {
                 hex.Animation.stop();
                 var p = [data.posX, data.posY, data.posZ];
-                var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
+                //var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
+                var r = [data.rotX, data.rotY, data.rotZ];
                 hex.Motion.moveTo(p, r, null, data.changeStateTime, 5, true);
             }
             catch(e) {

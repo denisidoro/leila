@@ -10,6 +10,7 @@ var math  = require("mathjs");
 var EPSILON = 100; //in ms
 var time_frac = 6; // time_move/time_rise
 var delta_h = 20;
+var MAX_SERVO_SPEED = 306; // degrees/s
 var defaultVerticalSpeed = 100;
 
 // State variables
@@ -38,6 +39,79 @@ var Motion = {
   moveToInit: function(){
       // Moving
       Servo.moveAll(this.getStateAngles(r, x, U), 80);
+  },
+
+
+    // movingLegs: vector containing the legs that are moving (from 0 to 5)
+  // diplacement: matrix (movingLegs.length x 3) containing the displacement of each leg in the vector movingLegs
+  // returns Uf, calculated from U and the displacement
+  getNewLegPositions: function(movingLegs, displacement){
+    var delta_U = [];
+
+    for(var i = 0; i < 6; i++){
+      // i in movingLegs:
+      if(movingLegs.indexOf(i) != -1){
+        delta_U[i] = math.squeeze(math.subset(displacement, math.index(movingLegs.indexOf(i), [0,3])));
+      } 
+      else{
+        delta_U[i] = [0,0,0];
+      }
+    }
+
+    return math.add(U, delta_u)
+  },
+
+  // New version of changeState()
+  // Move to new position
+  // xf: final center position
+  // rf: final roation angles
+  // Uf: final contact points (matrix 6x3)
+  // time: movement time in ms
+  // if the movement is relative, xf, rf and Uf are seen as delta_x, delta_r and delta_U
+  moveTo: function(xf, rf, Uf, time, startingTime, isRelative){
+
+    if(isRelative){
+      xf = math.add(x, xf);
+      rf = math.add(r, rf);
+      Uf = math.add(U, Uf);
+    }
+
+    var angles_i;
+    var angles_f;
+    var servoSpeeds = [];
+
+    // Angles of current state
+    angles_i = Motion.getStateAngles(r, x, U);
+    if(!angles_i) throw new Error("Initial angles error in moveTo()");
+
+    // Angles of final state
+    angles_f = Motion.getStateAngles(rf, xf, Uf);
+    if(!angles_f) throw new Error("Initial angles error in moveTo()");
+
+    // Calculating servo speeds
+    for(var i = 0; i < 18; i++){
+      servoSpeeds[i] = math.abs(angles_f[i] - angles_i[i])/(0.001*time); //in "angle bits"/s
+      servoSpeeds[i] *= 0.3; //in degrees/s, 0.3 = 300/1023
+      servoSpeeds[i] *= (1023/MAX_SERVO_SPEED);  //in "speed bits"
+      servoSpeeds[i] = Math.round(servoSpeeds[i]);
+    }
+
+    // Moving
+    var data = {
+      points: [starting_time],
+        keyframes: [ 
+            {pos: angles_f, speed: servoSpeeds}
+        ]
+    };
+
+    Animation.stop();
+    Animation.queue(data);
+
+    // Updating states
+    x = this.clone(xf);
+    r = this.clone(rf);
+    U = this.clone(Uf);
+
   },
 
   // xf: final center position

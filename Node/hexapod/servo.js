@@ -53,6 +53,14 @@ Servo.assignMotor = function(m) {
 Servo.get = function(id) {
   return Servo.list[id];
 }
+
+Servo.getFeedback = function(tag) {
+  var r = [];
+  Servo.list.forEach(function(s) {
+    r.push(s.feedback[tag]);
+  });
+  return r;
+}
   
 Servo.add = function(n) {
   n = n || 1;

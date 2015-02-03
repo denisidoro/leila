@@ -11,12 +11,12 @@ module.exports = function() {
         var id = m.motor.getID();
         count++;
         
-        io.emit("addMotor", {id: id - 1, count: count});
+        io.emit("addMotor", {id: id, count: count});
         hex.Servo.assignMotor(m.motor);
         
         m.motor.on("valueUpdated", function(d) {
             //io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
-            hex.Servo.get(id).update(d.name, d.value);
+            hex.Servo.get(id - 1).update(d.name, d.value);
         });
 
         if (count == 18) {

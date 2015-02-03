@@ -48,6 +48,8 @@ var temporalTask = function(kf) {
 		}
 	}
 
+	console.log("!!!!!")
+	console.log(speed)
 	Servo.moveAll(pos, speed);
 	//console.log(pos);
 

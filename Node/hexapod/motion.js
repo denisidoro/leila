@@ -21,6 +21,10 @@ var r = [];
 // Main
 var Motion = {
 
+  getState: function(){
+    return [x, U, r];
+  },
+
   initHexapod: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
@@ -57,8 +61,7 @@ var Motion = {
         delta_U[i] = [0,0,0];
       }
     }
-
-    return math.add(U, delta_u)
+    return math.add(U, delta_U)
   },
 
   // New version of changeState()
@@ -69,6 +72,10 @@ var Motion = {
   // time: movement time in ms
   // if the movement is relative, xf, rf and Uf are seen as delta_x, delta_r and delta_U
   moveTo: function(xf, rf, Uf, time, startingTime, isRelative){
+    
+    xf = xf || Motion.clone(x);
+    rf = rf || Motion.clone(rf);
+    Uf = Uf || Motion.clone(U);
 
     if(isRelative){
       xf = math.add(x, xf);
@@ -96,15 +103,17 @@ var Motion = {
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
 
+    
+    console.log(servoSpeeds)
+
     // Moving
     var data = {
-      points: [starting_time],
+      points: [startingTime],
         keyframes: [ 
             {pos: angles_f, speed: servoSpeeds}
         ]
     };
 
-    Animation.stop();
     Animation.queue(data);
 
     // Updating states
@@ -275,26 +284,14 @@ var Motion = {
       if(i == 0){
         delta_u = math.multiply(0.5, step);
         delta_x = math.multiply(0.25, step);
-      //delta_u = [0, step/2, 0];  //OMAR
-       // delta_x = delta_u; //OMAR
-        // delta_x = [0, step/6, 0];
-        // delta_u = [0, step/3, 0]
       }
       else if (i == n_steps - 1){
         delta_u = math.multiply(0.5, step);
         delta_x = math.multiply(0.25, step);
-        //delta_u = [0, step/2, 0]; //OMAR
-        //delta_x = [0, 0, 0]; //OMAR
-        // delta_x = [0, step*2/3, 0];
-        // delta_u = [0, step/3, 0];
       }
       else {
         delta_u = step;
         delta_x = math.multiply(0.5, step);
-        // delta_u = [0, step, 0]; //OMAR
-        // delta_x = [0, step/2, 0]; //OMAR
-        // delta_x = [0, step/3, 0];
-        // delta_u = [0, step, 0];
       }
 
       group = i % 2;
@@ -452,29 +449,6 @@ var Motion = {
     u = u || [  -c.X1 - 150,  0  , -80];
     angles = angles || math.zeros(3);
     var L = [c.COXA_LENGTH, c.FEMUR_LENGTH, c.TIBIA_LENGTH];
-    //console.log([i, xBase, xLeg, u, angles]);
-
-    //Rotation matrix
-    // var t;
-    // t = math.subset(angles, math.index(2));
-    // var C = math.matrix([
-    //   [Math.cos(t), Math.sin(t), 0], 
-    //   [-Math.sin(t), Math.cos(t), 0], 
-    //   [0, 0, 1]
-    // ]);
-    // t = math.subset(angles, math.index(1));
-    // var B = math.matrix([
-    //   [1, 0, 0], 
-    //   [0, Math.cos(t), Math.sin(t)], 
-    //   [0, -Math.sin(t), Math.cos(t)]
-    // ]);
-    // t = math.subset(angles, math.index(0));
-    // var A = math.matrix([
-    //   [Math.cos(t), Math.sin(t), 0], 
-    //   [-Math.sin(t), Math.cos(t), 0], 
-    //   [0, 0, 1]
-    // ]);
-    // var R = math.multiply(C, math.multiply(B, A));
 
     var R = this.rotationXYZ(angles);
     R = math.matrix(R);

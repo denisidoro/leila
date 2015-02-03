@@ -16,6 +16,7 @@ module.exports = function() {
         
         m.motor.on("valueUpdated", function(d) {
             //io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
+            //console.log({id: id, register: d.name, value: d.value})
         });
 
         if (count == 18) {

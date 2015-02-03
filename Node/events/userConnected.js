@@ -16,7 +16,7 @@ module.exports = function() {
             var now = Date.now();
             //console.log([now, hex.Servo.lastMovement]);
             if (now - hex.Servo.lastMovement < hex.Servo.minimumGap) {
-                //console.log('TOO QUICK');
+                //console.log('TOO QUICK: ' + Math.random());
                 return false;
             }
             hex.Servo.lastMovement = now;
@@ -44,8 +44,10 @@ module.exports = function() {
                 return false;
             try {
                 hex.Animation.stop();
-                console.log(data);
-                hex.Servo.get(data.id).move(data.pos, 150);
+                var pos = [];
+                for (var i = 0; i < 18; i++)
+                    pos.push(i == data.id ? data.pos : -1);
+                hex.Servo.moveAll(pos);
             } catch(e) {
                 console.log(e);
             }

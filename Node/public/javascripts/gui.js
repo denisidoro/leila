@@ -7,7 +7,7 @@ var configs = new function() {
 
 configs.base = {
 	rotX: 0, rotY: 0, rotZ: 0, 
-	posX: 0, posY: 0, posZ: 110,
+	posX: 0, posY: 0, posZ: 0,
 	stepSize: 150, walkAngle: 0,
 	changeStateTime: 1000
 };

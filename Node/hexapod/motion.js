@@ -70,7 +70,7 @@ var Motion = {
   // rf: final roation angles
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
-  // if the movement is relative, xf, rf and Uf are seen as delta_x, delta_r and delta_U
+  // if the movement is relative, xf is seen as delta_x
   moveTo: function(xf, rf, Uf, time, startingTime, isRelative){
     
     xf = xf || Motion.clone(x);
@@ -79,8 +79,6 @@ var Motion = {
 
     if(isRelative){
       xf = math.add(x, xf);
-      rf = math.add(r, rf);
-      Uf = math.add(U, Uf);
     }
 
     var angles_i;
@@ -88,6 +86,7 @@ var Motion = {
     var servoSpeeds = [];
 
     // Angles of current state
+    console.log([r, x, U])
     angles_i = Motion.getStateAngles(r, x, U);
     if(!angles_i) throw new Error("Initial angles error in moveTo()");
 
@@ -103,7 +102,7 @@ var Motion = {
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
 
-    
+
     console.log(servoSpeeds)
 
     // Moving

@@ -21,6 +21,13 @@ var r = [];
 // Main
 var Motion = {
 
+  resetFrames: function(){
+    var xx = math.squeeze(x);
+    var delta_U = [xx, xx, xx, xx, xx, xx];
+    U = math.subtract(U, delta_U);
+    x = [0,0,0];
+  },
+
   getState: function(){
     return [x, U, r];
   },
@@ -28,15 +35,15 @@ var Motion = {
   initHexapod: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
-        u[0] = [-c.X2 - 110, c.Y2 + 110, 0];
-        u[1] = [c.X2 + 110, c.Y2 + 110, 0];
-        u[2] = [-c.X1 - 150, 0, 0];
-        u[3] = [c.X1 + 150, 0, 0];
-        u[4] = [-c.X2 - 110, -c.Y2 - 110, 0];
-        u[5] = [c.X2 + 110, -c.Y2 - 110, 0];
+        u[0] = [-c.X2 - 110, c.Y2 + 110, -h];
+        u[1] = [c.X2 + 110, c.Y2 + 110, -h];
+        u[2] = [-c.X1 - 150, 0, -h];
+        u[3] = [c.X1 + 150, 0, -h];
+        u[4] = [-c.X2 - 110, -c.Y2 - 110, -h];
+        u[5] = [c.X2 + 110, -c.Y2 - 110, -h];
       // Writing states
       U = U_i || u;
-      x = x_i || [0, 0, h];
+      x = x_i || [0, 0, 0];
       r = r_i || [0,0,0];
   },
 

@@ -32,7 +32,7 @@ function initGUI() {
 	controllers.push(gui.f1.add(configs.base, 'rotZ', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'posX', -40, 40));
 	controllers.push(gui.f1.add(configs.base, 'posY', -40, 40));
-	controllers.push(gui.f1.add(configs.base, 'posZ', 40, 160));
+	controllers.push(gui.f1.add(configs.base, 'posZ', -40, 40));
 	$.each(controllers, function(i, c) {
 		c.listen().onChange(function(value) {
 			console.log('change base');

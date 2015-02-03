@@ -12,19 +12,18 @@ for (var i = 0; i < 18; i++) {
 	lastSpeed.push(0);
 }
 
-
 var onComplete = function() {
 	console.log('onComplete');
 }
 
 var temporalTask = function(kf) {
 
-	if (kf.movement) {
+	if (kf.fn) {
 		try {
-			if (!Array.isArray(kf.movement))
-				kf.movement = [kf.movement, []];
-			//console.log(kf.movement);
-			module.parent.exports.Movement[kf.movement[0]].apply(this, kf.movement[1] || []);
+			if (!Array.isArray(kf.fn))
+				kf.fn = [kf.fn, []];
+			//console.log(kf.fn);
+			module.parent.exports.Movement[kf.fn[0]].apply(this, kf.fn[1] || []);
 		}
 		catch (e) {
 			console.log(e);
@@ -112,12 +111,24 @@ var Animation = {
 	},
 
 	stop: function(tag) {
+
 		var tag = tag || 'default';
+
+		if (tag == 'all') {
+			temporals.forEach(function(t) {
+				t.stop();
+			});
+			temporals = {};
+			return true;
+		}
+
 		if (!temporals[tag])
 			return false;
+
 		//console.log(temporals[tag]);
 		temporals[tag].stop();
 		delete temporals[tag];
+
 	}
 
 };

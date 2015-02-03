@@ -5,6 +5,12 @@ var Servo = function(id) {
 
     this.id = (typeof id == 'undefined') ? Servo.list.length : id;
     this.motor = null;
+    this.feedback = {};
+
+    this.update = function(register, value) {
+      this.feedback[register] = value;
+      //console.log([this.id, register, value]);
+    }
 
     this.move = function(pos, speed) {
 
@@ -47,6 +53,14 @@ Servo.assignMotor = function(m) {
 Servo.get = function(id) {
   return Servo.list[id];
 }
+
+Servo.getFeedback = function(tag) {
+  var r = [];
+  Servo.list.forEach(function(s) {
+    r.push(s.feedback[tag]);
+  });
+  return r;
+}
   
 Servo.add = function(n) {
   n = n || 1;
@@ -74,6 +88,8 @@ Servo.moveAll = function(pos, speed, diff) {
     pos = pos.pos;
   }
 
+  //console.log(pos);
+
   try {
 
     if (Servo.invert) {
@@ -88,16 +104,19 @@ Servo.moveAll = function(pos, speed, diff) {
       throw new Error("Not enough motors");
 
     var diff = diff || 20000;
+    var keys = Object.keys(pos);
     var i = 0, old = 0;
-    while (i < pos.length) {
+
+    while (i < keys.length) {
+        if (pos[key] < 0 || (Array.isArray(speed) && speed[key] <= 0))
+          i++;
+        var key = keys[i];
         var time = process.hrtime();
         var timeMicro = Math.floor((time[0] * 1e9 + time[1])/1000);
         if (timeMicro - old > diff) {
-            Servo.get(i).move(pos[i], (Array.isArray(speed) ? speed[i] : speed));
+            Servo.get(key).move(pos[key], (Array.isArray(speed) ? speed[key] : speed));
             old = timeMicro;
             i++;
-            if (pos[i] < 0 || (Array.isArray(speed) && speed[i] <= 0))
-              i++;
         }
     }
 

@@ -6,11 +6,8 @@ var utils = require('./utils'),
 // Init buffer array
 var temporals = {};
 var lastPos = [];
-var lastSpeed = [];
-for (var i = 0; i < 18; i++) {
+for (var i = 0; i < 18; i++)
 	lastPos.push(512);
-	lastSpeed.push(0);
-}
 
 var onComplete = function() {
 	console.log('onComplete');
@@ -34,34 +31,27 @@ var temporalTask = function(kf) {
 	if (!kf.pos)
 		kf = {pos: kf};
 
-	var pos = [], speed = [];
+	var pos = [];
 	for (var i = 0; i < Servo.list.length; i++) {
-		var p = interpret(kf.pos, i, -1, lastPos[i]);
+		var p = interpret(kf.pos, i, -1, lastPos);
 		if (p > 0)
 			lastPos[i] = p;
 		pos.push(p);
-		if (kf.speed) {
-			var s = interpret(kf.speed, i, Servo.defaultSpeed, lastSpeed[i]);
-			if (s > 0)
-				lastSpeed[i] = s;
-			speed.push(p);
-		}
 	}
 
-	speed = kf.speed;
-	Servo.moveAll(pos, speed);
+	Servo.moveAll(pos, kf.speed);
 	//console.log(pos);
 
 }
 
-function interpret(a, i, defaultValue, previousValue) {
+function interpret(a, i, defaultValue, previousValueArray) {
 
 	if (!(i in a))			// don't move
 		return defaultValue;				
 	else if (a[i].to)		// absolute
 		return a[i].to;		
 	else if (a[i].step)		// relative
-		return previousValue + a[i].step;
+		return previousValueArray[i] + a[i].step;
 	else					// absolute
 		return a[i];
 

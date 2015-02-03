@@ -104,8 +104,9 @@ var Hexapod = function() {
 		clearInterval(this.t);
 		t = setInterval(function() {
 			var pos = [];
-			for (var i = 0; i < target.length; i++)
-				pos.push(target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
+			for (var i = 0; i < 18; i++)
+				pos.push(isNaN(target[i]) ? null : (target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]));
+			//console.log(pos);
 			self.move(pos);
 			iteration++;
 			if (iteration > totalIterations)

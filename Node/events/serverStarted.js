@@ -19,7 +19,7 @@ module.exports = function() {
         });
 
         if (count == 18) {
-            hex.Movements.moveToInit();
+            hex.Movement.moveToInit();
             hex.Servo.init = true;
         }
 

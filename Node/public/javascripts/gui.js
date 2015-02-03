@@ -64,15 +64,13 @@ function initGUI() {
 	for (var i = 0; i < 18; i++)
 		controllers.push(gui.f2.add(configs.servos, 'servo' + i, limits[i%3][0], limits[i%3][1]).step(1));
 
-	$.each(controllers, function(i, c) {
-		$.each(controllers, function(i, c) {
-			c.listen().onChange(function(value) {
-				var pos = [];
-				for (var i = 0; i < 18; i++)
-					pos.push(configs.servos['servo' + i]);
-				model.move(pos);
-				socket.emit('moveServo', {id: i, pos: configs.base['pos' + i]});
-			});
+	$.each(controllers, function(index, c) {
+		c.listen().onChange(function(value) {
+			var pos = [];
+			for (var i = 0; i < 18; i++)
+				pos.push(configs.servos['servo' + i]);
+			model.move(pos);
+			socket.emit('moveServo', {id: index, pos: configs.base['pos' + index]});
 		});
 	});
 

@@ -21,7 +21,7 @@ module.exports = function() {
 
         if (count == 18) {
             console.log('All servos started! Calling moveToInit()');
-            hex.Movement.moveToInit();
+            hex.Movement.init();
             hex.Servo.init = true;
         }
 

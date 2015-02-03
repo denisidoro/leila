@@ -55,7 +55,6 @@ var Motion = {
   },
 
 
-
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
   // legsDisplacement: vector 3x3 (line i: displacement of a leg)
@@ -131,7 +130,6 @@ var Motion = {
     var servoSpeeds = [];
 
     // Angles of current state
-    console.log([r, x, U])
     angles_i = Motion.getStateAngles(r, x, U);
     if(!angles_i) throw new Error("Initial angles error in moveTo()");
 
@@ -146,9 +144,6 @@ var Motion = {
       servoSpeeds[i] *= (1023/MAX_SERVO_SPEED);  //in "speed bits"
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
-
-
-    console.log(servoSpeeds)
 
     // Moving
     var data = {

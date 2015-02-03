@@ -58,10 +58,11 @@ module.exports = function() {
                 return false;
             try {
                 hex.Animation.stop();
+                var state = hex.Motion.getState();
                 var p = [data.posX, data.posY, data.posZ];
                 //var r = hex.Motion.degreesToRadians([data.rotX, data.rotY, data.rotZ]);
                 var r = [data.rotX, data.rotY, data.rotZ];
-                hex.Motion.moveTo(p, r, null, data.changeStateTime, 5, true);
+                hex.Motion.moveTo(p, r, null, data.changeStateTime, 5);
             }
             catch(e) {
                 console.log(e);

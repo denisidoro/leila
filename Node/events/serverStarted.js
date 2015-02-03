@@ -11,15 +11,16 @@ module.exports = function() {
         var id = m.motor.getID();
         count++;
         
-        io.emit("addMotor", {id: id, count: count});
+        io.emit("addMotor", {id: id - 1, count: count});
         hex.Servo.assignMotor(m.motor);
         
         m.motor.on("valueUpdated", function(d) {
             //io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
-            //console.log({id: id, register: d.name, value: d.value})
+            hex.Servo.get(id).update(d.name, d.value);
         });
 
         if (count == 18) {
+            console.log('All servos started! Calling moveToInit()');
             hex.Movement.moveToInit();
             hex.Servo.init = true;
         }

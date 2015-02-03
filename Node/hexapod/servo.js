@@ -5,6 +5,12 @@ var Servo = function(id) {
 
     this.id = (typeof id == 'undefined') ? Servo.list.length : id;
     this.motor = null;
+    this.feedback = {};
+
+    this.update = function(register, value) {
+      this.feedback[register] = value;
+      //console.log([this.id, register, value]);
+    }
 
     this.move = function(pos, speed) {
 

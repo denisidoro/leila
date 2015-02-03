@@ -63,10 +63,10 @@ function initSocket() {
 	});
 
 	// Motor value updated
-	socket.on('valueUpdated', function(data) {
+	//socket.on('valueUpdated', function(data) {
     	//console.log('motor value updated');
     	//console.log(data);
-    });
+    //});
 
 	// Servo.moveall called
 	// maybe remove it when valueUpdated is implemented?

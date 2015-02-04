@@ -44,9 +44,7 @@ module.exports = function() {
                 return false;
             try {
                 hex.Animation.stop();
-                var d = {};
-                d[data.id] = data.pos;
-                hex.Servo.moveAll(d);
+-               hex.Servo.get(data.id).move(data.pos, 150);
             } catch(e) {
                 console.log(e);
             }

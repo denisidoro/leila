@@ -66,7 +66,11 @@ function initGUI() {
 
 	$.each(controllers, function(index, c) {
 		c.listen().onChange(function(value) {
-			socket.emit('moveServo', {id: index, pos: configs.servos['servo' + index]});
+			var pos = [];
+			for (var i = 0; i < 18; i++)
+				pos.push(configs.servos['servo' + i]);
+			model.move(pos);
+			socket.emit('moveServo', {id: index, pos: value});
 		});
 	});
 

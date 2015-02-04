@@ -486,6 +486,10 @@ var Motion = {
     return bits;
   },
 
+  // xBase: coordinates of the center of the base
+  // xLeg : olha pra cima
+  // u: ponto de contato da pata com o chão em relação ao referencial fixo
+  // angles: angulos de rotação
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
 

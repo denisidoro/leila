@@ -61,7 +61,7 @@ function initGamepad() {
         break;
     }
     if (def)
-      changeState();
+      socket.emit('changeState', configs.base);
   });
 
   if (!gamepad.init()) {

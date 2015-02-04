@@ -32,7 +32,7 @@ var Motion = {
     return [x, U, r];
   },
 
-  initHexapod: function(x_i, U_i, r_i){
+  init: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
         u[0] = [-c.X2 - 110, c.Y2 + 110, -h];
@@ -45,6 +45,7 @@ var Motion = {
       U = U_i || u;
       x = x_i || [0, 0, 0];
       r = r_i || [0,0,0];
+      Motion.moveToInit();
   },
 
   moveToInit: function(){

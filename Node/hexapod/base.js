@@ -6,7 +6,7 @@ var Base = {
 
   init: function() {
     Servo.add(18); // add 18 servos
-    Motion.initHexapod();
+    Motion.init();
     console.log('Hexapod initialized');
   },
 

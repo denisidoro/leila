@@ -150,12 +150,12 @@ var Hexapod = function() {
 			x[i] *= Leg.constants.scale;
 
 		var pos = [
-			[-x[1], x[2]],
 			[x[1], x[2]],
-			[-x[0], 0],
+			[-x[1], x[2]],
 			[x[0], 0],
-			[-x[1], -x[2]],
+			[-x[0], 0],
 			[x[1], -x[2]],
+			[-x[1], -x[2]],
 		];
 
 		var h = new THREE.Object3D();

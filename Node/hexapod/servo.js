@@ -81,6 +81,8 @@ Servo.remove = function(index) {
  */
 Servo.moveAll = function(pos, speed, diff) {
 
+  //console.log(pos);
+
   // Treat case where input is only one object
   if (pos.pos) {
     speed = pos.speed;
@@ -108,7 +110,7 @@ Servo.moveAll = function(pos, speed, diff) {
     var i = 0, old = 0;
 
     while (i < keys.length) {
-        if (pos[key] < 0 || (Array.isArray(speed) && speed[key] <= 0))
+        if (pos[key] < 0 || (Array.isArray(speed) && speed[key] < 0))
           i++;
         var key = keys[i];
         var time = process.hrtime();

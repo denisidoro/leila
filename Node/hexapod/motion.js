@@ -189,15 +189,15 @@ var Motion = {
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
 
-    console.log("servoSpeeds")
-    console.log(servoSpeeds)
-    console.log("-------")
-     console.log("angles_i")
-     console.log(angles_i)
-    console.log("-------")
-        console.log("angles_f")
-    console.log(angles_f)
-    console.log("-------")
+    // console.log("servoSpeeds")
+    // console.log(servoSpeeds)
+    // console.log("-------")
+    //  console.log("angles_i")
+    //  console.log(angles_i)
+    // console.log("-------")
+    //     console.log("angles_f")
+    // console.log(angles_f)
+    // console.log("-------")
     // Moving
     var data = {
       points: [startingTime],
@@ -206,8 +206,9 @@ var Motion = {
         ]
     };
 
-    //Animation.queue(data);
-    hex.Servo.moveAll(angles_f)
+    Animation.stop();
+    Animation.queue(data);
+    //hex.Servo.moveAll(angles_f)
 
     // Updating states
     x = this.clone(xf);
@@ -354,6 +355,7 @@ var Motion = {
     //Animation.stop();
     //console.table(data);
     Animation.queue(data);
+
     //console.log(servo_speeds);
     
   },

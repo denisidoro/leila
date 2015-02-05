@@ -17,10 +17,8 @@ var temporalTask = function(kf) {
 
 	if (kf.fn) {
 		try {
-			if (!Array.isArray(kf.fn))
-				kf.fn = [kf.fn, []];
 			//console.log(kf.fn);
-			module.parent.exports.Movement[kf.fn[0]].apply(this, kf.fn[1] || []);
+			module.parent.exports.Movement[kf.fn].apply(this, kf.args || []);
 		}
 		catch (e) {
 			console.log(e);

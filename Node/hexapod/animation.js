@@ -77,6 +77,9 @@ var Animation = {
 			}
 		}
 
+		if (!data.points)
+			data.points = [0, 1];
+
 		if (!data.duration)
 			data.duration = data.points[data.points.length - 1];
 		data.points = normalize(data.points);

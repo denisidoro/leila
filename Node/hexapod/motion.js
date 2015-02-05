@@ -7,9 +7,10 @@ var math  = require("mathjs");
 
 // Constants
 //var STEP_TIME = 1000;
-var EPSILON = 100; //in ms
+var EPSILON = 0; // Tempo de antecedência (ms)
 var time_frac = 6; // time_move/time_rise
-var delta_h = 20;
+var DIV = 6; //see tripodStep()
+var delta_h = 40;
 var MAX_SERVO_SPEED = 306; // degrees/s
 var defaultVerticalSpeed = 100;
 
@@ -66,9 +67,11 @@ var Motion = {
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
   // legsDisplacement: vector 3x3 (line i: displacement of a leg)
-  tripodStep: function(group, legsDisplacement, xf, rf, stepTime, startingTime){
+  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime){
     var movingLegs = [];
     var displacement = [];
+    var xm = [];
+    var rm = [];
     var U1 = [];
     var U2 = [];
     var U3 = [];
@@ -79,20 +82,53 @@ var Motion = {
 
     Uf = Motion.getNewLegPositions(movingLegs, legsDisplacement);
 
-    U1 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]]);
+    U1 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]], U);
 
     U3 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]], Uf);
 
     U2 = math.add(U1, U3);
     U2 = math.multiply(1/2, U2);
 
+    xm = math.add(x, xf);
+    xm = math.multiply(1/2, xm);
 
+    rm = math.add(r, rf);
+    rm = math.multiply(1/2, rm);
+
+
+
+    // Rise moving legs
+    Motion.moveTo(x, r, U1, time*(1/DIV), startingTime)
+
+    // Move to midpoint
+    console.log("Tempo:")
+    console.log(time*(0.5 - (1/DIV)))
+    console.log("Começo:")
+    console.log(startingTime + time*(1/DIV) - EPSILON)
+    //Motion.moveTo(xm, rm, U2, time*(0.5 - (1/DIV)), startingTime + time*(1/DIV) - EPSILON);
+    //Motion.moveTo(xm, rm, U2, 2*time, 2*startingTime)
+    //Motion.moveTo(xm, rm, U2, 1000, 3000);
+
+
+    // Move to end point
+    //Motion.moveTo(xf, rf, U3, time*(0.5 - (1/DIV)), startingTime + time/2 - EPSILON);
+    //Motion.moveTo(xf, rf, Uf, time*(1/DIV), startingTime + time*(1 - 1/DIV) - EPSILON); // descend moving legs
+    //Motion.moveTo(xf, rf, Uf, 1000, 5000); 
+
+    // console.log("------------------");
+    // console.log(U1);
+    // console.log("------------------");
+    // console.log(U2);
+    // console.log("------------------");
+    // console.log(U3);
+    // console.log("------------------");
+    // console.log(Uf);
   },
   // movingLegs: vector containing the legs that are moving (from 0 to 5)
   // diplacement: matrix (movingLegs.length x 3) containing the displacement of each leg in the vector movingLegs
   // returns Uf, calculated from U and the displacement
   getNewLegPositions: function(movingLegs, displacement, Ui){
-    Ui = Ui || U;
+    Ui = Ui || Motion.clone(U);
     var delta_U = [];
 
     for(var i = 0; i < 6; i++){
@@ -153,6 +189,15 @@ var Motion = {
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
 
+    console.log("servoSpeeds")
+    console.log(servoSpeeds)
+    console.log("-------")
+     console.log("angles_i")
+     console.log(angles_i)
+    console.log("-------")
+        console.log("angles_f")
+    console.log(angles_f)
+    console.log("-------")
     // Moving
     var data = {
       points: [startingTime],
@@ -161,7 +206,8 @@ var Motion = {
         ]
     };
 
-    Animation.queue(data);
+    //Animation.queue(data);
+    hex.Servo.moveAll(angles_f)
 
     // Updating states
     x = this.clone(xf);

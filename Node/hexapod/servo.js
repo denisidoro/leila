@@ -100,7 +100,9 @@ Servo.moveAll = function(pos, speed, diff) {
         speed = servoUtils.swap(speed);
     }
 
+    // emit info to client and to animation buffer
   	io.emit('moveAll', {pos: pos, speed: speed});
+    module.parent.exports.Animation.updateBuffer(pos, speed);
 
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");

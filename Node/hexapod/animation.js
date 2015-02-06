@@ -2,21 +2,23 @@ var utils = require('./utils'),
   Servo = utils.require('servo'),
   temporal = require('temporal');
 
-
 // Init buffer array
 var temporals = {};
 var lastPos = [];
 for (var i = 0; i < 18; i++)
 	lastPos.push(512);
+var tag = 'default';
+var bufferData = {};
 
-var onComplete = function() {
-	console.log('onComplete');
-}
+const MAX_BUFFER_SIZE = 10;
+var buffer = [];
 
 var temporalTask = function(kf) {
 
 	//console.log('kf');
 	//console.log(kf);
+	if (!kf)
+		return false;
 
 	if (kf.fn) {
 		try {
@@ -43,6 +45,9 @@ var temporalTask = function(kf) {
 		pos.push(p);
 	}
 
+	//console.log(bufferData);
+	bufferData.points.shift();
+	bufferData.keyframes.shift();
 	Servo.moveAll(pos, kf.speed);
 	//console.log(pos);
 
@@ -116,13 +121,6 @@ var Animation = {
 		data = treatData(data);
 		//console.table(data);
 
-		if (data.back) {
-			for (var i = initialNPoints - 2; i >= 0; i--) {
-				data.keyframes.push(data.keyframes[i]);
-				data.points.push(data.points[data.points.length - 1] + data.points[i + 1] - data.points[i]);
-			}
-		}
-
 		data.points.forEach(function(p, i) {
 			if (i >= data.keyframes.length)
 				return false;
@@ -135,15 +133,67 @@ var Animation = {
 			tdatai[data.loop ? 'loop' : 'delay'] = Math.round(time - previousTime);
 			tdata.push(tdatai);
 			previousTime = time;
-		})
+		});
 
-		temporals[data.tag || 'default'] = temporal.queue(tdata);
+		bufferData = data;
+		temporals[tag] = temporal.queue(tdata);
 
 	},
 
-	stop: function(tag) {
+	pause: function() {
 
-		var tag = tag || 'default';
+		Servo.moveAll(Servo.getFeedback('presentPosition'), Servo.getFeedback('presentSpeed'));
+		//console.log(temporals);
+		Animation.stop();
+
+	},
+
+	play: function(target) {
+
+		var target = target || bufferData.length;
+
+		if (target > 0) {	// continue movement
+
+			var startingTime = bufferData.points[0];
+			bufferData.points.forEach(function(p, i) {
+				bufferData.points[i] -= startingTime;
+			});
+
+			if (target > bufferData.length)
+				target = bufferData.length;
+
+			var data = bufferData;
+
+		}
+
+		else {				// reverse movement
+
+			if (-target > buffer.length)
+				target = -buffer.length;
+
+			var time = 0;
+			var data = {points: [], keyframes: []};
+
+			for (var i = buffer.length - 2; i >= buffer.length - 1 + target; i--) {
+				//console.log([i, buffer[i].time, buffer[i+1].time]);
+				time += buffer[i+1].time - buffer[i].time;
+				data.points.push(time);
+				data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
+			}
+
+			//console.log(data);
+
+		}
+
+		Animation.stop();
+		//console.log(data);
+		Animation.queue(data);
+
+	},
+
+	stop: function() {
+
+		//console.log(temporals);
 
 		if (tag == 'all') {
 			temporals.forEach(function(t) {
@@ -160,6 +210,41 @@ var Animation = {
 		temporals[tag].stop();
 		delete temporals[tag];
 
+	},
+
+	updateBuffer: function(pos, speed) {
+
+		var d = new Date();
+		var now = d.getTime();
+
+		if (!Array.isArray(speed)) {
+			var s = speed;
+			speed = [];
+			for (var i = 0; i < 18; i++)
+				speed[i] = s;
+		}
+
+		for (var i = 0; i < 18; i++) {
+			if (!pos[i] || pos[i] < 0)
+				pos[i] = buffer[buffer.length - 1].pos[i];
+			if (!speed[i] || speed[i] < 0) {
+				var prevSpeed = buffer[buffer.length - 1].speed;
+				speed[i] = buffer.length == 0 ? Servo.defaultSpeed : (Array.isArray(prevSpeed) ? prevSpeed[i] : prevSpeed);
+			}
+		}
+
+		//console.log([pos, speed]);
+		//console.log('------');
+
+		buffer.push({pos: pos, speed: speed, time: now});
+
+		if (buffer.length > MAX_BUFFER_SIZE)
+			buffer.shift();
+
+	},
+
+	getBuffer: function() {
+		return buffer;
 	}
 
 };

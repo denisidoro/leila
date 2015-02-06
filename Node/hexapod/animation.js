@@ -119,7 +119,7 @@ var Animation = {
 		var initialNPoints = data.keyframes.length;
 
 		data = treatData(data);
-		//console.table(data);
+		//console.log(data);
 
 		data.points.forEach(function(p, i) {
 			if (i >= data.keyframes.length)
@@ -135,7 +135,7 @@ var Animation = {
 			previousTime = time;
 		});
 
-		bufferData = data;
+		bufferData = JSON.parse(JSON.stringify(data));
 		temporals[tag] = temporal.queue(tdata);
 
 	},
@@ -155,6 +155,7 @@ var Animation = {
 		if (target > 0) {	// continue movement
 
 			var startingTime = bufferData.points[0];
+			bufferData.duration *= (1 - bufferData.points[0]);
 			bufferData.points.forEach(function(p, i) {
 				bufferData.points[i] -= startingTime;
 			});

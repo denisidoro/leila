@@ -61,7 +61,8 @@ var Motion = {
   //step_time: in ms
   //starting_time in ms
   //isRelativeDirection: true or false
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, isRelativeDirection){
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, changeOrientation){
+    direction = Motion.degreesToRadians(direction);
     var movingLegs = [];
     var group;
     var legsDisplacement;
@@ -70,24 +71,64 @@ var Motion = {
     var ui = [];
     var uf = [];
     var aux = [];
+    var step = [step_size*Math.sin(direction), step_size*Math.cos(direction), 0];
 
     for(var i = 0; i < n_steps; i++){
+
+      if(i == 0){
+        delta_u = math.multiply(0.5, step);
+        delta_x = math.multiply(0.25, step);
+      }
+      else if (i == n_steps - 1){
+        delta_u = math.multiply(0.5, step);
+        delta_x = math.multiply(0.25, step);
+      }
+      else {
+        delta_u = step;
+        delta_x = math.multiply(0.5, step);
+      }
 
       group = i % 2;
       if(group == 0) movingLegs = [0, 3, 4];
       else movingLegs = [1, 2, 5];
 
-      // Getting initial positions of moving legs
-     // aux = 
+     // Getting initial positions of moving legs
+      for(var j = 0; j < 3; j++){
+        aux = math.subset(U, math.index(movingLegs[j], [0,3]));
+        aux = math.squeeze(aux);
+        ui[j] = aux;
+      }
 
+      // Calculating final positions of moving legs
+      xf = math.add(x, delta_x);
+      r = math.squeeze(r);
 
+      rf = Motion.clone(r);
+      R = [[1,0,0], [0,1,0], [0,0,1]];
+        if(changeOrientation) {
+          rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), direction];
+          R = Motion.rotationXYZ(rf);
+        }
+      
 
+      for(var j = 0; j < 3; j++){
+        uf[j] = math.add(ui[j], delta_u);
+        uf[j] = math.subtract(uf[j], xf);
+        uf[j] = math.transpose(uf[j]);
+        uf[j] = math.multiply(R, uf[j]);
+        uf[j] = math.squeeze(uf[j]);
+        uf[j] = math.add(uf[j], xf);
+        uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
+        uf[j] = math.squeeze(uf[j]);
+      }
+      Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime);
     }
   },
+
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
-  // legsDisplacement: vector 3x3 (line i: displacement of a leg)
-  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime, n_points){
+  // legsDisplacement: matrix 3x3 (line i: displacement of a leg)
+  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime){
     var movingLegs = [];
     var displacement = [];
     var xm = [];
@@ -115,35 +156,17 @@ var Motion = {
     rm = math.add(r, rf);
     rm = math.multiply(1/2, rm);
 
-
-
     // Rise moving legs
     Motion.moveTo(x, r, U1, time*(1/DIV), startingTime)
 
     // Move to midpoint
-    console.log("Tempo:")
-    console.log(time*(0.5 - (1/DIV)))
-    console.log("Começo:")
-    console.log(startingTime + time*(1/DIV) - EPSILON)
     Motion.moveTo(xm, rm, U2, time*(0.5 - (1/DIV)), startingTime + time*(1/DIV) - EPSILON);
-    //Motion.moveTo(xm, rm, U2, 2*time, 2*startingTime)
-    //Motion.moveTo(xm, rm, U2, 1000, 3000);
-
 
     // Move to end point
     Motion.moveTo(xf, rf, U3, time*(0.5 - (1/DIV)), startingTime + time/2 - EPSILON);
     Motion.moveTo(xf, rf, Uf, time*(1/DIV), startingTime + time*(1 - 1/DIV) - EPSILON); // descend moving legs
-    //Motion.moveTo(xf, rf, Uf, 1000, 5000); 
-
-    // console.log("------------------");
-    // console.log(U1);
-    // console.log("------------------");
-    // console.log(U2);
-    // console.log("------------------");
-    // console.log(U3);
-    // console.log("------------------");
-    // console.log(Uf);
   },
+
   // movingLegs: vector containing the legs that are moving (from 0 to 5)
   // diplacement: matrix (movingLegs.length x 3) containing the displacement of each leg in the vector movingLegs
   // returns Uf, calculated from U and the displacement
@@ -171,10 +194,10 @@ var Motion = {
   // time: movement time in ms
   // if the movement is relative, xf is seen as delta_x
   moveTo: function(xf, rf, Uf, time, startingTime, isRelative_x, isRelative_r, isRelative_U){
-    rf = Motion.degreesToRadians(rf);
+    //rf = Motion.degreesToRadians(rf);
     
     xf = xf || Motion.clone(x);
-    rf = rf || Motion.clone(rf);
+    rf = rf || Motion.clone(r);
     Uf = Uf || Motion.clone(U);
 
     if(isRelative_x){

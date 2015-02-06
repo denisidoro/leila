@@ -105,7 +105,8 @@ Servo.moveAll = function(pos, speed, diff) {
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-    var diff = diff || 20000;
+    //var diff = diff || 20000;
+    var diff = diff || 5000;
     var keys = Object.keys(pos);
     var i = 0, old = 0;
 

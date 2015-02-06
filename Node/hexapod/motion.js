@@ -7,11 +7,12 @@ var math  = require("mathjs");
 
 // Constants
 //var STEP_TIME = 1000;
-var EPSILON = 0; // Tempo de antecedência (ms)
+var EPSILON = 10; // Tempo de antecedência (ms)
 var time_frac = 6; // time_move/time_rise
 var DIV = 6; //see tripodStep()
-var delta_h = 40;
-var MAX_SERVO_SPEED = 306; // degrees/s
+var delta_h = 20;
+//var MAX_SERVO_SPEED = 306; // degrees/s
+var MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
 var defaultVerticalSpeed = 100;
 
 // State variables
@@ -61,13 +62,32 @@ var Motion = {
   //starting_time in ms
   //isRelativeDirection: true or false
   tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, isRelativeDirection){
+    var movingLegs = [];
+    var group;
+    var legsDisplacement;
+    var xf;
+    var rf;
+    var ui = [];
+    var uf = [];
+    var aux = [];
+
+    for(var i = 0; i < n_steps; i++){
+
+      group = i % 2;
+      if(group == 0) movingLegs = [0, 3, 4];
+      else movingLegs = [1, 2, 5];
+
+      // Getting initial positions of moving legs
+     // aux = 
+
+
+
+    }
   },
-
-
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
   // legsDisplacement: vector 3x3 (line i: displacement of a leg)
-  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime){
+  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime, n_points){
     var movingLegs = [];
     var displacement = [];
     var xm = [];
@@ -105,14 +125,14 @@ var Motion = {
     console.log(time*(0.5 - (1/DIV)))
     console.log("Começo:")
     console.log(startingTime + time*(1/DIV) - EPSILON)
-    //Motion.moveTo(xm, rm, U2, time*(0.5 - (1/DIV)), startingTime + time*(1/DIV) - EPSILON);
+    Motion.moveTo(xm, rm, U2, time*(0.5 - (1/DIV)), startingTime + time*(1/DIV) - EPSILON);
     //Motion.moveTo(xm, rm, U2, 2*time, 2*startingTime)
     //Motion.moveTo(xm, rm, U2, 1000, 3000);
 
 
     // Move to end point
-    //Motion.moveTo(xf, rf, U3, time*(0.5 - (1/DIV)), startingTime + time/2 - EPSILON);
-    //Motion.moveTo(xf, rf, Uf, time*(1/DIV), startingTime + time*(1 - 1/DIV) - EPSILON); // descend moving legs
+    Motion.moveTo(xf, rf, U3, time*(0.5 - (1/DIV)), startingTime + time/2 - EPSILON);
+    Motion.moveTo(xf, rf, Uf, time*(1/DIV), startingTime + time*(1 - 1/DIV) - EPSILON); // descend moving legs
     //Motion.moveTo(xf, rf, Uf, 1000, 5000); 
 
     // console.log("------------------");

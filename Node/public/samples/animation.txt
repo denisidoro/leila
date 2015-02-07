@@ -2,24 +2,26 @@ var move1 = {
     duration: 500,
     points: [0, 1],
     keyframes: [
-        {pos: {3: 512}},
-        {pos: {3: 0}}
+        {pos: {3: 800}},
+        {pos: {3: 530}}
     ]
 };
 
 var data = {
-    duration: 3000,
-    points: [0, 300, 800, 2000, 2500, 3000],
+    duration: 4000,
+    points: [0, 300, 800, 2000, 2500, 3000, 4000],
     keyframes: [
         {fn: 'moveToInit'},
         {pos: {2: 512}},
         {pos: {3: {step: -80}, 4: {step: 40}, 5: {to: 200}, 6: 600}},
         {pos: [512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310]},
-        {fn: 'allEqual', args: [400, 10]},
+        {fn: 'allEqual', args: [512, 10]},
         {data: move1}
-    ],
-    back: true
+    ]
 };
 
 hex.Animation.stop();
 hex.Animation.queue(data);
+//hex.Animation.pause();
+//hex.Animation.play();
+

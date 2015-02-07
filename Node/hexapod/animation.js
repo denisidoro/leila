@@ -9,9 +9,11 @@ for (var i = 0; i < 18; i++)
 	lastPos.push(512);
 var tag = 'default';
 var bufferData = {};
+var lastTime = 0;
 
 const MAX_BUFFER_SIZE = 10;
 var buffer = [];
+
 
 var temporalTask = function(kf) {
 
@@ -135,6 +137,7 @@ var Animation = {
 			previousTime = time;
 		});
 
+		lastTime = (new Date()).getTime();
 		bufferData = JSON.parse(JSON.stringify(data));
 		temporals[tag] = temporal.queue(tdata);
 
@@ -142,6 +145,7 @@ var Animation = {
 
 	pause: function() {
 
+		lastTime = (new Date()).getTime() - lastTime;
 		Servo.moveAll(Servo.getFeedback('presentPosition'), Servo.getFeedback('presentSpeed'));
 		//console.log(temporals);
 		Animation.stop();
@@ -150,20 +154,22 @@ var Animation = {
 
 	play: function(target) {
 
-		var target = target || bufferData.length;
+		var target = target || 9999;
 
 		if (target > 0) {	// continue movement
 
-			var startingTime = bufferData.points[0];
-			bufferData.duration *= (1 - bufferData.points[0]);
+			var startingPoint = lastTime/bufferData.duration;
+			bufferData.duration *= (1 - startingPoint);
 			bufferData.points.forEach(function(p, i) {
-				bufferData.points[i] -= startingTime;
+				bufferData.points[i] -= startingPoint;
 			});
+			bufferData.points = normalize(bufferData.points);
 
 			if (target > bufferData.length)
 				target = bufferData.length;
 
 			var data = bufferData;
+			//console.log(data);
 
 		}
 
@@ -215,8 +221,7 @@ var Animation = {
 
 	updateBuffer: function(pos, speed) {
 
-		var d = new Date();
-		var now = d.getTime();
+		var now = (new Date()).getTime();
 
 		if (!Array.isArray(speed)) {
 			var s = speed;

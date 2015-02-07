@@ -29,7 +29,7 @@ module.exports = function() {
 
         socket.on('eval', function(string) {
             //console.log(['eval', string]);
-            string = "try {" + string + "} catch(codeError) { console.log(codeError); }";
+            string = "try {" + string + "\n} catch(codeError) { console.log(codeError); }";
             try {
                 eval(string); 
             } catch (e) {

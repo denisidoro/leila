@@ -152,49 +152,54 @@ var Animation = {
 
 	},
 
-	play: function(target) {
+	rewind: function(target) {
 
-		var target = target || 9999;
+		if (!target || target > buffer.length)
+			target = buffer.length;
 
-		if (target > 0) {	// continue movement
+		var time = 0;
+		var data = {points: [], keyframes: []};
 
-			var startingPoint = lastTime/bufferData.duration;
-			bufferData.duration *= (1 - startingPoint);
-			bufferData.points.forEach(function(p, i) {
-				bufferData.points[i] -= startingPoint;
-			});
-			bufferData.points = normalize(bufferData.points);
-
-			if (target > bufferData.length)
-				target = bufferData.length;
-
-			var data = bufferData;
-			//console.log(data);
-
+		for (var i = buffer.length - 2; i >= buffer.length - target; i--) {
+			//console.log([i, buffer[i].time, buffer[i+1].time]);
+			time += buffer[i+1].time - buffer[i].time;
+			data.points.push(time);
+			data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
 		}
 
-		else {				// reverse movement
-
-			if (-target > buffer.length)
-				target = -buffer.length;
-
-			var time = 0;
-			var data = {points: [], keyframes: []};
-
-			for (var i = buffer.length - 2; i >= buffer.length - 1 + target; i--) {
-				//console.log([i, buffer[i].time, buffer[i+1].time]);
-				time += buffer[i+1].time - buffer[i].time;
-				data.points.push(time);
-				data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
-			}
-
-			//console.log(data);
-
-		}
+		//console.log(data);
 
 		Animation.stop();
-		//console.log(data);
 		Animation.queue(data);
+
+	},
+
+	resume: function(target) {
+
+		if (!target || target > bufferData.length)
+			target = bufferData.length;
+
+		var startingPoint = lastTime/bufferData.duration;
+		bufferData.duration *= (1 - startingPoint);
+		bufferData.points.forEach(function(p, i) {
+			bufferData.points[i] -= startingPoint;
+		});
+		bufferData.points = normalize(bufferData.points);
+
+		var data = bufferData;
+		//console.log(data);
+
+		Animation.stop();
+		Animation.queue(data);
+
+	},
+
+	play: function(target) {
+
+		if (target < 0)		// reverse movement
+			this.rewind(-target);
+		else				// continue movement
+			this.resume(target);
 
 	},
 

@@ -10,7 +10,7 @@ var math  = require("mathjs");
 var EPSILON = 10; // Tempo de antecedência (ms)
 var time_frac = 6; // time_move/time_rise
 var DIV = 6; //see tripodStep()
-var delta_h = 35;
+var delta_h = 25;
 //var MAX_SERVO_SPEED = 306; // degrees/s
 var MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
 var defaultVerticalSpeed = 100;
@@ -55,6 +55,34 @@ var Motion = {
       Servo.moveAll(this.getStateAngles(r, x, U), 80);
   },
 
+  initAuto: function(){
+    var h1 = 20;
+    var h = -110;
+    x = [0,0,0];
+    r = [0,0,0];
+    var u = [];
+      u[0] = [-c.X2 - 110, c.Y2 + 110, h1];
+      u[1] = [c.X2 + 110, c.Y2 + 110, h1];
+      u[2] = [-c.X1 - 150, 0, h1];
+      u[3] = [c.X1 + 150, 0, h1];
+      u[4] = [-c.X2 - 110, -c.Y2 - 110, h1];
+      u[5] = [c.X2 + 110, -c.Y2 - 110, h1];
+
+    U = this.clone(u);
+
+    Motion.moveTo(x, r, U, 2000, 100);
+
+    u[0] = [-c.X2 - 110, c.Y2 + 110, h];
+    u[1] = [c.X2 + 110, c.Y2 + 110, h];
+    u[2] = [-c.X1 - 150, 0, h];
+    u[3] = [c.X1 + 150, 0, h];
+    u[4] = [-c.X2 - 110, -c.Y2 - 110, h];
+    u[5] = [c.X2 + 110, -c.Y2 - 110, h];
+
+    U = this.clone(u);
+
+    Motion.moveTo(x, r, u, 5000, 2500);
+  },
 
   //step_size: in mm
   //direction: in degrees

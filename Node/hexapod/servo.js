@@ -54,10 +54,10 @@ Servo.get = function(id) {
   return Servo.list[id];
 }
 
-Servo.getFeedback = function(tag) {
+Servo.getFeedback = function(tag, defaultValue) {
   var r = [];
   Servo.list.forEach(function(s) {
-    r.push(s.feedback[tag]);
+    r.push(s.feedback[tag] || defaultValue);
   });
   return r;
 }

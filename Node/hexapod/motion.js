@@ -11,8 +11,7 @@ var EPSILON = 10; // Tempo de antecedência (ms)
 var time_frac = 6; // time_move/time_rise
 var DIV = 6; //see tripodStep()
 var delta_h = 25;
-//var MAX_SERVO_SPEED = 306; // degrees/s
-var MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
+//var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
 var defaultVerticalSpeed = 100;
 
 // State variables
@@ -256,7 +255,7 @@ var Motion = {
     for(var i = 0; i < 18; i++){
       servoSpeeds[i] = math.abs(angles_f[i] - angles_i[i])/(0.001*time); //in "angle bits"/s
       servoSpeeds[i] *= 0.3; //in degrees/s, 0.3 = 300/1023
-      servoSpeeds[i] *= (1023/MAX_SERVO_SPEED);  //in "speed bits"
+      servoSpeeds[i] *= (1023/c.MAX_SERVO_SPEED);  //in "speed bits"
       servoSpeeds[i] = Math.round(servoSpeeds[i]);
     }
 

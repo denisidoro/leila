@@ -1,0 +1,16 @@
+var pos = [], start = [];
+for (var i = 0; i < 18; i++) {
+    start.push(512);
+    pos.push(800);
+}
+
+var data = {
+    duration: 10,
+    points: [1],
+    keyframes: [
+        {easing: 'linear', points: 9, duration: 3000, pos: pos, start: start},
+    ]
+};
+
+hex.Animation.stop();
+hex.Animation.queue(data);

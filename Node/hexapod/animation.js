@@ -1,5 +1,6 @@
 var ease = require('ease-component');
 var utils = require('./utils'),
+  c = utils.require('constants'),
   Servo = utils.require('servo'),
   temporal = require('temporal');
 
@@ -20,7 +21,7 @@ var temporalTask = function(kf) {
 
 	if (kf.fn) {
 		try {
-			console.log(kf.fn);
+			//console.log(kf.fn);
 			var args = [];
 			if (kf.args)
 				args = Array.isArray(kf.args) ? kf.args : [kf.args];
@@ -33,8 +34,8 @@ var temporalTask = function(kf) {
 	}
 
 	else if (kf.easing) {
-		var data = easeData(null, kf.pos, kf.points, kf.duration, kf.easing);
-		console.log(data);
+		var data = easeData(kf.start, kf.pos, kf.points, kf.duration, kf.easing);
+		//console.log(data);
 		Animation.stop();
 		Animation.queue(data);
 		return;
@@ -119,7 +120,7 @@ function normalize(points) {
 
 function easeData(start, end, points, duration, easing) {
 
-	var start = start || Servo.getFeedback('presentPosition');
+	var start = start || Servo.getFeedback('presentPosition', 512);
 	var points = points || 2;
 	var duration = duration || 1000;
 	var easing = easing || 'linear';
@@ -130,15 +131,22 @@ function easeData(start, end, points, duration, easing) {
 		keyframes: []
 	};
 
-	for (var k = 0; k < points; k++) {
+	for (var k = 0; k <= points; k++) {
 
-		var pos = [];
+		var pos = [], speed = [];
+		var t = ease[easing](k/points);
+
 		for (var i = 0; i < 18; i++) {
 			var p = start[i] + (end[i] - start[i]) * (k/points);
 			pos.push(p);
+			var s = k == 0 ? 1023 : ((p - data.keyframes[k - 1].pos[i]) / ((t - data.points[k - 1])  * duration/1000)) * (0.3*1023/c.MAX_SERVO_SPEED);
+			speed.push(s);
 		}
-		data.points.push(ease[easing](k/points));
-		data.keyframes.push({pos: pos});
+
+		data.points.push(t);
+		data.keyframes.push({pos: pos, speed: speed});
+		//console.log(pos);
+		//console.log(speed);
 
 	}
 

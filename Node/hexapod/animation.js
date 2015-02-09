@@ -1,12 +1,10 @@
+var ease = require('ease-component');
 var utils = require('./utils'),
   Servo = utils.require('servo'),
   temporal = require('temporal');
 
 // Init buffer array
 var temporals = {};
-var lastPos = [];
-for (var i = 0; i < 18; i++)
-	lastPos.push(512);
 var tag = 'default';
 var bufferData = {};
 var lastTime = 0;
@@ -17,14 +15,12 @@ var buffer = [];
 
 var temporalTask = function(kf) {
 
-	//console.log('kf');
-	//console.log(kf);
 	if (!kf)
-		return false;
+		return;
 
 	if (kf.fn) {
 		try {
-			//console.log(kf.fn);
+			console.log(kf.fn);
 			var args = [];
 			if (kf.args)
 				args = Array.isArray(kf.args) ? kf.args : [kf.args];
@@ -36,14 +32,20 @@ var temporalTask = function(kf) {
 		return;
 	}
 
+	else if (kf.easing) {
+		var data = easeData(null, kf.pos, kf.points, kf.duration, kf.easing);
+		console.log(data);
+		Animation.stop();
+		Animation.queue(data);
+		return;
+	}
+
 	if (!kf.pos)
 		kf = {pos: kf};
 
 	var pos = [];
 	for (var i = 0; i < Servo.list.length; i++) {
-		var p = interpret(kf.pos, i, -1, lastPos);
-		if (p > 0)
-			lastPos[i] = p;
+		var p = interpret(kf.pos, i);
 		pos.push(p);
 	}
 
@@ -52,18 +54,20 @@ var temporalTask = function(kf) {
 	bufferData.keyframes.shift();
 	Servo.moveAll(pos, kf.speed);
 	//console.log(pos);
+	
+	return;
 
 }
 
-function interpret(a, i, defaultValue, previousValueArray) {
+function interpret(a, i) {
 
 	if (!(i in a))			// don't move
-		return defaultValue;				
+		return -1;				
 	else if (a[i].to)		// absolute
 		return a[i].to;		
-	else if (a[i].step)		// relative
-		return previousValueArray[i] + a[i].step;
-	else					// absolute
+	else if (a[i].step)	// relative
+		return Servo.get(i).feedback.presentPosition + a[i].step;
+	else						// absolute
 		return a[i];
 
 }
@@ -111,6 +115,35 @@ function normalize(points) {
 		r.push(cp/points[points.length - 1]);
 	})
 	return r;
+}
+
+function easeData(start, end, points, duration, easing) {
+
+	var start = start || Servo.getFeedback('presentPosition');
+	var points = points || 2;
+	var duration = duration || 1000;
+	var easing = easing || 'linear';
+
+	var data = {
+		duration: duration,
+		points: [],
+		keyframes: []
+	};
+
+	for (var k = 0; k < points; k++) {
+
+		var pos = [];
+		for (var i = 0; i < 18; i++) {
+			var p = start[i] + (end[i] - start[i]) * (k/points);
+			pos.push(p);
+		}
+		data.points.push(ease[easing](k/points));
+		data.keyframes.push({pos: pos});
+
+	}
+
+	return data;
+
 }
 
 var Animation = {

@@ -10,8 +10,8 @@ var Movement = {
     Motion.tripodSimpleWalk.apply(this, arguments);
   },
 
-  moveToInit: function() {
-    Motion.moveToInit();
+  init: function() {
+    Motion.initAuto();
   },
 
   allEqual: function(args, amplitude) {

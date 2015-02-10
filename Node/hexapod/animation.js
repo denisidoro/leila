@@ -1,27 +1,22 @@
 var ease = require('ease-component');
 var utils = require('./utils'),
   c = utils.require('constants'),
-  Servo = utils.require('servo'),
-  temporal = require('temporal');
+  Servo = utils.require('servo');
 
-// Init buffer array
-var temporals = {};
-var tag = 'default';
-var bufferData = {};
-var lastTime = 0;
 
 const MAX_BUFFER_SIZE = 10;
-var buffer = [];
+var buffer = [];  
 
 
-var temporalTask = function(kf) {
+// task execution
+
+var timeoutCallback = function(kf, animation) {
 
 	if (!kf)
 		return;
 
 	if (kf.fn) {
 		try {
-			//console.log(kf.fn);
 			var args = [];
 			if (kf.args)
 				args = Array.isArray(kf.args) ? kf.args : [kf.args];
@@ -35,10 +30,12 @@ var temporalTask = function(kf) {
 
 	else if (kf.easing) {
 		var data = easeData(kf.start, kf.pos, kf.points, kf.duration, kf.easing);
-		//console.log(data);
-		Animation.stop();
-		Animation.queue(data);
+		Animation.create('ease').play(data);
 		return;
+	}
+
+	else if (kf.data) {
+		Animation.create('subtask').play(kf.data);
 	}
 
 	if (!kf.pos)
@@ -50,11 +47,9 @@ var temporalTask = function(kf) {
 		pos.push(p);
 	}
 
-	//console.log(bufferData);
-	bufferData.points.shift();
-	bufferData.keyframes.shift();
+	animation.data.points.shift();
+	animation.data.keyframes.shift();
 	Servo.moveAll(pos, kf.speed);
-	//console.log(pos);
 	
 	return;
 
@@ -62,41 +57,20 @@ var temporalTask = function(kf) {
 
 function interpret(a, i) {
 
-	if (!(i in a))			// don't move
+	if (!(i in a))		// don't move
 		return -1;				
-	else if (a[i].to)		// absolute
+	else if (a[i].to)	// absolute
 		return a[i].to;		
 	else if (a[i].step)	// relative
 		return Servo.get(i).feedback.presentPosition + a[i].step;
-	else						// absolute
+	else				// absolute
 		return a[i];
 
 }
 
-function integrateSubtasks(data) {
+// treat data
 
-	data.keyframes.forEach(function(k, i) {
-		if (k.data) {
-			// remove data[i], add k.data to data
-			if (k.duration)
-				k.data.duration = k.duration;
-			var d = treatData(k.data);
-			var startingTime = data.points[i];
-			data.keyframes.splice(i, 1);
-			data.points.splice(i, 1);
-			for (var j = 0; j < d.keyframes.length; j++) {
-				data.points.splice(i + j, 0, startingTime + d.points[j]*d.duration/data.duration);
-				data.keyframes.splice(i + j, 0, d.keyframes[j]);
-			}
-		}
-	})
-
-	data.points = normalize(data.points);
-	return data;
-
-}
-
-function treatData(data, duration) {
+function treatData(data) {
 
 	if (!data.points)
 		data.points = [0, 1];
@@ -105,18 +79,25 @@ function treatData(data, duration) {
 		data.duration = data.points[data.points.length - 1];
 	data.points = normalize(data.points);
 
-	data = integrateSubtasks(data); // warning
+	//data = integrateSubtasks(data); // warning
 	return data;
 
 }
 
 function normalize(points) {
+
 	var r = [];
+
 	points.forEach(function(cp) {
 		r.push(cp/points[points.length - 1]);
 	})
+
 	return r;
+
 }
+
+
+// easing
 
 function easeData(start, end, points, duration, easing) {
 
@@ -145,8 +126,6 @@ function easeData(start, end, points, duration, easing) {
 
 		data.points.push(t);
 		data.keyframes.push({pos: pos, speed: speed});
-		//console.log(pos);
-		//console.log(speed);
 
 	}
 
@@ -154,151 +133,146 @@ function easeData(start, end, points, duration, easing) {
 
 }
 
-var Animation = {
+// main class
 
-	queue: function(data) {
+var Animation = function() {
 
-		var tdata = [], time = 0, previousTime = 0;
-		var initialNPoints = data.keyframes.length;
+	var self = this;
+	this.timeouts = [];
+	this.data = {};
+	this.playTime = 0;
+	this.pauseTime = 0;
 
-		data = treatData(data);
-		//console.log(data);
+	this.queue = function(data) {
+		this.data = treatData(data);
+	};
 
-		data.points.forEach(function(p, i) {
-			if (i >= data.keyframes.length)
-				return false;
-			time = (data.startingTime || 0) + p * data.duration;
-			var tdatai = {
-				task: function() {
-					temporalTask(data.keyframes[i]);
-				}
-			};
-			tdatai[data.loop ? 'loop' : 'delay'] = Math.round(time - previousTime);
-			tdata.push(tdatai);
-			previousTime = time;
-		});
+	this.play = function(data) {	
 
-		lastTime = (new Date()).getTime();
-		bufferData = JSON.parse(JSON.stringify(data));
-		temporals[tag] = temporal.queue(tdata);
+		if (data)
+			this.queue(data);
 
-	},
+		data = this.data;
 
-	pause: function() {
-
-		lastTime = (new Date()).getTime() - lastTime;
-		Servo.moveAll(Servo.getFeedback('presentPosition'), Servo.getFeedback('presentSpeed'));
-		//console.log(temporals);
-		Animation.stop();
-
-	},
-
-	rewind: function(target) {
-
-		if (!target || target > buffer.length)
-			target = buffer.length;
-
-		var time = 0;
-		var data = {points: [], keyframes: []};
-
-		for (var i = buffer.length - 2; i >= buffer.length - target; i--) {
-			//console.log([i, buffer[i].time, buffer[i+1].time]);
-			time += buffer[i+1].time - buffer[i].time;
-			data.points.push(time);
-			data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
-		}
-
-		//console.log(data);
-
-		Animation.stop();
-		Animation.queue(data);
-
-	},
-
-	resume: function(target) {
-
-		if (!target || target > bufferData.length)
-			target = bufferData.length;
-
-		var startingPoint = lastTime/bufferData.duration;
-		bufferData.duration *= (1 - startingPoint);
-		bufferData.points.forEach(function(p, i) {
-			bufferData.points[i] -= startingPoint;
-		});
-		bufferData.points = normalize(bufferData.points);
-
-		var data = bufferData;
-		//console.log(data);
-
-		Animation.stop();
-		Animation.queue(data);
-
-	},
-
-	play: function(target) {
-
-		if (target < 0)		// reverse movement
-			this.rewind(-target);
-		else				// continue movement
-			this.resume(target);
-
-	},
-
-	stop: function() {
-
-		//console.log(temporals);
-
-		if (tag == 'all') {
-			temporals.forEach(function(t) {
-				t.stop();
+		if (this.pauseTime != 0) {
+			var startingPoint = (this.pauseTime - this.playTime) / data.duration;
+			data.duration *= (1 - startingPoint);
+			data.points.forEach(function(p, i) {
+				data.points[i] -= startingPoint;
 			});
-			temporals = {};
-			return true;
+			data.points = normalize(data.points);
 		}
 
-		if (!temporals[tag])
-			return false;
+		data.keyframes.forEach(function(kf, i) {
+			self.timeouts.push(setTimeout(function() {
+				timeoutCallback(kf, self);
+			}, Math.round((data.startingTime || 5) + data.points[i] * data.duration)));
+		});
 
-		//console.log(temporals[tag]);
-		temporals[tag].stop();
-		delete temporals[tag];
+		this.playTime = (new Date()).getTime();
+		this.pauseTime = 0;
 
-	},
+	};
 
-	updateBuffer: function(pos, speed) {
+	this.pause = function() {
 
-		var now = (new Date()).getTime();
+		this.pauseTime = (new Date()).getTime();
+		Servo.moveAll(Servo.getFeedback('presentPosition'), Servo.getFeedback('presentSpeed'));
+		this.stop();
 
-		if (!Array.isArray(speed)) {
-			var s = speed;
-			speed = [];
-			for (var i = 0; i < 18; i++)
-				speed[i] = s;
+	};
+
+	this.stop = function(keepData) {
+
+		this.timeouts.forEach(function(t, i) {
+			clearTimeout(t);
+		});
+
+		this.timeouts.shift();
+
+		if (!keepData) {
+			this.data = {};
 		}
 
-		for (var i = 0; i < 18; i++) {
-			if (!pos[i] || pos[i] < 0)
-				pos[i] = buffer[buffer.length - 1].pos[i];
-			if (!speed[i] || speed[i] < 0) {
-				var prevSpeed = buffer[buffer.length - 1].speed;
-				speed[i] = buffer.length == 0 ? Servo.defaultSpeed : (Array.isArray(prevSpeed) ? prevSpeed[i] : prevSpeed);
-			}
-		}
-
-		//console.log([pos, speed]);
-		//console.log('------');
-
-		buffer.push({pos: pos, speed: speed, time: now});
-
-		if (buffer.length > MAX_BUFFER_SIZE)
-			buffer.shift();
-
-	},
-
-	getBuffer: function() {
-		return buffer;
-	}
+	};
 
 };
+
+
+Animation.list = {};
+
+Animation.get = function(tag) {
+	return Animation.list[tag];
+}
+
+Animation.create = function(tag, keepExisting) {
+
+	tag = tag || 'default';
+
+	var a = Animation.get(tag);
+
+	if (!a || !keepExisting) {
+		if (a)
+			a.stop();
+		a = new Animation();
+		return Animation.list[tag] = a;
+	}
+
+	return a;
+
+}
+
+Animation.all = function(fn) {
+	for (var tag in Animation.list) {
+		Animation.get(tag)[fn]();
+	}
+}
+
+Animation.updateBuffer = function(pos, speed) {
+
+	var now = (new Date()).getTime();
+
+	if (!Array.isArray(speed)) {
+		var s = speed;
+		speed = [];
+		for (var i = 0; i < 18; i++)
+			speed[i] = s;
+	}
+
+	for (var i = 0; i < 18; i++) {
+		if (!pos[i] || pos[i] < 0)
+			pos[i] = buffer[buffer.length - 1].pos[i];
+		if (!speed[i] || speed[i] < 0) {
+			var prevSpeed = buffer[buffer.length - 1].speed;
+			speed[i] = buffer.length == 0 ? Servo.defaultSpeed : (Array.isArray(prevSpeed) ? prevSpeed[i] : prevSpeed);
+		}
+	}
+
+	buffer.push({pos: pos, speed: speed, time: now});
+
+	if (buffer.length > MAX_BUFFER_SIZE)
+		buffer.shift();
+
+};
+
+Animation.rewind = function(target) {
+
+	if (!target || target > buffer.length)
+		target = buffer.length;
+
+	var time = 0;
+	var data = {points: [], keyframes: []};
+
+	for (var i = buffer.length - 2; i >= buffer.length - target; i--) {
+		time += buffer[i+1].time - buffer[i].time;
+		data.points.push(time);
+		data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
+	}
+
+	Animation.all('stop');
+	Animation.create('rewind').play(data);
+
+}
+
 
 module.exports = Animation;

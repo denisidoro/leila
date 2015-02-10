@@ -1,2 +1,0 @@
-//#
-console.table(getServoAngles());

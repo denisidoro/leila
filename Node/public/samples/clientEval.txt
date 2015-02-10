@@ -1,3 +1,7 @@
 //#
+
+// the first line means that the code will be evaluated in the client side
+
 console.log(configs.base);
-alert('hello');
+console.table(getServoAngles());
+// alert('hello');

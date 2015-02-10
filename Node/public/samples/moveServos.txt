@@ -1,6 +1,8 @@
 var n = getRandom(100);
 hex.Servo.moveAll([n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n], 200);
 
+// hex.Servo.get(id).move(pos, speed); // move only one servo
+
 function getRandom(amplitude) {
 	var min = 512 - amplitude/2, max = 512 + amplitude/2;
 	return Math.floor(Math.random() * (max - min + 1)) + min;

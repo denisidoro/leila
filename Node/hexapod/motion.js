@@ -415,7 +415,7 @@ var Motion = {
     
     //Animation.stop();
     //console.table(data);
-    Animation.queue(data);
+    Animation.create('main').play(data);
 
     //console.log(servo_speeds);
     

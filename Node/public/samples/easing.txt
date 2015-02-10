@@ -12,5 +12,8 @@ var data = {
     ]
 };
 
-hex.Animation.stop();
-hex.Animation.queue(data);
+hex.Animation.create('main').play(data);
+
+/* Docs:
+https://github.com/component/ease
+*/

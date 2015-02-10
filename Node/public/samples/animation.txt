@@ -1,27 +1,26 @@
+var pos = [], start = [];
+for (var i = 0; i < 18; i++) {
+    start.push(512);
+    pos.push(800);
+}
+
+var move0 = {
+    duration: 1000,
+    keyframes: [
+        {pos: {3: 600}},
+        {pos: {3: 512}}
+    ]
+};
+
 var move1 = {
-    duration: 500,
-    points: [0, 1],
-    keyframes: [
-        {pos: {3: 800}},
-        {pos: {3: 530}}
-    ]
-};
-
-var data = {
     duration: 4000,
-    points: [0, 300, 800, 2000, 2500, 3000, 4000],
+    points: [0, 1, 2, 4],
     keyframes: [
-        {fn: 'moveToInit'},
-        {pos: {2: 512}},
-        {pos: {3: {step: -80}, 4: {step: 40}, 5: {to: 200}, 6: 600}},
-        {pos: [512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310, 512, 420, 310]},
-        {fn: 'allEqual', args: [512, 10]},
-        {data: move1}
+        {pos: start},
+        {pos: pos},
+        {data: move0},
+        {fn: 'allEqual', args: [512]}
     ]
 };
 
-hex.Animation.stop();
-hex.Animation.queue(data);
-//hex.Animation.pause();
-//hex.Animation.play();
-
+hex.Animation.create('main').play(move1);

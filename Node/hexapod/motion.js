@@ -92,7 +92,7 @@ var Motion = {
   //step_time: in ms
   //starting_time in ms
   //isRelativeDirection: true or false
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, changeOrientation){
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, changeOrientation, n_points){
     direction = Motion.degreesToRadians(direction);
     var movingLegs = [];
     var group;
@@ -152,51 +152,106 @@ var Motion = {
         uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
         uf[j] = math.squeeze(uf[j]);
       }
-      Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime);
+      Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
     }
-    Motion.resetFrames();
   },
 
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
   // legsDisplacement: matrix 3x3 (line i: displacement of a leg)
-  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime){
+  // n_points: number of points in one step
+  // heights: array of size n_points
+  // factors: array of size n_points
+  tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime, n_points, heights, factors){
     var movingLegs = [];
-    var displacement = [];
-    var xm = [];
-    var rm = [];
+    var delta_x = [];
+    var delta_U = [];
+    var delta_r = [];
+    var list_x = []; // position of the center in each point (size = n_points)
+    var list_r = []; // rotation in each point (size = n_points)
+    var list_U = []; // positions of the legs in each point
+    var list_time = [];
+    var list_starting_time = [];
     var U1 = [];
     var U2 = [];
     var U3 = [];
-    var Uf = []; 
+    var Uf = [];
+
+    delta_x = math.subtract(xf, x);
+    delta_r = math.subtract(rf, r);
+    delta_U = legsDisplacement; 
 
     if(group == 0) movingLegs = [0, 3, 4];
     else movingLegs = [1, 2, 5];
 
-    Uf = Motion.getNewLegPositions(movingLegs, legsDisplacement);
+    // default n_points
+    if(!n_points) n_points = 5;
 
-    U1 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]], U);
+    // default factors
+    var def_factors = [];
+    def_factors[0] = 0;
+    for(var i = 1; i < n_points; i++){
+      def_factors[i] = def_factors[i-1] + 1/(n_points-1);
+    }
+    factors =  factors || def_factors;
 
-    U3 = Motion.getNewLegPositions(movingLegs, [[0, 0, delta_h], [0, 0, delta_h], [0, 0, delta_h]], Uf);
+    // default heights
+    var def_heights = [];
+    for(var i = 0; i < n_points; i++){
+      if((i == n_points - 1)  || (i == 0)) def_heights[i] = 0;
+      else def_heights[i] = delta_h;
+    }
+    heights = heights || def_heights;
 
-    U2 = math.add(U1, U3);
-    U2 = math.multiply(1/2, U2);
+    // calculating list_x, list_r, list_U and list_time
+    for(var i = 0; i < n_points; i++){
+      // list_x
+      list_x[i] = math.multiply( 
+                    math.subset(factors, math.index(i)),
+                    delta_x
+                  );
+      list_x[i] = math.add(x, list_x[i]);
 
-    xm = math.add(x, xf);
-    xm = math.multiply(1/2, xm);
+      // list_r
+      list_r[i] = math.multiply( 
+                    math.subset(factors, math.index(i)),
+                    delta_r
+                  );
+      list_r[i] = math.add(r, list_r[i]);
 
-    rm = math.add(r, rf);
-    rm = math.multiply(1/2, rm);
+      // list_U 
+      list_U[i] = math.multiply(
+                    math.subset(factors, math.index(i)),
+                    delta_U
+                  );
 
-    // Rise moving legs
-    Motion.moveTo(x, r, U1, time*(1/DIV), startingTime)
+      list_U[i] = math.add(
+                  list_U[i],
+                  [ [0, 0, math.subset(heights, math.index(i))],
+                    [0, 0, math.subset(heights, math.index(i))],
+                    [0, 0, math.subset(heights, math.index(i))],
+                  ]
+              );
 
-    // Move to midpoint
-    Motion.moveTo(xm, rm, U2, time*(0.5 - (1/DIV)), startingTime + time*(1/DIV) - EPSILON);
+      list_U[i] = Motion.getNewLegPositions(movingLegs, list_U[i], U);
+    }
 
-    // Move to end point
-    Motion.moveTo(xf, rf, U3, time*(0.5 - (1/DIV)), startingTime + time/2 - EPSILON);
-    Motion.moveTo(xf, rf, Uf, time*(1/DIV), startingTime + time*(1 - 1/DIV) - EPSILON); // descend moving legs
+    // list_time and list_starting_time
+    list_time[0] = factors[0]*time; // No problem if list_time[0]=0, see Motion.speedCalculation()
+    list_starting_time[0] = startingTime;
+    for(var i = 1; i < n_points; i++){
+      list_time[i] = (factors[i] - factors[i-1])*time;
+      list_starting_time[i] = list_starting_time[i-1] + list_time[i-1]; 
+    }
+    
+    // Moving 
+    for(var i = 0; i < n_points; i++){
+      Motion.moveTo(list_x[i], 
+                    list_r[i], 
+                    list_U[i], 
+                    list_time[i], 
+                    list_starting_time[i]);
+    }
   },
 
   // movingLegs: vector containing the legs that are moving (from 0 to 5)
@@ -232,7 +287,7 @@ var Motion = {
     rf = rf || Motion.clone(r);
     Uf = Uf || Motion.clone(U);
 
-    // Slider *******************
+    // Slider ********************
     if(isSlider){
       if(isSlider != slider_event)
         slider_ref = x;
@@ -293,6 +348,7 @@ var Motion = {
   speedCalculation: function(start, end, duration) {
     // duration: ms
     // 0.3 = 300/1023
+    if(duration == 0) return 800;
     return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED * 0.9));
   },
 

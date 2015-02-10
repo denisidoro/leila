@@ -25,3 +25,23 @@ var move1 = {
 
 hex.Animation.create('main').play(move1);
 
+/*
+
+// loop test
+
+var data = {
+    duration: 1500,
+    startingTime: 10,
+    points: [0.5, 1],
+    keyframes: [
+        {fn: 'allEqual', args: [[512,433,162], 0], speed: 100},
+        {fn: 'allEqual', args: [[512,533,253], 0], speed: 100}
+    ],
+    loop: true
+}
+
+hex.Animation.reset();
+hex.Animation.create('main').play(data);
+
+ */
+

@@ -48,7 +48,7 @@ function initGUI() {
 	$.each(controllers, function(i, c) {
 		c.listen().onChange(function(value) {	
 			console.log('walk')
-			socket.emit('tripodSimpleWalk', configs.base);
+			socket.emit('walk', configs.base);
 		});
 	});
 

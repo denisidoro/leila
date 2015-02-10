@@ -38,7 +38,7 @@ function initGamepad() {
     switch (e.axis) {
       case "LEFT_STICK_X":
       case "LEFT_STICK_Y":
-        var a = Math.atan2(-s.LEFT_STICK_Y, s.LEFT_STICK_X) * 180 / 3.1415 - 90;
+        var a = Math.atan2(-s.LEFT_STICK_Y, -s.LEFT_STICK_X) * 180 / 3.1415 - 90;
         if (a < 0)
           a += 360;
         configs.base.walkAngle = a;
@@ -47,21 +47,23 @@ function initGamepad() {
         def = false;
         break;
       case "RIGHT_STICK_Y":
-          configs.base.rotY = scale(e.value, 1, -1, -20, 20);
+          configs.base.rotY = scale(e.value, 1, -1, -15, 15);
         break;
       case "RIGHT_STICK_X":
-        configs.base.rotX = scale(e.value, -1, 1, -20, 20);
+        configs.base.rotX = scale(e.value, -1, 1, -15, 15);
         break;
       case "LEFT_BOTTOM_SHOULDER":
       case "RIGHT_BOTTOM_SHOULDER":
         if (e.gamepad.state.RIGHT_TOP_SHOULDER == 1)
-          configs.base.rotZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -20, 20);  
+          configs.base.rotZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -15, 15);  
         else
-          configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, 40, 160);
+          configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -40, 40);
         break;
     }
     if (def)
       socket.emit('changeState', configs.base);
+    else
+      socket.emit('walk', configs.base);
   });
 
   if (!gamepad.init()) {

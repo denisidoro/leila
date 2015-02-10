@@ -65,12 +65,12 @@ module.exports = function() {
             }
         });
 
-        socket.on('tripodSimpleWalk', function(data) {
-            if (!check())
+        socket.on('walk', function(data) {
+            if (!check() || data.stepSize < 80)
                 return false;   
             try {
                 hex.Animation.reset();
-                hex.Motion.tripodSimpleWalk(data.stepSize, 1, data.walkAngle, 1000);
+                hex.Motion.tripodPlaneWalk(data.stepSize, 4, [data.walkAngle, 0], 500, 100);
             }
             catch(e) {
                 console.log(e);

@@ -5,7 +5,7 @@ var utils = require('./utils'),
 
 // buffers
 
-const MAX_BUFFER_SIZE = 10;
+const MAX_BUFFER_SIZE = 50;
 var buffer = []; 
 
 
@@ -42,6 +42,7 @@ var timeoutCallback = function(kf, animation) {
 
 	else if (kf.data) {
 		Animation.create('subtask').play(kf.data);
+		return;
 	}
 
 	if (!kf.pos)
@@ -58,13 +59,15 @@ var timeoutCallback = function(kf, animation) {
 
 	Servo.moveAll(pos, kf.speed);
 
-	// if (animation.originalData != {} && animation.data.keyframes.length == 0) {
-	// 	//console.log('insideIf')
-	// 	//console.log(animation.originalData);
-	// 	animation.play(animation.originalData);
-	// 	animation.originalData = {};
-	// 	//console.log('#insideIf')
-	// }
+	//console.log(animation.originalData);
+	if (animation.originalData.keyframes && animation.data.keyframes.length == 0) {
+	 	//console.log('insideIf')
+	 	//console.log(animation.originalData);
+	 	var data = animation.originalData;
+	 	animation.originalData = {};
+	 	animation.play(data);
+	 	//console.log('#insideIf')
+	}
 	
 	return;
 
@@ -190,8 +193,10 @@ var Animation = function() {
 		this.playTime = (new Date()).getTime();
 		this.pauseTime = 0;
 
-		//if (this.data.loop == true) 
-		//	this.originalData = JSON.parse(JSON.stringify(this.data));
+		if (this.data.loop == true) {
+			console.log('loop true');
+			this.originalData = JSON.parse(JSON.stringify(this.data));
+		}
 
 		//console.log('----1---')
 		//console.log(this.originalData);

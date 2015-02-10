@@ -1,3 +1,5 @@
+// test 0
+
 var pos = [], start = [];
 for (var i = 0; i < 18; i++) {
     start.push(512);
@@ -17,3 +19,21 @@ hex.Animation.create('main').play(data);
 /* Docs:
 https://github.com/component/ease
 */
+
+/*
+// test 1
+
+var keyframes = [
+    {fn: 'allEqual', args: [[512, 440, 168], 0]},
+    {fn: 'allEqual', args: [[520, 420, 140], 5], easing: 'linear', points: 8, duration: 8000}
+];
+
+
+var data = {
+    duration: 1000,
+    points: [0.5, 1],
+    keyframes: keyframes
+};
+
+hex.Animation.create('main').play(data);
+ */

@@ -11,7 +11,7 @@ var buffer = [];
 
 // task execution
 
-var timeoutCallback = function(kf, animation) {
+var timeoutCallback = function(kf, animation, remaining) {
 
 	if (!kf)
 		return;
@@ -54,20 +54,7 @@ var timeoutCallback = function(kf, animation) {
 		pos.push(p);
 	}
 
-	animation.data.points.shift();
-	animation.data.keyframes.shift();
-
 	Servo.moveAll(pos, kf.speed);
-
-	//console.log(animation.originalData);
-	if (animation.originalData.keyframes && animation.data.keyframes.length == 0) {
-	 	//console.log('insideIf')
-	 	//console.log(animation.originalData);
-	 	var data = animation.originalData;
-	 	animation.originalData = {};
-	 	animation.play(data);
-	 	//console.log('#insideIf')
-	}
 	
 	return;
 
@@ -75,7 +62,7 @@ var timeoutCallback = function(kf, animation) {
 
 function interpret(a, i) {
 
-	if (!(i in a))		// don't move
+	if (!(i in a) || a[i] == null)		// don't move
 		return -1;				
 	else if (a[i].to)	// absolute
 		return a[i].to;		
@@ -151,13 +138,31 @@ function easeData(start, end, points, duration, easing) {
 
 }
 
+// buffering
+
+function dataFromBuffer(start, end, increment) {
+
+	var time = 0;
+	var data = {points: [], keyframes: []};
+
+	for (var i = start; end >= start ? i <= end : i >= end; i += increment) {
+		//console.log([i, buffer[i-increment].time, buffer[i].time]);
+		time += buffer[i-increment].time - buffer[i].time;
+		data.points.push(time);
+		data.keyframes.push({pos: buffer[i].pos, speed: buffer[i-increment].speed});
+	}
+
+	return data;
+
+}
+
+
 // main class
 
 var Animation = function() {
 
 	var self = this;
 	this.timeouts = [];
-	this.originalData = {};
 	this.data = {};
 	this.playTime = 0;
 	this.pauseTime = 0;
@@ -168,15 +173,13 @@ var Animation = function() {
 
 	this.play = function(data) {	
 
-		//console.log(data);
-
 		if (data)
 			this.queue(data);
 
-		data = this.data;
+		data = JSON.parse(JSON.stringify(this.data));
+		var startingPoint = (this.pauseTime - this.playTime) / data.duration;
 
-		if (this.pauseTime != 0) {
-			var startingPoint = (this.pauseTime - this.playTime) / data.duration;
+		if (startingPoint > 0) {
 			data.duration *= (1 - startingPoint);
 			data.points.forEach(function(p, i) {
 				data.points[i] -= startingPoint;
@@ -185,24 +188,30 @@ var Animation = function() {
 		}
 
 		data.keyframes.forEach(function(kf, i) {
-			self.timeouts.push(setTimeout(function() {
-				timeoutCallback(kf, self);
-			}, Math.round((data.startingTime || 5) + data.points[i] * data.duration)));
+			if (data.points[i] >= startingPoint) {
+				self.timeouts.push(setTimeout(function() {
+					timeoutCallback(kf, self, kf.length - i + 1);
+				}, Math.round((data.startingTime || 5) + data.points[i] * data.duration)));		
+			}
 		});
 
 		this.playTime = (new Date()).getTime();
 		this.pauseTime = 0;
 
-		if (this.data.loop == true) {
-			console.log('loop true');
-			this.originalData = JSON.parse(JSON.stringify(this.data));
-		}
-
-		//console.log('----1---')
-		//console.log(this.originalData);
-		//console.log('---/1---')
-
 	};
+
+	this.loop = function(data, period) {
+		
+		if (data)
+			this.queue(data);
+
+		period = period || this.data.duration;
+
+		self.timeouts.push(setInterval(function() {
+			self.play();
+		}, period));
+
+	}
 
 	this.pause = function() {
 
@@ -216,6 +225,7 @@ var Animation = function() {
 
 		this.timeouts.forEach(function(t, i) {
 			clearTimeout(t);
+			//clearInterval(t);
 		});
 		this.timeouts = [];
 
@@ -260,6 +270,11 @@ Animation.all = function(fn) {
 Animation.reset = function() {
 	Animation.all('stop');
 	Animation.list = {};
+	Animation.clearBuffer();
+}
+
+Animation.clearBuffer = function() {
+	buffer = [];
 }
 
 Animation.updateBuffer = function(pos, speed) {
@@ -289,24 +304,28 @@ Animation.updateBuffer = function(pos, speed) {
 
 };
 
-Animation.rewind = function(target) {
-
+Animation.rewind = function(target, loop) {
 	if (!target || target > buffer.length)
 		target = buffer.length;
-
-	var time = 0;
-	var data = {points: [], keyframes: []};
-
-	for (var i = buffer.length - 2; i >= buffer.length - target; i--) {
-		time += buffer[i+1].time - buffer[i].time;
-		data.points.push(time);
-		data.keyframes.push({pos: buffer[i].pos, speed: buffer[i+1].speed});
-	}
-
-	Animation.all('stop');
-	Animation.create('rewind').play(data);
-
+	Animation.redo(buffer.length - 2, buffer.length - target, -1, loop);
 }
 
+Animation.replay = function(target, loop) {
+	if (!target || target > buffer.length)
+		target = buffer.length;
+	Animation.redo(buffer.length - target + 1, buffer.length - 1, 1, loop);
+}
+
+Animation.redo = function(start, end, increment, loop) {
+
+	var data = dataFromBuffer(start, end, increment);
+
+	Animation.reset();
+	var a = Animation.create('redo');
+	a.queue(data);
+
+	return loop == true ? a.loop() : a.play();
+
+}
 
 module.exports = Animation;

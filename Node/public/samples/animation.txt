@@ -36,12 +36,11 @@ var data = {
     keyframes: [
         {fn: 'allEqual', args: [[512,433,162], 0], speed: 100},
         {fn: 'allEqual', args: [[512,533,253], 0], speed: 100}
-    ],
-    loop: true
+    ]
 }
 
 hex.Animation.reset();
-hex.Animation.create('main').play(data);
+hex.Animation.create('main').loop(data, 1600);
 
  */
 

@@ -109,7 +109,7 @@ function easeData(start, end, points, duration, easing) {
 
 	var start = start || Servo.getFeedback('presentPosition', 512);
 	var points = points || 2;
-	var duration = duration || 1000;
+	var duration = duration || 500*points;
 	var easing = easing || 'linear';
 
 	var data = {

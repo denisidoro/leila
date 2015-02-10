@@ -268,7 +268,7 @@ var Motion = {
     };
 
     //Animation.stop();
-    Animation.queue(data);
+    Animation.create('main', true).play(data);
     //hex.Servo.moveAll(angles_f)
 
     // Updating states

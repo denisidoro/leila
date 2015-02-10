@@ -6,7 +6,7 @@ var utils = require('./utils'),
 // buffers
 
 const MAX_BUFFER_SIZE = 10;
-var buffer = [];  
+var buffer = []; 
 
 
 // task execution
@@ -55,7 +55,16 @@ var timeoutCallback = function(kf, animation) {
 
 	animation.data.points.shift();
 	animation.data.keyframes.shift();
+
 	Servo.moveAll(pos, kf.speed);
+
+	// if (animation.originalData != {} && animation.data.keyframes.length == 0) {
+	// 	//console.log('insideIf')
+	// 	//console.log(animation.originalData);
+	// 	animation.play(animation.originalData);
+	// 	animation.originalData = {};
+	// 	//console.log('#insideIf')
+	// }
 	
 	return;
 
@@ -145,6 +154,7 @@ var Animation = function() {
 
 	var self = this;
 	this.timeouts = [];
+	this.originalData = {};
 	this.data = {};
 	this.playTime = 0;
 	this.pauseTime = 0;
@@ -154,6 +164,8 @@ var Animation = function() {
 	};
 
 	this.play = function(data) {	
+
+		//console.log(data);
 
 		if (data)
 			this.queue(data);
@@ -177,6 +189,13 @@ var Animation = function() {
 
 		this.playTime = (new Date()).getTime();
 		this.pauseTime = 0;
+
+		//if (this.data.loop == true) 
+		//	this.originalData = JSON.parse(JSON.stringify(this.data));
+
+		//console.log('----1---')
+		//console.log(this.originalData);
+		//console.log('---/1---')
 
 	};
 
@@ -212,6 +231,7 @@ Animation.get = function(tag) {
 Animation.create = function(tag, keepExisting) {
 
 	tag = tag || 'default';
+	//console.log(tag);
 
 	var a = Animation.get(tag);
 

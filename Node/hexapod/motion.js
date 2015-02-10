@@ -278,7 +278,7 @@ var Motion = {
   speedCalculation: function(start, end, duration) {
     // duration: ms
     // 0.3 = 300/1023
-    return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED));
+    return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED * 0.9));
   },
 
   // xf: final center position

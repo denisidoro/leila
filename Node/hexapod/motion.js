@@ -36,10 +36,10 @@ var Motion = {
   init: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
-        u[0] = [-c.X2 - 110, c.Y2 + 110, -h+57];
-        u[1] = [c.X2 + 110, c.Y2 + 110, -h+57];
-        u[2] = [-c.X1 - 150 + 20, 0, -h+26];
-        u[3] = [c.X1 + 150  - 20, 0, -h+26];
+        u[0] = [-c.X2 - 110, c.Y2 + 110, -h];
+        u[1] = [c.X2 + 110, c.Y2 + 110, -h];
+        u[2] = [-c.X1 - 150, 0, -h];
+        u[3] = [c.X1 + 150, 0, -h];
         u[4] = [-c.X2 - 110, -c.Y2 - 110, -h];
         u[5] = [c.X2 + 110, -c.Y2 - 110, -h];
       // Writing states
@@ -134,12 +134,7 @@ var Motion = {
       // Calculating final positions of moving legs
       xf = math.add(x, delta_x);
       r = math.squeeze(r);
-      // rf = Motion.clone(r);
-      // R = [[1,0,0], [0,1,0], [0,0,1]];
-      //   if(changeOrientation) {
-      //     rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), direction];
-      //     R = Motion.rotationXYZ(rf);
-      //   }
+
       if(base_angles)
         rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), base_angles[i]];
       else
@@ -352,7 +347,6 @@ var Motion = {
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
-
   },
 
   speedCalculation: function(start, end, duration) {

@@ -178,7 +178,7 @@ var Animation = function() {
 
 		this.pauseTime = (new Date()).getTime();
 		Servo.moveAll(Servo.getFeedback('presentPosition'), Servo.getFeedback('presentSpeed'));
-		this.stop();
+		this.stop(true);
 
 	};
 
@@ -187,12 +187,10 @@ var Animation = function() {
 		this.timeouts.forEach(function(t, i) {
 			clearTimeout(t);
 		});
+		this.timeouts = [];
 
-		this.timeouts.shift();
-
-		if (!keepData) {
+		if (!keepData)
 			this.data = {};
-		}
 
 	};
 

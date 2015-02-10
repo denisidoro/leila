@@ -1,8 +1,9 @@
 var ease = require('ease-component');
 var utils = require('./utils'),
-  c = utils.require('constants'),
   Servo = utils.require('servo');
 
+
+// buffers
 
 const MAX_BUFFER_SIZE = 10;
 var buffer = [];  
@@ -120,7 +121,7 @@ function easeData(start, end, points, duration, easing) {
 		for (var i = 0; i < 18; i++) {
 			var p = start[i] + (end[i] - start[i]) * (k/points);
 			pos.push(p);
-			var s = k == 0 ? 1023 : ((p - data.keyframes[k - 1].pos[i]) / ((t - data.points[k - 1])  * duration/1000)) * (0.3*1023/c.MAX_SERVO_SPEED);
+			var s = k == 0 ? 1023 : module.parent.exports.Motion.speedCalculation(p, data.keyframes[k-1].pos[i], (t-data.points[k-1])*duration);
 			speed.push(s);
 		}
 

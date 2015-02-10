@@ -18,9 +18,6 @@ define("GAMMA_LOWER_LIMIT", 0);
 define("ALPHA_UPPER_LIMIT_BITS",	750);
 define("ALPHA_LOWER_LIMIT_BITS",    270);
 
-// Movement
-define('MAX_SERVO_SPEED',	600); // Não sei por que, mas fica bom com esse valor!
-
 // Helper for defining exportable constants
 function define(name, value, obj, writable) {
   Object.defineProperty(obj || exports, name, {

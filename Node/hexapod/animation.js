@@ -232,6 +232,11 @@ Animation.all = function(fn) {
 	}
 }
 
+Animation.reset = function() {
+	Animation.all('stop');
+	Animation.list = {};
+}
+
 Animation.updateBuffer = function(pos, speed) {
 
 	var now = (new Date()).getTime();

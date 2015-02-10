@@ -6,13 +6,9 @@ var utils = require('./utils'),
 var math  = require("mathjs");
 
 // Constants
-var EPSILON = 10; // Tempo de antecedência (ms)
-var time_frac = 6; // time_move/time_rise
-var DIV = 6; //see tripodStep()
 var delta_h = 25;
 //var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
 MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
-var defaultVerticalSpeed = 100;
 
 // State variables
 // Fixed frame
@@ -40,10 +36,10 @@ var Motion = {
   init: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
-        u[0] = [-c.X2 - 110, c.Y2 + 110, -h];
-        u[1] = [c.X2 + 110, c.Y2 + 110, -h];
-        u[2] = [-c.X1 - 150, 0, -h];
-        u[3] = [c.X1 + 150, 0, -h];
+        u[0] = [-c.X2 - 110, c.Y2 + 110, -h+57];
+        u[1] = [c.X2 + 110, c.Y2 + 110, -h+57];
+        u[2] = [-c.X1 - 150 + 20, 0, -h+26];
+        u[3] = [c.X1 + 150  - 20, 0, -h+26];
         u[4] = [-c.X2 - 110, -c.Y2 - 110, -h];
         u[5] = [c.X2 + 110, -c.Y2 - 110, -h];
       // Writing states
@@ -88,21 +84,26 @@ var Motion = {
   },
 
   //step_size: in mm
-  //direction: in degrees
+  //direction: vector size 2, direction[0]: angle in (x,y) plan, direction[1]: "up" angle (in degrees)
   //step_time: in ms
   //starting_time in ms
-  //isRelativeDirection: true or false
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, changeOrientation, n_points){
+  //base_angles: vector size n_steps, z-rotation of each step
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, n_points){
     direction = Motion.degreesToRadians(direction);
+    base_angles = Motion.degreesToRadians(base_angles);
     var movingLegs = [];
     var group;
-    var legsDisplacement;
     var xf;
     var rf;
     var ui = [];
     var uf = [];
     var aux = [];
-    var step = [step_size*Math.sin(direction), step_size*Math.cos(direction), 0];
+    var phi = direction[0];
+    var theta = direction[1];
+    var step = [step_size*Math.cos(theta)*Math.sin(phi), 
+                step_size*Math.cos(theta)*Math.cos(phi), 
+                step_size*Math.sin(theta)];
+
 
     for(var i = 0; i < n_steps; i++){
 
@@ -133,14 +134,23 @@ var Motion = {
       // Calculating final positions of moving legs
       xf = math.add(x, delta_x);
       r = math.squeeze(r);
+      // rf = Motion.clone(r);
+      // R = [[1,0,0], [0,1,0], [0,0,1]];
+      //   if(changeOrientation) {
+      //     rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), direction];
+      //     R = Motion.rotationXYZ(rf);
+      //   }
+      if(base_angles)
+        rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), base_angles[i]];
+      else
+        rf = math.clone(r);
 
-      rf = Motion.clone(r);
-      R = [[1,0,0], [0,1,0], [0,0,1]];
-        if(changeOrientation) {
-          rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), direction];
+
+      if(i % 2 == 0){
+        if (!(math.equal(r, rf)[2])) 
           R = Motion.rotationXYZ(rf);
-        }
-      
+        else R = [[1,0,0], [0,1,0], [0,0,1]];
+      }
 
       for(var j = 0; j < 3; j++){
         uf[j] = math.add(ui[j], delta_u);
@@ -152,6 +162,7 @@ var Motion = {
         uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
         uf[j] = math.squeeze(uf[j]);
       }
+
       Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
     }
   },
@@ -336,7 +347,6 @@ var Motion = {
 
     //Animation.stop();
     Animation.create('main', true).play(data);
-    //hex.Servo.moveAll(angles_f)
 
     // Updating states
     x = this.clone(xf);

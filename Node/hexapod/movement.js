@@ -6,6 +6,13 @@ var utils = require('./utils'),
 
 var Movement = {
 
+  execute: function() {
+    var r = Movement[arguments[0]].apply(this, arguments[1]);
+    if (Array.isArray(r)) {
+      Servo.moveAll(r);
+    }
+  },
+
   walk: function() {
     Motion.tripodSimpleWalk.apply(this, arguments);
   },
@@ -35,13 +42,13 @@ var Movement = {
     var p = [];
     for (var i = 0; i < 18; i++)
       p.push(pos[i%pos.length]);
-    //console.log(p);
-    Servo.moveAll(p);
+
+    return p;
 
   },
 
   raise: function() {
-    Servo.moveAll([512,557,280,512,557,280,512,555,270,512,555,270,512,557,279,512,557,279]);
+    return [512,557,280,512,557,280,512,555,270,512,555,270,512,557,279,512,557,279];
   }
 
 };

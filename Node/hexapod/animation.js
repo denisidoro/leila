@@ -21,7 +21,12 @@ var timeoutCallback = function(kf, animation) {
 			var args = [];
 			if (kf.args)
 				args = Array.isArray(kf.args) ? kf.args : [kf.args];
-			module.parent.exports.Movement[kf.fn].apply(this, args);
+			var r = module.parent.exports.Movement[kf.fn].apply(this, args);
+			if (Array.isArray(r)) {
+				delete kf.fn; delete kf.args;
+				kf.pos = r;
+				return timeoutCallback(kf, animation);
+			}
 		}
 		catch (e) {
 			console.log(e);

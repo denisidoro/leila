@@ -10,7 +10,7 @@ function init3d() {
 	renderer.setSize(width, height);
 	document.getElementById('threejs').appendChild( renderer.domElement );
 
-	camera.position.set(  80, 80, 110 );
+	camera.position.set( 80, 80, 110 );
 	camera.lookAt( scene.position );
 
 	//scene.add(Utils.buildAxes(10));
@@ -18,7 +18,7 @@ function init3d() {
 	model.mesh.position.y = 3.5;
 	scene.add(model.mesh);
 
-	terrain = new Terrain();
+	terrain = new Terrain(100, 100, 30, 30);
 	scene.add(terrain.mesh);
 
 	controls = new THREE.OrbitControls( camera, renderer.domElement );

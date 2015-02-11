@@ -42,5 +42,20 @@ var data = {
 hex.Animation.reset();
 hex.Animation.create('main').loop(data, 1600);
 
+// creu test
+
+var data = {
+    duration: 300,
+    startingTime: 10,
+    points: [0.5, 1],
+    keyframes: [
+        {pos: [496,301,109,528,301,109,476,423,156,548,423,156,474,564,264,550,564,264]},
+        {pos: [512,438,167,512,438,167,512,438,158,512,438,158,512,441,168,512,441,168]}
+    ]
+}
+
+hex.Animation.reset();
+hex.Animation.create('main').loop(data, 340);
+
  */
 

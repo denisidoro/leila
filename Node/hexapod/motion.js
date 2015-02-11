@@ -12,6 +12,10 @@ MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
 
 // State variables
 // Fixed frame
+
+// x: centro da base s2
+// U: as posições das pontas das patas s2
+// r: angulos de rotação s2
 var x = [];
 var U = [];
 var r = [];

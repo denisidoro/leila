@@ -22,7 +22,7 @@ function init3d() {
 	scene.add(terrain.mesh);
 
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	controls.noZoom = true;
+	//controls.noZoom = true;
 	controls.damping = 20;
 	//controls.addEventListener( 'change', render );
 

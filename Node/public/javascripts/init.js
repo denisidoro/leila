@@ -31,6 +31,7 @@ $(document).ready(function() {
 	$(document).ready(function(){ 
  		$("#main-holder").onepage_scroll({
  			direction: 'horizontal',
+ 			mousewheel: false,
 		    beforeMove: function(index) {
 		      //console.log(index);
 		      if (index == 3)

@@ -33,7 +33,8 @@ var Motion = {
     x = [0,0,0];
   },
 
-  getState: function(){
+  getState: function(json){
+    if (json) return {x: x, r: r, U: U};
     return [x, U, r];
   },
 
@@ -163,6 +164,10 @@ var Motion = {
       }
 
       Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
+
+      io.emit('state', Motion.getState(true));
+
+
     }
   },
 
@@ -351,6 +356,7 @@ var Motion = {
     x = this.clone(xf);
     r = this.clone(rf);
     U = this.clone(Uf);
+
   },
 
   speedCalculation: function(start, end, duration) {

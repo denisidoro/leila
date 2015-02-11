@@ -75,4 +75,10 @@ function initSocket() {
     	model.animate(data.pos);
     });
 
+    // moveTo finished, get new state
+	socket.on('state', function(data) {
+		//console.log(data.x);
+    	model.mesh.position.set(data.x[0]/50, data.x[2] + 4, data.x[1]/100 - 0); // temporary
+    });
+
 }

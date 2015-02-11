@@ -5,7 +5,7 @@ $(document).ready(function() {
 	initSocket();
 
 	// 3D model
-	var model, camera, render;
+	var model, camera, render, terrain;
  	init3d();
 
 	// GUI

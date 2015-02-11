@@ -122,7 +122,7 @@ var Hexapod = function() {
 		var geometry = new THREE.SphereGeometry(0.6);
 		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, x/8, x));
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0xffd0ff,
+			color: 0x140D62,
 			wireframe: true
 		} );
 		var head = new THREE.Mesh( geometry, material );
@@ -134,7 +134,7 @@ var Hexapod = function() {
 
 		var geometry = new THREE.SphereGeometry(1, 6);
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0xffd0ff,
+			color: 0x140D62,
 			wireframe: true
 		} );
 		var sphere = new THREE.Mesh( geometry, material );
@@ -186,6 +186,61 @@ var Hexapod = function() {
 	}
 
 };
+
+
+
+/* ==============
+ * Terrain
+ * =========== */
+
+ var Terrain = function(width, height, widthSegments, heightSegments) {
+
+ 	var self = this;
+ 	this.width = width || 200;
+ 	this.height = height || this.width;
+ 	this.widthSegments = widthSegments || 100;
+ 	this.heightSegments = heightSegments || this.widthSegments;
+ 	this.mesh = createTerrain();
+
+ 	function createTerrain() {
+		
+		var geometry = new THREE.PlaneGeometry(self.width, self.height, self.widthSegments, self.heightSegments);
+		var material = new THREE.MeshBasicMaterial({
+			color: 0xE0C8F1,
+			transparent: true,
+			wireframe: true,
+			opacity: 0.65
+		});    
+
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.rotation.x = 3.14/2;
+		return mesh;
+
+ 	}
+
+ 	this.updateHeightmap = function(x, y, z) {
+ 		// todo: make transitions
+ 		var g = self.mesh.geometry;
+ 		var v = Math.round(((x+y)*1000)%(g.vertices.length)); // temporary
+ 		for (var i = -4; i < 4; i++) {
+ 			for (var j = -4; j < 4; j++) {
+ 				var n = v+self.widthSegments*i+j;
+ 				if (n in g.vertices)
+ 					g.vertices[n].z = -z*(0.8 + Math.random() * 0.4);
+ 			}
+ 		}
+ 		g.verticesNeedUpdate = true;
+ 	}
+
+ 	// test
+ 	this.applyRandomHeightmap = function() {
+ 		self.mesh.geometry.vertices.forEach(function(v, i) {
+ 			v.z = Math.random()*20;
+ 		});
+		self.mesh.geometry.verticesNeedUpdate = true;
+ 	}
+
+ }
 
 
 

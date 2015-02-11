@@ -1,0 +1,8 @@
+//#
+
+var t = setInterval(function() {
+    if (typeof terrain != 'undefined')
+        terrain.updateHeightmap(Math.random()*40, Math.random()*40, Math.random()*9.5);
+}, 250)
+
+//clearInterval(t);

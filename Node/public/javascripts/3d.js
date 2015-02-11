@@ -15,7 +15,11 @@ function init3d() {
 
 	//scene.add(Utils.buildAxes(10));
 	model = new Hexapod();
+	model.mesh.position.y = 3.5;
 	scene.add(model.mesh);
+
+	terrain = new Terrain();
+	scene.add(terrain.mesh);
 
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	controls.noZoom = true;

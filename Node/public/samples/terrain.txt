@@ -1,8 +1,35 @@
 //#
 
+// random mapping
+
+if (t)
+    clearInterval(t);
+
 var t = setInterval(function() {
-    if (typeof terrain != 'undefined')
-        terrain.updateHeightmap(Math.random()*40, Math.random()*40, Math.random()*9.5);
+    if (typeof terrain != 'undefined') {
+        terrain.updateHeightmap(terrain.heightSegments*(-.5 + Math.random()), terrain.widthSegments*(-.5 + Math.random()), 3 + 3.5*Math.random());
+        //console.log(terrain.heightmap);
+    }    
 }, 250)
 
-//clearInterval(t);
+
+/*
+
+// sine movement
+
+if (t)
+    clearInterval(t);
+
+var t = setInterval(function() {
+    if (typeof terrain == 'undefined') {
+        return false;
+    }
+    var d = ((new Date()).getTime() - 1423746544242)/1000;
+    var g = terrain.mesh.geometry;
+    g.vertices.forEach(function(v, i) {
+        v.z = 4*Math.sin((i + d));
+    });
+    g.verticesNeedUpdate = true;
+}, 100);
+
+ */

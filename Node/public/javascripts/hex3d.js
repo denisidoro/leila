@@ -200,6 +200,7 @@ var Hexapod = function() {
  	this.height = height || this.width;
  	this.widthSegments = widthSegments || 100;
  	this.heightSegments = heightSegments || this.widthSegments;
+ 	this.heightmap = {};
  	this.mesh = createTerrain();
 
  	function createTerrain() {
@@ -213,31 +214,42 @@ var Hexapod = function() {
 		});    
 
 		var mesh = new THREE.Mesh(geometry, material);
-		mesh.rotation.x = 3.14/2;
+		mesh.rotation.x = -3.14/2;
 		return mesh;
 
  	}
 
  	this.updateHeightmap = function(x, y, z) {
- 		// todo: make transitions
- 		var g = self.mesh.geometry;
- 		var v = Math.round(((x+y)*1000)%(g.vertices.length)); // temporary
- 		for (var i = -4; i < 4; i++) {
- 			for (var j = -4; j < 4; j++) {
- 				var n = v+self.widthSegments*i+j;
- 				if (n in g.vertices)
- 					g.vertices[n].z = -z*(0.8 + Math.random() * 0.4);
+
+ 		// define constants
+ 		var amp = 2, factor = 0.80;
+
+ 		// find (x, y) of the center of the plane
+ 		var yCenter = self.widthSegments / 2, xCenter = self.widthSegments / 2;
+
+ 		// coordinate system change (center -> top left)
+ 		var xtemp = x;
+ 		x = xCenter - y;
+ 		y = yCenter - xtemp;
+
+ 		// raise the desired point and neighbourhood (points p)
+ 		var xp, yp, n, h;
+ 		for (var i = -amp; i < amp; i++) {
+ 			for (var j = -(amp - Math.abs(i)); j <= amp - Math.abs(i); j++) {
+ 				xp = x + i;
+ 				yp = y + j;
+ 				n = Math.round((1 + self.widthSegments) * xp + yp);
+ 				if (!(xp < 0 || yp < 0 || xp > self.widthSegments || yp > self.heightSegments || (i != 0 && j != 0 && n in self.heightmap))) {
+ 					h = z * Math.pow(factor, i*i + j*j);
+ 					self.mesh.geometry.vertices[n].z = h;
+ 					if (i == 0 && j == 0)
+ 						self.heightmap[n] = h;
+ 				}
  			}
  		}
- 		g.verticesNeedUpdate = true;
- 	}
 
- 	// test
- 	this.applyRandomHeightmap = function() {
- 		self.mesh.geometry.vertices.forEach(function(v, i) {
- 			v.z = Math.random()*20;
- 		});
-		self.mesh.geometry.verticesNeedUpdate = true;
+ 		self.mesh.geometry.verticesNeedUpdate = true;
+
  	}
 
  }

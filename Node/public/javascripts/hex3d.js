@@ -210,7 +210,7 @@ var Hexapod = function() {
 			color: 0xE0C8F1,
 			transparent: true,
 			wireframe: true,
-			opacity: 0.05
+			opacity: 0.15
 		});    
 
 		var mesh = new THREE.Mesh(geometry, material);
@@ -219,10 +219,11 @@ var Hexapod = function() {
 
  	}
 
- 	this.updateHeightmap = function(x, y, z, amp) {
+ 	this.updateHeightmap = function(x, y, z, amp, factor) {
 
  		// define constants
- 		var amp = Math.round(Math.sqrt(self.widthSegmentsself.heightSegments / 15)), factor = 0.80;
+ 		amp = amp || Math.round(Math.sqrt(self.widthSegments * self.heightSegments) / 15);
+ 		factor = factor || 0.80;
 
  		// find (x, y) of the center of the plane
  		var yCenter = self.widthSegments / 2, xCenter = self.widthSegments / 2;

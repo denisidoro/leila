@@ -122,7 +122,7 @@ var Hexapod = function() {
 		var geometry = new THREE.SphereGeometry(0.6);
 		geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, x/8, x));
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0x140D62,
+			color: 0xfffDf2,
 			wireframe: true
 		} );
 		var head = new THREE.Mesh( geometry, material );
@@ -134,7 +134,7 @@ var Hexapod = function() {
 
 		var geometry = new THREE.SphereGeometry(1, 6);
 		var material = new THREE.MeshBasicMaterial( { 
-			color: 0x140D62,
+			color: 0xfffDf2,
 			wireframe: true
 		} );
 		var sphere = new THREE.Mesh( geometry, material );
@@ -210,7 +210,7 @@ var Hexapod = function() {
 			color: 0xE0C8F1,
 			transparent: true,
 			wireframe: true,
-			opacity: 0.65
+			opacity: 0.05
 		});    
 
 		var mesh = new THREE.Mesh(geometry, material);

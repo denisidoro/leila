@@ -98,19 +98,35 @@ var Hexapod = function() {
 	this.animate = function(target, duration) {
 
 		var duration = duration || 200;
-		var pos0 = this.pos;
+		var pos0 = target.length == 3 ? Utils.vectorToArray(self.mesh.position) : this.pos;
 		var deltaT = 25, iteration = 0, totalIterations = duration/deltaT;
 
 		clearInterval(this.t);
 		t = setInterval(function() {
-			var pos = [];
-			for (var i = 0; i < 18; i++)
-				pos.push(isNaN(target[i]) ? null : (target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]));
-			//console.log(pos);
-			self.move(pos);
+
+			if (target.length == 3) { // translate
+
+				var p = [];
+				for (var i = 0; i < 3; i++)
+					p.push((target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]);
+				self.mesh.position.set(p[0], p[1], p[2]);
+
+			}
+
+			else { // move
+
+				var pos = [];
+				for (var i = 0; i < 18; i++)
+					pos.push(isNaN(target[i]) ? null : (target[i] <= 0 ? null : (target[i] - pos0[i])*(iteration/totalIterations) + pos0[i]));
+				//console.log(pos);
+				self.move(pos);
+
+			}
+
 			iteration++;
 			if (iteration > totalIterations)
 				clearInterval(t);
+
 		}, deltaT);
 
 		this.t = t;
@@ -297,5 +313,9 @@ var Utils = {
 		}
 
 	},	
+
+	vectorToArray: function(v) {
+		return [v.x, v.y, v.z];
+	}
 
 };

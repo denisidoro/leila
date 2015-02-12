@@ -47,7 +47,7 @@ function initGUI() {
 	controllers.push(gui.f1.add(configs.base, 'walkAngle', 0, 360));
 	$.each(controllers, function(i, c) {
 		c.listen().onChange(function(value) {	
-			console.log('walk')
+			//console.log('walk')
 			socket.emit('walk', configs.base);
 		});
 	});

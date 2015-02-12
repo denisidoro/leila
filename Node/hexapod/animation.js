@@ -292,7 +292,7 @@ Animation.updateBuffer = function(pos, speed) {
 		if (!pos[i] || pos[i] < 0)
 			pos[i] = buffer[buffer.length - 1].pos[i];
 		if (!speed[i] || speed[i] < 0) {
-			var prevSpeed = buffer[buffer.length - 1].speed;
+			var prevSpeed = buffer.length > 1 ? buffer[buffer.length - 1].speed : Servo.defaultSpeed;
 			speed[i] = buffer.length == 0 ? Servo.defaultSpeed : (Array.isArray(prevSpeed) ? prevSpeed[i] : prevSpeed);
 		}
 	}

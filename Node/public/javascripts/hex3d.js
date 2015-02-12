@@ -219,10 +219,10 @@ var Hexapod = function() {
 
  	}
 
- 	this.updateHeightmap = function(x, y, z) {
+ 	this.updateHeightmap = function(x, y, z, amp) {
 
  		// define constants
- 		var amp = 2, factor = 0.80;
+ 		var amp = Math.round(Math.sqrt(self.widthSegmentsself.heightSegments / 15)), factor = 0.80;
 
  		// find (x, y) of the center of the plane
  		var yCenter = self.widthSegments / 2, xCenter = self.widthSegments / 2;
@@ -233,17 +233,16 @@ var Hexapod = function() {
  		y = yCenter - xtemp;
 
  		// raise the desired point and neighbourhood (points p)
- 		var xp, yp, n, h;
+ 		var xp, yp, n;
  		for (var i = -amp; i < amp; i++) {
  			for (var j = -(amp - Math.abs(i)); j <= amp - Math.abs(i); j++) {
  				xp = x + i;
  				yp = y + j;
  				n = Math.round((1 + self.widthSegments) * xp + yp);
  				if (!(xp < 0 || yp < 0 || xp > self.widthSegments || yp > self.heightSegments || (i != 0 && j != 0 && n in self.heightmap))) {
- 					h = z * Math.pow(factor, i*i + j*j);
- 					self.mesh.geometry.vertices[n].z = h;
+ 					self.mesh.geometry.vertices[n].z = z * Math.pow(factor, i*i + j*j);
  					if (i == 0 && j == 0)
- 						self.heightmap[n] = h;
+ 						self.heightmap[n] = true;
  				}
  			}
  		}

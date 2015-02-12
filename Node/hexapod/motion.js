@@ -89,13 +89,15 @@ var Motion = {
   },
 
   //step_size: in mm
-  //direction: vector size 2, direction[0]: angle in (x,y) plan, direction[1]: "up" angle (in degrees)
+  //direction: matrix size n_steps x 2, direction[i,0]: angle in (x,y) plan, direction[i,1]: "up" angle (in degrees)
   //step_time: in ms
   //starting_time in ms
-  //base_angles: vector size n_steps, z-rotation of each step
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, n_points){
+  //base_angles: vector size n_steps, z-rotation of the base in each step (absolute) -- in degrees
+  //leg_angles: vector size n_steps, z-rotation of the (moving) legs in each step (incremental) -- in degrees
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points){
     direction = Motion.degreesToRadians(direction);
     base_angles = Motion.degreesToRadians(base_angles);
+    leg_angles = Motion.degreesToRadians(leg_angles);
     var movingLegs = [];
     var group;
     var xf;
@@ -103,14 +105,24 @@ var Motion = {
     var ui = [];
     var uf = [];
     var aux = [];
-    var phi = direction[0];
-    var theta = direction[1];
-    var step = [step_size*Math.cos(theta)*Math.sin(phi), 
-                step_size*Math.cos(theta)*Math.cos(phi), 
-                step_size*Math.sin(theta)];
+    var phi = 0;
+    var theta = 0;
+    var step = [];
+    var delta_r = [];
+    var R = [];
 
 
     for(var i = 0; i < n_steps; i++){
+
+      if(math.size(direction).length == 1) 
+        direction = [direction];
+      if(math.size(direction)[0] >= i + 1) {
+        phi = math.subset(direction, math.index(i, 0));
+        theta = math.subset(direction, math.index(i, 1));
+        step = [step_size*Math.cos(theta)*Math.sin(phi)*(-1), 
+                step_size*Math.cos(theta)*Math.cos(phi), 
+                step_size*Math.sin(theta)];
+      }
 
       if(i == 0){
         delta_u = math.multiply(0.5, step);
@@ -140,16 +152,24 @@ var Motion = {
       xf = math.add(x, delta_x);
       r = math.squeeze(r);
 
-      if(base_angles)
-        rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), base_angles[i]];
-      else
+      if(base_angles) { 
+          if(base_angles.length >= i + 1)
+            rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), base_angles[i]];
+          else 
+            rf = math.clone(r);
+      }
+      else {
         rf = math.clone(r);
+      }
 
-
-      if(i % 2 == 0){
-        if (!(math.equal(r, rf)[2])) 
-          R = Motion.rotationXYZ(rf);
-        else R = [[1,0,0], [0,1,0], [0,0,1]];
+      if(leg_angles){
+        if(leg_angles.length >= i + 1)
+          R = Motion.rotationXYZ([0, 0, leg_angles[i]]);
+        else
+          R = Motion.rotationXYZ([0,0,0]);
+      }
+      else{
+        R = Motion.rotationXYZ([0,0,0]);
       }
 
       for(var j = 0; j < 3; j++){
@@ -166,8 +186,6 @@ var Motion = {
       Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
 
       io.emit('state', Motion.getState(true));
-
-
     }
   },
 

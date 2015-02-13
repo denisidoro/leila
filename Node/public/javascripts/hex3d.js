@@ -131,7 +131,22 @@ var Hexapod = function() {
 
 		this.t = t;
 
+		this.updateHeight();
+
 	}
+
+	this.updateHeight = function() {
+
+		if (!terrain)
+			return false;
+ 		
+ 		// update Leila's vertical position
+ 		var v = terrain.vertexFromCoordinates(self.mesh.position.x, self.mesh.position.z, false, true);
+ 		//console.log(v);
+    	self.mesh.position.y = v.z + 3.5;
+
+	}
+
 
 	function createHead(x) {
 
@@ -289,6 +304,9 @@ var Hexapod = function() {
  		}
 
  		self.mesh.geometry.verticesNeedUpdate = true;
+
+ 		if (model)
+ 			model.updateHeight();
 
  	}
 

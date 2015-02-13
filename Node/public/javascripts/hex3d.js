@@ -235,11 +235,7 @@ var Hexapod = function() {
 
  	}
 
- 	this.updateHeightmap = function(x, y, z, amp, factor) {
-
- 		// define constants
- 		amp = amp || Math.round(Math.sqrt(self.widthSegments * self.heightSegments) / 15);
- 		factor = factor || 0.80;
+ 	function changeCoordinates(x, y) {
 
  		// find (x, y) of the center of the plane
  		var yCenter = self.widthSegments / 2, xCenter = self.widthSegments / 2;
@@ -249,13 +245,41 @@ var Hexapod = function() {
  		x = xCenter - y;
  		y = yCenter - xtemp;
 
+ 		return {x: x, y: y};
+
+ 	}
+
+ 	this.vertexFromCoordinates = function(x, y, id, changeCoord) {
+ 		
+ 		if (changeCoord) {
+ 			var p = changeCoordinates(x, y);
+ 			x = p.x; y = p.y;
+ 		}
+
+ 		var n = Math.round((1 + self.widthSegments) * x + y);
+ 		console.log(n);
+ 		return id ? n : self.mesh.geometry.vertices[n];
+
+ 	}
+
+ 	this.updateHeightmap = function(x, y, z, amp, factor) {
+
+ 		// coordinate system change (center -> top left)
+		var p = changeCoordinates(x, y);
+		x = p.x; y = p.y;
+		console.log(p);
+
+ 		// define constants
+ 		amp = amp || Math.round(Math.sqrt(self.widthSegments * self.heightSegments) / 15);
+ 		factor = factor || 0.80;
+
  		// raise the desired point and neighbourhood (points p)
  		var xp, yp, n;
  		for (var i = -amp; i < amp; i++) {
  			for (var j = -(amp - Math.abs(i)); j <= amp - Math.abs(i); j++) {
  				xp = x + i;
  				yp = y + j;
- 				n = Math.round((1 + self.widthSegments) * xp + yp);
+ 				n = self.vertexFromCoordinates(xp, yp, true);
  				if (!(xp < 0 || yp < 0 || xp > self.widthSegments || yp > self.heightSegments || (i != 0 && j != 0 && n in self.heightmap))) {
  					self.mesh.geometry.vertices[n].z = z * Math.pow(factor, i*i + j*j);
  					if (i == 0 && j == 0)

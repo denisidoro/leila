@@ -21,15 +21,21 @@ if (t)
     clearInterval(t);
 
 var t = setInterval(function() {
+
     if (typeof terrain == 'undefined') {
         return false;
     }
+
     var d = ((new Date()).getTime() - 1423746544242)/1000;
     var g = terrain.mesh.geometry;
     g.vertices.forEach(function(v, i) {
         v.z = 4*Math.sin((i + d));
     });
     g.verticesNeedUpdate = true;
+
+    var z = terrain.vertexFromCoordinates(model.mesh.position.x, model.mesh.position.z);
+    model.mesh.position.z = z;
+
 }, 100);
 
  */

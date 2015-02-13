@@ -33,8 +33,8 @@ var t = setInterval(function() {
     });
     g.verticesNeedUpdate = true;
 
-    var z = terrain.vertexFromCoordinates(model.mesh.position.x, model.mesh.position.z);
-    model.mesh.position.z = z;
+    var v = terrain.vertexFromCoordinates(model.mesh.position.x, model.mesh.position.z, false, true);
+    model.mesh.position.y = v.z;
 
 }, 100);
 

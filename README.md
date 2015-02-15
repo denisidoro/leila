@@ -1,19 +1,18 @@
-# Hexapod
+# LEILA
 
 Source code for the Projet Inno.
-Documentation, CAD and design files aren't hosted in this repository.
+Documentation, CAD and design files are hosted on this [page].
 
 ### Installation
 First install [Node] and [Git].
 
-Then, execute the following, in the terminal window:
+Then, execute the following, in a Git Bash, Cygwin or UNIX terminal window:
 ```sh
 $ git clone [git-repo-url] leila
 $ cd leila
-$ sudo ./shell/update.sh # if you're on Linux
-$ sudo ./shell/startServer.sh # if you're on Linux
+$ sudo ./shell/update.sh
+$ sudo ./shell/startServer.sh
 ```
-If you're on Windows or can't execute the shell scripts, see their source codes and try to reproduce the commands.
 Finally, open the following URL in your browser:
 ```
 http://localhost:3000
@@ -21,3 +20,4 @@ http://localhost:3000
 
 [Node]: http://nodejs.org/
 [Git]: http://git-scm.com/
+[page]: https://copy.com/wkzO8JdOZRAFeUrt

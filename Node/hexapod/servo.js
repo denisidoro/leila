@@ -79,7 +79,7 @@ Servo.remove = function(index) {
  * @param  int          diff      time between the movement of two servos
  * @return bool         success   false in case of an error
  */
-Servo.moveAll = function(pos, speed, diff) {
+Servo.moveAll = function(pos, speed, diff, calls) {
 
   //console.log(pos);
 
@@ -107,8 +107,8 @@ Servo.moveAll = function(pos, speed, diff) {
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-    //var diff = diff || 20000;
-    var diff = diff || 5000;
+    var calls = calls || 100;
+    var diff = diff || 5000; // 20000
     var keys = Object.keys(pos);
     var i = 0, old = 0;
 
@@ -119,7 +119,8 @@ Servo.moveAll = function(pos, speed, diff) {
         var time = process.hrtime();
         var timeMicro = Math.floor((time[0] * 1e9 + time[1])/1000);
         if (timeMicro - old > diff) {
-            Servo.get(key).move(pos[key], (Array.isArray(speed) ? speed[key] : speed));
+            for (var m = 0; m < 100; m++) 
+              Servo.get(key).move(pos[key], (Array.isArray(speed) ? speed[key] : speed));
             old = timeMicro;
             i++;
         }

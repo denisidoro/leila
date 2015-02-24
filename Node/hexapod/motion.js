@@ -6,7 +6,7 @@ var utils = require('./utils'),
 var math  = require("mathjs");
 
 // Constants
-var delta_h = 20;
+var delta_h = 35;
 //var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
 MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
 

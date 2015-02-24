@@ -107,7 +107,7 @@ Servo.moveAll = function(pos, speed, diff, calls) {
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-    var calls = calls || 100;
+    var calls = calls || 20;
     var diff = diff || 5000; // 20000
     var keys = Object.keys(pos);
     var i = 0, old = 0;
@@ -119,7 +119,7 @@ Servo.moveAll = function(pos, speed, diff, calls) {
         var time = process.hrtime();
         var timeMicro = Math.floor((time[0] * 1e9 + time[1])/1000);
         if (timeMicro - old > diff) {
-            for (var m = 0; m < 100; m++) 
+            for (var m = 0; m < calls; m++) 
               Servo.get(key).move(pos[key], (Array.isArray(speed) ? speed[key] : speed));
             old = timeMicro;
             i++;

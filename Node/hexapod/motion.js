@@ -8,7 +8,7 @@ var math  = require("mathjs");
 // Constants
 var delta_h = 35;
 //var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
-MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
+MAX_SERVO_SPEED = 800; // Não sei por que, mas fica bom com esse valor!
 
 // State variables
 // Fixed frame
@@ -64,7 +64,8 @@ var Motion = {
       Servo.moveAll(this.getStateAngles(r, x, U), 80);
   },
 
-  initAuto: function(){
+  initAuto: function(timeUnit){
+    var timeUnit = timeUnit || 1000;
     var h1 = 20;
     var h = -110;
     x = [0,0,0];
@@ -79,7 +80,7 @@ var Motion = {
 
     U = this.clone(u);
 
-    Motion.moveTo(x, r, U, 2000, 100);
+    Motion.moveTo(x, r, U, 2*timeUnit, 100);
 
     u[0] = [-c.X2 - 110, c.Y2 + 110, h];
     u[1] = [c.X2 + 110, c.Y2 + 110, h];
@@ -90,7 +91,10 @@ var Motion = {
 
     U = this.clone(u);
 
-    Motion.moveTo(x, r, u, 5000, 2500);
+    console.log("abviasivbebeubv")
+    console.log(timeUnit)
+
+    Motion.moveTo(x, r, u, 6*timeUnit, 2*timeUnit + 500);
   },
 
   //step_size: in mm
@@ -451,7 +455,7 @@ var Motion = {
     // duration: ms
     // 0.3 = 300/1023
     if(duration == 0) return 800;
-    return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED * 0.9));
+    return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED*1));
   },
 
   // xf: final center position

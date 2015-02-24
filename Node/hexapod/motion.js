@@ -6,7 +6,7 @@ var utils = require('./utils'),
 var math  = require("mathjs");
 
 // Constants
-var delta_h = 25;
+var delta_h = 20;
 //var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
 MAX_SERVO_SPEED = 600; // Não sei por que, mas fica bom com esse valor!
 
@@ -22,6 +22,11 @@ var r = [];
 
 var slider_ref = [0,0,0];
 var slider_event = false;
+
+//******** Walk variables *****************//
+  var isNowController = false; // Changes to true when controller starts to be used
+  var time_previousCall_Walk =  (new Date()).getTime();
+  var time_thisCall_Walk = 0;
 
 // Main
 var Motion = {
@@ -89,13 +94,17 @@ var Motion = {
   },
 
   //step_size: in mm
-  //direction: matrix size n_steps x 2, direction[i,0]: angle in (x,y) plan, direction[i,1]: "up" angle (in degrees)
+  //direction: array size n_steps x 2, direction[i,0]: angle in (x,y) plan, direction[i,1]: "up" angle (in degrees)
   //step_time: in ms
   //starting_time in ms
   //base_angles: vector size n_steps, z-rotation of the base in each step (absolute) -- in degrees
   //leg_angles: vector size n_steps, z-rotation of the (moving) legs in each step (incremental) -- in degrees
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points){
+  //isController: Boolean. If true, function will take one step at each call
+
+
+  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points, isController){
     direction = Motion.degreesToRadians(direction);
+    console.log(direction)
     base_angles = Motion.degreesToRadians(base_angles);
     leg_angles = Motion.degreesToRadians(leg_angles);
     var movingLegs = [];
@@ -110,9 +119,15 @@ var Motion = {
     var step = [];
     var delta_r = [];
     var R = [];
+    var i;
 
+    // Evaluating time between calls. Necessary to calculate startingTime of the step.
+    // var time_diff;
+    // time_thisCall = (new Date()).getTime();
+    // time_diff = time_thisCall - time_previousCall; // in milliseconds
 
-    for(var i = 0; i < n_steps; i++){
+    i = 0;
+    while (i < n_steps){
 
       if(math.size(direction).length == 1) 
         direction = [direction];
@@ -184,8 +199,8 @@ var Motion = {
       }
 
       Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
-
       io.emit('state', Motion.getState(true));
+      i++;
     }
   },
 
@@ -205,10 +220,7 @@ var Motion = {
     var list_U = []; // positions of the legs in each point
     var list_time = [];
     var list_starting_time = [];
-    var U1 = [];
-    var U2 = [];
-    var U3 = [];
-    var Uf = [];
+    var aux;
 
     delta_x = math.subtract(xf, x);
     delta_r = math.subtract(rf, r);
@@ -223,10 +235,23 @@ var Motion = {
     // default factors
     var def_factors = [];
     def_factors[0] = 0;
-    for(var i = 1; i < n_points; i++){
-      def_factors[i] = def_factors[i-1] + 1/(n_points-1);
+    def_factors[1] = 0;
+    for(var i = 2; i < n_points - 1; i++){
+      def_factors[i] = def_factors[i-1] + 1/(n_points-3);
     }
+    def_factors[n_points-1] = 1;
     factors =  factors || def_factors;
+
+    // default factors_base
+    // var def_factors_base = [];
+    // def_factors_base[0] = 0;
+    // def_factors_base[1] = 0;
+    // for(var i = 2; i < n_points - 1; i++){
+    //   def_factors_base[i] = def_factors_base[i-1] + 1/(n_points-3);
+    // }
+    // def_factors_base[n_points-1] = 1;
+    // factors_base =  factors_base || def_factors_base;
+
 
     // default heights
     var def_heights = [];
@@ -269,14 +294,59 @@ var Motion = {
       list_U[i] = Motion.getNewLegPositions(movingLegs, list_U[i], U);
     }
 
-    // list_time and list_starting_time
-    list_time[0] = factors[0]*time; // No problem if list_time[0]=0, see Motion.speedCalculation()
+    //**************** Calculating the time between points***************
+    // 1. var u : vector of delta_U with maximum norm
+    var u = math.squeeze(math.subset(delta_U, math.index([0,3], 0)));
+
+    for(var i = 1; i < 3; i++){
+      aux = math.squeeze(math.subset(delta_U, math.index([0,3], i)));        
+      if (math.norm(aux) > math.norm(u))
+        u = Motion.clone(aux); 
+    }
+
+    // 2. var delta_heights: Vector with heights variations (REVIEW THIS POINT IF THE FIRST POINT, i = 0,
+    //  IS DIFFERENT OF THE INITIAL STATE, i.e, heights[0] != 0 or factors[0] != 0)
+    var delta_heights = [];
+    delta_heights[0] = 0;
+    for(var i = 1; i < n_points; i ++){
+      delta_heights[i] = heights[i] - heights[i-1];
+    }
+
+
+    // 3. Array with the total displacement: sqrt((delta_u[i])² + (delta_heights[i])²)
+    var d = [];
+    var incremental_factors = [];
+    incremental_factors[0] = 0;
+    for(var i = 1; i < n_points; i++){
+      incremental_factors[i] = factors[i] - factors[i-1];
+    }
+
+    for(var i = 0; i < n_points; i++){
+      d[i] = (math.square(math.subset(incremental_factors, math.index(i))*math.norm(u))) + math.square(delta_heights[i]);
+      d[i] = math.sqrt(d[i]);
+    }
+
+    // 4. Normalize array d, regarding the total displacement
+       d = math.multiply(1/math.sum(d), d);
+
+    // 5. Calculating displacement time to each point
+    for(var i = 0; i < n_points; i++){
+      list_time[i] = time*math.subset(d, math.index(i));
+    }
+    //******************************************************************
+
+    // list_starting_time
     list_starting_time[0] = startingTime;
     for(var i = 1; i < n_points; i++){
-      list_time[i] = (factors[i] - factors[i-1])*time;
       list_starting_time[i] = list_starting_time[i-1] + list_time[i-1]; 
     }
     
+    console.log("****************")
+    console.log(list_time)
+    console.log(list_starting_time)
+    //console.log(list_starting_time)
+    console.log("****************")
+
     // Moving 
     for(var i = 0; i < n_points; i++){
       Motion.moveTo(list_x[i], 

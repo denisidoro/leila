@@ -43,7 +43,8 @@ function initGamepad() {
           a += 360;
         configs.base.walkAngle = a;
         var d = Math.sqrt(Math.pow(s.LEFT_STICK_X, 2) + Math.pow(s.LEFT_STICK_Y, 2));
-        configs.base.stepSize = scale(d, 0, Math.sqrt(2) * 0.95, 30, 200);
+        configs.base.radius = d;
+        configs.base.stepTime = scale(d, 0, Math.sqrt(2) * 0.95, 1500, 600);
         def = false;
         break;
       case "RIGHT_STICK_Y":

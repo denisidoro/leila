@@ -66,11 +66,21 @@ module.exports = function() {
         });
 
         socket.on('walk', function(data) {
-            if (!check() || data.stepSize < 80)
+            if (!check())
                 return false;   
             try {
-                hex.Animation.reset();
-                hex.Motion.tripodPlaneWalk(data.stepSize, 4, [data.walkAngle, 0], 500, 100);
+                
+                var gpad = {
+                    r: configs.base.radius,
+                    a: configs.base.walkAngle
+                }
+
+                console.log(gpad);
+                return false;
+
+                hex.Motion.tripodPlaneWalk(130, 1, [gpad.a, 0], configs.base.stepTime, 10, false, false, false, gpad);
+
+
             }
             catch(e) {
                 console.log(e);

@@ -23,10 +23,22 @@ var r = [];
 var slider_ref = [0,0,0];
 var slider_event = false;
 
-//******** Walk variables *****************//
-  var isNowController = false; // Changes to true when controller starts to be used
-  var time_previousCall_Walk =  (new Date()).getTime();
-  var time_thisCall_Walk = 0;
+//******** tripodPlaneWalk() variables ************************************************//
+  var isFirstStep = false;
+  var isLastStep = false;
+  var isWalking = false;
+  var prevRadius = false;
+//*************************************************************************************//
+
+function setMovingFalse(time) {
+
+  setTimeout(function() {
+    isWalking = false;
+    console.log("isWalking = false")
+  }, time);
+
+}
+
 
 // Main
 var Motion = {
@@ -105,12 +117,11 @@ var Motion = {
   //leg_angles: vector size n_steps, z-rotation of the (moving) legs in each step (incremental) -- in degrees
   //isController: Boolean. If true, function will take one step at each call
 
+  tripodPlaneWalk: function(stepSize, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points, gamepad){
 
-  tripodPlaneWalk: function(step_size, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points, isController){
     direction = Motion.degreesToRadians(direction);
-    console.log(direction)
-    base_angles = Motion.degreesToRadians(base_angles);
-    leg_angles = Motion.degreesToRadians(leg_angles);
+    if (base_angles) base_angles = Motion.degreesToRadians(base_angles);
+    if (leg_angles) leg_angles = Motion.degreesToRadians(leg_angles);
     var movingLegs = [];
     var group;
     var xf;
@@ -124,30 +135,50 @@ var Motion = {
     var delta_r = [];
     var R = [];
     var i;
+    var condition = false;
+    var eps = 0.1;
 
-    // Evaluating time between calls. Necessary to calculate startingTime of the step.
-    // var time_diff;
-    // time_thisCall = (new Date()).getTime();
-    // time_diff = time_thisCall - time_previousCall; // in milliseconds
+    if (gamepad && isWalking)
+      return false;
 
-    i = 0;
-    while (i < n_steps){
+    var time = stepTime * (gamepad ? 1 : n_steps);
+    isWalking = true;
+    setMovingFalse(time);   
 
-      if(math.size(direction).length == 1) 
+    for (var i = 0; i < 1 || (!gamepad && i < n_steps); i++) {
+
+      if (!gamepad) {
+        if(i == 0) 
+          isFirstStep = true;
+        else if (i == n_steps - 1)
+          isLastStep = true;
+      }
+
+      else {
+
+        if (!prevRadius || (prevRadius < eps && gamepad.r >= eps)) // first step
+          isFirstStep = true;
+        else if (prevRadius >= eps && gamepad.r < eps) // last step
+          isLastStep = true;
+
+        prevRadius = gamepad.r;
+
+      }
+
+      if (gamepad)
+        direction = [gamepad.a, 0];
+      
+      if (math.size(direction).length == 1)  // ESTRELASSSSSSSSSSSSSSSSSSSSSSSSSS
         direction = [direction];
-      if(math.size(direction)[0] >= i + 1) {
+      if (math.size(direction)[0] >= i + 1) {
         phi = math.subset(direction, math.index(i, 0));
         theta = math.subset(direction, math.index(i, 1));
-        step = [step_size*Math.cos(theta)*Math.sin(phi)*(-1), 
-                step_size*Math.cos(theta)*Math.cos(phi), 
-                step_size*Math.sin(theta)];
+        step = [stepSize*Math.cos(theta)*Math.sin(phi)*(-1), 
+                stepSize*Math.cos(theta)*Math.cos(phi), 
+                stepSize*Math.sin(theta)];
       }
 
-      if(i == 0){
-        delta_u = math.multiply(0.5, step);
-        delta_x = math.multiply(0.25, step);
-      }
-      else if (i == n_steps - 1){
+      if (isFirstStep || isLastStep) {
         delta_u = math.multiply(0.5, step);
         delta_x = math.multiply(0.25, step);
       }
@@ -204,8 +235,15 @@ var Motion = {
 
       Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
       io.emit('state', Motion.getState(true));
-      i++;
+      if(!gamepad) i++;
+
+      isFirstStep = false;
+      isLastStep = false;
+
     }
+
+    prevRadius = false;
+
   },
 
   // group = 0 -> legs: 0, 3, 4

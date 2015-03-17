@@ -13,7 +13,7 @@ module.exports = {
 	Servo: require('./servo'), 					
 	Animation: require('./animation'),					
 	Motion: require('./motion'),
-	walk: new (require('./walk')),						
+	Walk: new (require('./walk')),						
 	Movement: require('./movement'),		
 	Base: require('./base')
 }

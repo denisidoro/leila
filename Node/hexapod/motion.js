@@ -23,22 +23,6 @@ var r = [];
 var slider_ref = [0,0,0];
 var slider_event = false;
 
-//******** tripodPlaneWalk() variables ************************************************//
-  var isFirstStep = false;
-  var isLastStep = false;
-  var isWalking = false;
-  var prevRadius = false;
-//*************************************************************************************//
-
-function setMovingFalse(time) {
-
-  setTimeout(function() {
-    isWalking = false;
-    console.log("isWalking = false")
-  }, time);
-
-}
-
 
 // Main
 var Motion = {
@@ -107,143 +91,6 @@ var Motion = {
     console.log(timeUnit)
 
     Motion.moveTo(x, r, u, 6*timeUnit, 2*timeUnit + 500);
-  },
-
-  //step_size: in mm
-  //direction: array size n_steps x 2, direction[i,0]: angle in (x,y) plan, direction[i,1]: "up" angle (in degrees)
-  //step_time: in ms
-  //starting_time in ms
-  //base_angles: vector size n_steps, z-rotation of the base in each step (absolute) -- in degrees
-  //leg_angles: vector size n_steps, z-rotation of the (moving) legs in each step (incremental) -- in degrees
-  //isController: Boolean. If true, function will take one step at each call
-
-  tripodPlaneWalk: function(stepSize, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points, gamepad){
-
-    direction = Motion.degreesToRadians(direction);
-    if (base_angles) base_angles = Motion.degreesToRadians(base_angles);
-    if (leg_angles) leg_angles = Motion.degreesToRadians(leg_angles);
-    var movingLegs = [];
-    var group;
-    var xf;
-    var rf;
-    var ui = [];
-    var uf = [];
-    var aux = [];
-    var phi = 0;
-    var theta = 0;
-    var step = [];
-    var delta_r = [];
-    var R = [];
-    var i;
-    var condition = false;
-    var eps = 0.1;
-
-    if (gamepad && isWalking)
-      return false;
-
-    var time = stepTime * (gamepad ? 1 : n_steps);
-    isWalking = true;
-    setMovingFalse(time);   
-
-    for (var i = 0; i < 1 || (!gamepad && i < n_steps); i++) {
-
-      if (!gamepad) {
-        if(i == 0) 
-          isFirstStep = true;
-        else if (i == n_steps - 1)
-          isLastStep = true;
-      }
-
-      else {
-
-        if (!prevRadius || (prevRadius < eps && gamepad.r >= eps)) // first step
-          isFirstStep = true;
-        else if (prevRadius >= eps && gamepad.r < eps) // last step
-          isLastStep = true;
-
-        prevRadius = gamepad.r;
-
-      }
-
-      if (gamepad)
-        direction = [gamepad.a, 0];
-      
-      if (math.size(direction).length == 1)  // ESTRELASSSSSSSSSSSSSSSSSSSSSSSSSS
-        direction = [direction];
-      if (math.size(direction)[0] >= i + 1) {
-        phi = math.subset(direction, math.index(i, 0));
-        theta = math.subset(direction, math.index(i, 1));
-        step = [stepSize*Math.cos(theta)*Math.sin(phi)*(-1), 
-                stepSize*Math.cos(theta)*Math.cos(phi), 
-                stepSize*Math.sin(theta)];
-      }
-
-      if (isFirstStep || isLastStep) {
-        delta_u = math.multiply(0.5, step);
-        delta_x = math.multiply(0.25, step);
-      }
-      else {
-        delta_u = step;
-        delta_x = math.multiply(0.5, step);
-      }
-
-      group = i % 2;
-      if(group == 0) movingLegs = [0, 3, 4];
-      else movingLegs = [1, 2, 5];
-
-     // Getting initial positions of moving legs
-      for(var j = 0; j < 3; j++){
-        aux = math.subset(U, math.index(movingLegs[j], [0,3]));
-        aux = math.squeeze(aux);
-        ui[j] = aux;
-      }
-
-      // Calculating final positions of moving legs
-      xf = math.add(x, delta_x);
-      r = math.squeeze(r);
-
-      if(base_angles) { 
-          if(base_angles.length >= i + 1)
-            rf = [math.subset(r, math.index(0)), math.subset(r, math.index(0)), base_angles[i]];
-          else 
-            rf = math.clone(r);
-      }
-      else {
-        rf = math.clone(r);
-      }
-
-      if(leg_angles){
-        if(leg_angles.length >= i + 1)
-          R = Motion.rotationXYZ([0, 0, leg_angles[i]]);
-        else
-          R = Motion.rotationXYZ([0,0,0]);
-      }
-      else{
-        R = Motion.rotationXYZ([0,0,0]);
-      }
-
-      for(var j = 0; j < 3; j++){
-        uf[j] = math.add(ui[j], delta_u);
-        uf[j] = math.subtract(uf[j], xf);
-        uf[j] = math.transpose(uf[j]);
-        uf[j] = math.multiply(R, uf[j]);
-        uf[j] = math.squeeze(uf[j]);
-        uf[j] = math.add(uf[j], xf);
-        uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
-        uf[j] = math.squeeze(uf[j]);
-      }
-
-      Motion.tripodStep(group, uf, xf, rf, stepTime, startingTime + i*stepTime, n_points);
-      io.emit('state', Motion.getState(true));
-      if(!gamepad) i++;
-
-      isFirstStep = false;
-      isLastStep = false;
-
-    }
-
-    prevRadius = false;
-
   },
 
   // group = 0 -> legs: 0, 3, 4
@@ -383,11 +230,11 @@ var Motion = {
       list_starting_time[i] = list_starting_time[i-1] + list_time[i-1]; 
     }
     
-    console.log("****************")
+    /*console.log("****************")
     console.log(list_time)
     console.log(list_starting_time)
     //console.log(list_starting_time)
-    console.log("****************")
+    console.log("****************")*/
 
     // Moving 
     for(var i = 0; i < n_points; i++){
@@ -427,65 +274,74 @@ var Motion = {
   // if the movement is relative, xf is seen as delta_x
   moveTo: function(xf, rf, Uf, time, startingTime, isRelative_x, isRelative_r, isRelative_U, isSlider){
     //rf = Motion.degreesToRadians(rf);
-    
-    xf = xf || Motion.clone(x);
-    rf = rf || Motion.clone(r);
-    Uf = Uf || Motion.clone(U);
 
-    // Slider ********************
-    if(isSlider){
-      if(isSlider != slider_event)
-        slider_ref = x;
+    try {
+      
+      xf = xf || Motion.clone(x);
+      rf = rf || Motion.clone(r);
+      Uf = Uf || Motion.clone(U);
 
-      xf = math.add(slider_ref, xf);
-      slider_event = true;
+      // Slider ********************
+      if(isSlider){
+        if(isSlider != slider_event)
+          slider_ref = x;
+
+        xf = math.add(slider_ref, xf);
+        slider_event = true;
+      }
+      else slider_event = false;
+      //*****************************
+
+      if(isRelative_x){
+        xf = math.add(x, xf);
+      }
+
+      if(isRelative_r){
+        rf = math.add(r, rf);
+      }
+
+      if(isRelative_U){
+        Uf = math.add(U, Uf);
+      }
+
+      var angles_i;
+      var angles_f;
+      var servoSpeeds = [];
+
+      // Angles of current state
+      angles_i = Motion.getStateAngles(r, x, U);
+      if(!angles_i) throw new Error("Initial angles error in moveTo()");
+
+      // Angles of final state
+      angles_f = Motion.getStateAngles(rf, xf, Uf);
+      if(!angles_f) throw new Error("Initial angles error in moveTo()");
+
+      // Calculating servo speeds
+      for(var i = 0; i < 18; i++)
+        servoSpeeds[i] = Motion.speedCalculation(angles_i[i], angles_f[i], time);
+
+      // Moving
+      var data = {
+        points: [startingTime],
+          keyframes: [ 
+              {pos: angles_f, speed: servoSpeeds}
+          ]
+      };
+
+      //Animation.stop();
+      Animation.create('main', true).play(data);
+
+      // Updating states
+      x = this.clone(xf);
+      r = this.clone(rf);
+      U = this.clone(Uf);
+
     }
-    else slider_event = false;
-    //*****************************
-
-    if(isRelative_x){
-      xf = math.add(x, xf);
+    catch (error) {
+      console.log('Error in moveTo(). Moving to initial position...')
+      console.log(error);
+      Motion.init();
     }
-
-    if(isRelative_r){
-      rf = math.add(r, rf);
-    }
-
-    if(isRelative_U){
-      Uf = math.add(U, Uf);
-    }
-
-    var angles_i;
-    var angles_f;
-    var servoSpeeds = [];
-
-    // Angles of current state
-    angles_i = Motion.getStateAngles(r, x, U);
-    if(!angles_i) throw new Error("Initial angles error in moveTo()");
-
-    // Angles of final state
-    angles_f = Motion.getStateAngles(rf, xf, Uf);
-    if(!angles_f) throw new Error("Initial angles error in moveTo()");
-
-    // Calculating servo speeds
-    for(var i = 0; i < 18; i++)
-      servoSpeeds[i] = Motion.speedCalculation(angles_i[i], angles_f[i], time);
-
-    // Moving
-    var data = {
-      points: [startingTime],
-        keyframes: [ 
-            {pos: angles_f, speed: servoSpeeds}
-        ]
-    };
-
-    //Animation.stop();
-    Animation.create('main', true).play(data);
-
-    // Updating states
-    x = this.clone(xf);
-    r = this.clone(rf);
-    U = this.clone(Uf);
 
   },
 
@@ -584,6 +440,8 @@ var Motion = {
     var l = math.subtract(math.add(xBase, math.multiply(R, s1)), u);
     var alpha = Math.atan(math.dot(l, math.multiply(R, [0, 1, 0]))/math.dot(l, math.multiply(R, [1, 0, 0])));
 
+
+
     //Alpha is now verified in bits, at the end of the function
     //if (Math.abs(alpha) > c.ALPHA_LIMIT)
       //throw new Error("Limits exceeded (alpha = " + alpha + ")");
@@ -650,7 +508,7 @@ var Motion = {
     var result = this.radiansToBits([alpha,beta,gamma]);
     //console.log(result);
     //Verify alpha, after conversion to bits
-    if(result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
+    if(!result || result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
       throw new Error("Limits exceeded (alpha = " + result[0] + ")");
     }
     return result;
@@ -660,12 +518,17 @@ var Motion = {
 
     if (Array.isArray(radians)) {
       var bits = [];
-      for (var i = 0; i < radians.length; i++)
+      for (var i = 0; i < radians.length; i++) {
+        if (isNaN(radians[i]))
+          return false;
         bits[i] = this.radiansToBits(radians[i], (i != 0));
+      }
       return bits;
     }
-    else if (isNaN(radians))
+    else if (isNaN(radians)) {
+      console.log(['problem with radians', radians]);
       return 512;
+    }
 
     var bits = math.round((1023/300)*(180/math.pi)*radians*(negative ? -1 : 1) + 512);
     return bits > 1023 ? 1023 : bits;

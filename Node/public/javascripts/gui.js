@@ -48,7 +48,7 @@ function initGUI() {
 	$.each(controllers, function(i, c) {
 		c.listen().onChange(function(value) {	
 			//console.log('walk')
-			socket.emit('walk', configs.base);
+			// socket emit
 		});
 	});
 

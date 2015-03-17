@@ -61,10 +61,11 @@ function initGamepad() {
           configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -40, 40);
         break;
     }
+    console.log(['def', def]);
     if (def)
       socket.emit('changeState', configs.base);
     else
-      socket.emit('walk', configs.base);
+      socket.emit('walk', {a: configs.base.walkAngle, r: configs.base.radius, stepTime: configs.base.stepTime});
   });
 
   if (!gamepad.init()) {

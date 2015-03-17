@@ -66,19 +66,14 @@ module.exports = function() {
         });
 
         socket.on('walk', function(data) {
-            if (!check())
-                return false;   
-            try {
-                
-                var gpad = {
-                    r: configs.base.radius,
-                    a: configs.base.walkAngle
-                }
+         
+            try {   
 
-                console.log(gpad);
-                return false;
-
-                hex.Motion.tripodPlaneWalk(130, 1, [gpad.a, 0], configs.base.stepTime, 10, false, false, false, gpad);
+                //console.log(data);
+                //return false;
+                //console.log(data.r);
+                //console.log(data);
+                hex.walk.update(data.r, data.a);
 
 
             }

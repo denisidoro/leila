@@ -4,6 +4,12 @@ var utils = require('./utils'),
 var math  = require("mathjs");
 var eps = 0.4; 
 
+// helpers
+
+function scale(x, in_min, in_max, out_min, out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 // stepSize, n_steps, direction, stepTime, startingTime, base_angles, leg_angles, n_points, gamepad
 
 var Walk = function(gamepad) {
@@ -12,18 +18,19 @@ var Walk = function(gamepad) {
 
 	this.reset = function(gamepad) {
 		//console.log('reset');
-		self.gamepad = gamepad;
+		self.gamepad = gamepad || true;
 		self.group = 1;
 		self.isWalking = false;
-		self.prevRadius = -1;
+		self.lastAngle = -1;
+		self.lastRadius = -1;
 		self.stepTime = 1000;
 		self.stepSize = 50;
 		self.count = 0;
 	}
 
-	this.setParams = function(stepTime, stepSize) {
-		if (stepTime)	self.stepTime = stepTime;
-		if (stepSize)	self.stepSize = stepSize;
+	this.setParams = function(obj) {
+		for (p in obj)
+			self[p] = obj[p];
 	}
 
 	this.start = function(direction, n_steps) {
@@ -37,27 +44,41 @@ var Walk = function(gamepad) {
 
 	this.update = function(radius, angle) {
 
-		//console.log('update');
-		//console.log(['prevRad', self.prevRadius, radius])
+		//console.log(['update', self.lastRadius, self.lastAngle]);
 
-		if (self.isWalking) {
-			self.prevRadius = radius;
-			//console.log(['stop', radius]);
+		if (self.count == 0 && radius < eps)
 			return false;
+
+		var first = (self.count == 0);
+
+		if (first || self.isWalking) {
+			self.lastRadius = radius;
+			self.lastAngle = angle;
+			if (self.isWalking) return false;
 		}
 
-		//self.setParams(1000, 120); // change
-
-		var firstOrLast = ((self.prevRadius < 0 || (self.prevRadius < eps && radius >= eps)) || // first
-			(self.prevRadius > 0 && self.prevRadius < eps || self.prevRadius >= eps && radius < eps)); // last
+		var last = (self.lastRadius < eps); // last
 		
-		self.step([0, 0], 10, firstOrLast, false, false, false);
+        self.setParams({stepTime: scale(self.lastRadius, 0, Math.sqrt(2) * 0.95, 1500, 600)});
+		self.step([0, self.lastAngle], 10, [first, last], false, false, false);
 
 	}
 
-	this.step = function(direction, startingTime, firstOrLast, base_angles, leg_angles, n_points) {
+	this.setWalkingFalse = function(time) {
+		setTimeout(function() {
+			
+			self.isWalking = false;
+			
+			//console.log(['setFalse', self.gamepad, self.lastRadius, eps]);
+			if (self.gamepad && self.lastRadius > eps)
+				self.update();						
 
-		//console.log('step');
+		}, time);
+	}
+
+	this.step = function(direction, startingTime, firstLast, base_angles, leg_angles, n_points) {
+
+		console.log(['step', self.count, direction, self.stepTime, firstLast]);
 
 		// get state
 		var state = Motion.getState(true);
@@ -85,9 +106,8 @@ var Walk = function(gamepad) {
 	    var R = [];   
 
 	    var i = 0;
-		if (math.size(direction).length == 1)  // ESTRELASSSSSSSSSSSSSSSSSSSSSSSSSS
+		if (math.size(direction).length == 1) 
 			direction = [direction];
-		//console.log(direction);
 		if (math.size(direction)[0] >= i + 1) {
 			phi = math.subset(direction, math.index(i, 0));
 			theta = math.subset(direction, math.index(i, 1));
@@ -96,7 +116,7 @@ var Walk = function(gamepad) {
 			        self.stepSize*Math.sin(theta)];
 		}
 
-		if (firstOrLast) {
+		if (firstLast[0] || firstLast[1]) {
 			delta_u = math.multiply(0.5, step);
 			delta_x = math.multiply(0.25, step);
 		}
@@ -140,28 +160,13 @@ var Walk = function(gamepad) {
 			uf[j] = math.squeeze(uf[j]);
 		}
 
-		//console.log([self.group, uf, xf, rf, self.stepTime, startingTime, n_points]);
-		//console.log([self.group, direction]);
 		Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);
-		//console.log('call walk');
 
 		self.count += 1;
-		if (firstOrLast && self.count > 1)
+		if (firstLast[1])
 			self.reset(self.gamepad);
 
     }
-
-	this.setWalkingFalse = function(time) {
-		setTimeout(function() {
-			
-			self.isWalking = false;
-			//console.log('it is now false');	
-			
-			//if (self.prevRadius > eps)
-				//self.update();						
-
-		}, time);
-	}
 
 	// constructor
 	self.reset(gamepad);

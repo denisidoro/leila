@@ -4,6 +4,10 @@ function initGamepad() {
     gui.__folders.Base.__controllers[0].__onChange();
   }
 
+  gamepad.firstState = function() {
+    return this.gamepads[Object.keys(this.gamepads)[0]].state;
+  }
+
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
     logToTable('gamepad', 'Gamepad connected');
     if (typeof gui.gamepadStarted == 'undefined')
@@ -34,7 +38,8 @@ function initGamepad() {
 
   gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
     var def = true;
-    var s = gamepad.gamepads[0].state;
+    var s = gamepad.firstState();
+    //console.log(s.LEFT_STICK_X);
     switch (e.axis) {
       case "LEFT_STICK_X":
       case "LEFT_STICK_Y":
@@ -44,7 +49,6 @@ function initGamepad() {
         configs.base.walkAngle = a;
         var d = Math.sqrt(Math.pow(s.LEFT_STICK_X, 2) + Math.pow(s.LEFT_STICK_Y, 2));
         configs.base.radius = d;
-        configs.base.stepTime = scale(d, 0, Math.sqrt(2) * 0.95, 1500, 600);
         def = false;
         break;
       case "RIGHT_STICK_Y":
@@ -61,11 +65,11 @@ function initGamepad() {
           configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -40, 40);
         break;
     }
-    console.log(['def', def]);
+    //console.log(['def', def]);
     if (def)
       socket.emit('changeState', configs.base);
     else
-      socket.emit('walk', {a: configs.base.walkAngle, r: configs.base.radius, stepTime: configs.base.stepTime});
+      socket.emit('walk', {a: configs.base.walkAngle, r: configs.base.radius});
   });
 
   if (!gamepad.init()) {

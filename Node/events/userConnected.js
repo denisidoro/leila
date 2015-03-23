@@ -73,7 +73,8 @@ module.exports = function() {
                 //return false;
                 //console.log(data.r);
                 //console.log(data);
-                hex.walk.update(data.r, data.a);
+                //console.log(data);
+                hex.Walk.update(data.r, data.a);
 
 
             }

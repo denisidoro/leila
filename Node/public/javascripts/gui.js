@@ -93,11 +93,12 @@ function initGamepadGUI() {
 	gui.f3 = gui.addFolder('Controller');
 	var controllers = [];
 
-	for (var p in gamepad.gamepads[0].state) {
+	var s = gamepad.firstState();
+	for (var p in s) {
 		if (p.toLowerCase().indexOf('stick') != -1 || p.toLowerCase().indexOf('bottom_shoulder') != -1)
-			controllers.push(gui.f3.add(gamepad.gamepads[0].state, p, -1, 1));
+			controllers.push(gui.f3.add(s, p, -1, 1));
 		else
-			controllers.push(gui.f3.add(gamepad.gamepads[0].state, p, false));
+			controllers.push(gui.f3.add(s, p, false));
 	}
 
 	$.each(controllers, function(i, c) {

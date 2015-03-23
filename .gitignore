@@ -48,3 +48,12 @@ Node/node_modules/*/
 !Node/node_modules/changes/
 !Node/node_modules/dynanode/
 Node/public/bower/*
+
+
+# ------------------------------
+# Remove from history
+# ------------------------------
+
+ftdi_sio.ko
+desktop.ini
+.share_info

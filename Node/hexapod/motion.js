@@ -28,8 +28,42 @@ var slider_event = false;
 var Motion = {
 
   testeTorque: function(){
+    Motion.init();
 
+    var Uf1 = Motion.getNewLegPositions([4], [[0, 0, 80]], U);
+    var Uf2 = Motion.getNewLegPositions([4], [[0, 0, -140]], Uf1);
 
+    // Subir a pata
+    Motion.moveTo(x, r, Uf1, 1000, 10);
+
+    // Descer muito
+    Motion.moveTo(x, r, Uf2, 5000, 2000);
+
+    var time = 50; //in ms
+
+    var torque = [];
+    var torque_test;
+    var aux = [];
+
+    var myInterval = setInterval(function() {
+        aux = Servo.getFeedback('presentLoad');
+        torque.push(aux[13]);
+        torque_test = torque[torque.length - 1];
+        if(Math.abs(torque_test) > 150) {
+          clearInterval(myInterval);
+          Animation.get('main').stop();
+          console.log(torque)
+        }
+      }, time);    
+
+    console.log(torque)
+
+    // var t = setTimeout(function() {           
+    //   clearInterval(myInterval);
+    //   console.log(torque);
+    // }, 10000);
+
+    
 
   },
 

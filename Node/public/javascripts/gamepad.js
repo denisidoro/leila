@@ -42,7 +42,7 @@ function initGamepad() {
     var s = gamepad.firstState();
     //console.log(s.LEFT_STICK_X);
     switch (e.axis) {
-      console.log(e.axis);
+      //console.log(e.axis);
       case "LEFT_STICK_X":
       case "LEFT_STICK_Y":
         var a = Math.atan2(-s.LEFT_STICK_Y, -s.LEFT_STICK_X) * 180 / 3.1415 - 90;

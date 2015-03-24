@@ -27,6 +27,12 @@ var slider_event = false;
 // Main
 var Motion = {
 
+  testeTorque: function(){
+
+
+
+  },
+
   resetFrames: function(){
     var xx = math.squeeze(x);
     var delta_U = [xx, xx, xx, xx, xx, xx];

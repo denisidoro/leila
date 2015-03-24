@@ -102,13 +102,13 @@ Servo.moveAll = function(pos, speed, diff, calls) {
 
     // emit info to client and to animation buffer
   	io.emit('moveAll', {pos: pos, speed: speed});
-    module.parent.exports.Animation.updateBuffer(pos, speed);
+    //module.parent.exports.Animation.updateBuffer(pos, speed);
 
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");
 
-    var calls = calls || 5; // 20;
-    var diff = diff || 1500; // 5000; // 20000
+    var calls = calls || 20; // 20;
+    var diff = diff || 5000; // 5000; // 20000
     var keys = Object.keys(pos);
     var i = 0, old = 0;
 
@@ -129,7 +129,7 @@ Servo.moveAll = function(pos, speed, diff, calls) {
   }
 
   catch (err) {
-    console.table(["MotorError", err.message]);
+    console.log(["MotorError", err.message]);
     return false;
   }
 

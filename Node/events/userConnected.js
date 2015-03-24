@@ -40,6 +40,7 @@ module.exports = function() {
         });
 
         socket.on('moveServo', function(data) {
+            console.log('moveServo');
             if (!check())
                 return false;
             try {
@@ -51,7 +52,7 @@ module.exports = function() {
         });
 
         socket.on('changeState', function(data) {
-            //console.log('changeState');
+            console.log('changeState');
             if (!check())
                 return false;
             try {
@@ -66,6 +67,7 @@ module.exports = function() {
         });
 
         socket.on('walk', function(data) {
+            //console.log('walk');
          
             try {   
 

@@ -23,9 +23,10 @@ var Walk = function(gamepad) {
 		self.isWalking = false;
 		self.lastAngle = -1;
 		self.lastRadius = -1;
-		self.stepTime = 1000;
-		self.stepSize = 50;
+		self.stepTime = 1200;
+		self.stepSize = 100;
 		self.count = 0;
+		//Motion.init();
 	}
 
 	this.setParams = function(obj) {
@@ -44,29 +45,32 @@ var Walk = function(gamepad) {
 
 	this.update = function(radius, angle) {
 
-		//console.log(['update', self.lastRadius, self.lastAngle]);
-
-		if (self.count == 0 && radius < eps)
-			return false;
+		//console.log(['update', self.isWalking, self.lastRadius, self.lastAngle]);
 
 		var first = (self.count == 0);
+
+		if (first && radius < eps)
+			return false;
 
 		if (first || self.isWalking) {
 			self.lastRadius = radius;
 			self.lastAngle = angle;
+			//console.log('update vars only');
 			if (self.isWalking) return false;
 		}
 
 		var last = (self.lastRadius < eps); // last
 		
-        self.setParams({stepTime: scale(self.lastRadius, 0, Math.sqrt(2) * 0.95, 1500, 600)});
+        self.setParams({stepTime: scale(self.lastRadius, 0, Math.sqrt(2) * 0.95, 1500, 450)});
 		self.step([0, self.lastAngle], 10, [first, last], false, false, false);
 
 	}
 
 	this.setWalkingFalse = function(time) {
-		setTimeout(function() {
+		console.log(time);
+		var t = setTimeout(function() {
 			
+			//console.log('\tisfalse: ' + (new Date()).getTime())
 			self.isWalking = false;
 			
 			//console.log(['setFalse', self.gamepad, self.lastRadius, eps]);

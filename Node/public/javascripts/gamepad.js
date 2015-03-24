@@ -19,6 +19,7 @@ function initGamepad() {
   });
 
   gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
+    //console.log(e.control);
     switch (e.control) {
       case "DPAD_UP":
         configs.base.posY += 5; 
@@ -33,7 +34,7 @@ function initGamepad() {
         configs.base.posX += 5;
         break;
     }
-    changeState();
+    //changeState();
   });
 
   gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
@@ -41,6 +42,7 @@ function initGamepad() {
     var s = gamepad.firstState();
     //console.log(s.LEFT_STICK_X);
     switch (e.axis) {
+      console.log(e.axis);
       case "LEFT_STICK_X":
       case "LEFT_STICK_Y":
         var a = Math.atan2(-s.LEFT_STICK_Y, -s.LEFT_STICK_X) * 180 / 3.1415 - 90;
@@ -59,15 +61,17 @@ function initGamepad() {
         break;
       case "LEFT_BOTTOM_SHOULDER":
       case "RIGHT_BOTTOM_SHOULDER":
-        if (e.gamepad.state.RIGHT_TOP_SHOULDER == 1)
+        if (s.RIGHT_TOP_SHOULDER == 1)
           configs.base.rotZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -15, 15);  
         else
           configs.base.posZ = scale(-s.LEFT_BOTTOM_SHOULDER + s.RIGHT_BOTTOM_SHOULDER, -1, 1, -40, 40);
         break;
     }
     //console.log(['def', def]);
-    if (def)
+    if (def) {
+      console.log('changeSTATE WITH SHOULDER')
       socket.emit('changeState', configs.base);
+    }
     else
       socket.emit('walk', {a: configs.base.walkAngle, r: configs.base.radius});
   });

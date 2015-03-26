@@ -14,6 +14,7 @@ module.exports = {
 	Animation: require('./animation'),					
 	Motion: require('./motion'),
 	Walk: new (require('./walk')),						
-	Movement: require('./movement'),		
+	Movement: require('./movement'),	
+	Accel: new (require('./adxl345')),	
 	Base: require('./base')
 }

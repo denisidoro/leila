@@ -1,4 +1,4 @@
-var i2c = require('i2c');
+var i2c = RASP ? require('i2c') : function() { this.writeBytes = function() {}; this.readBytes = function() {} }
 var async = require('async');
 var address = 0x53;
 
@@ -21,6 +21,14 @@ function ADXL345(callback)
 	this.wire = new i2c(address, {
 		device : '/dev/i2c-1'
 	});
+
+	callback = callback || function(err) {
+		accel.accelScaleFactor = [0.0371299982, -0.0374319982, -0.0385979986];
+		if (!err)
+			computeAccelBias();
+		else
+			console.log(err);
+	}
 	
 	var self = this;
 	
@@ -49,6 +57,7 @@ function ADXL345(callback)
 		}
 	});
 }
+
 ADXL345.prototype.measureAccel = function(callback) {
 
 	var self = this;

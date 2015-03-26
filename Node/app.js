@@ -65,6 +65,7 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 // set globals
+global.RASP = false;
 global.io = io;
 global.hex = require('./hexapod');
 

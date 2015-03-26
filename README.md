@@ -20,4 +20,4 @@ http://localhost:3000
 
 [Node]: http://nodejs.org/
 [Git]: http://git-scm.com/
-[page]: https://copy.com/wkzO8JdOZRAFeUrt
+[page]: https://copy.com/idtUHZXflKxd7S4j

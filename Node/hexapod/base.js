@@ -2,8 +2,6 @@ var Servo = hex.Servo,
   Motion = hex.Motion,
   Accel = hex.Accel;
 
-console.log(hex.Accel);
-
 var Base = {
 
   init: function() {

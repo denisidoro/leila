@@ -1,4 +1,5 @@
-var Motion = hex.Motion;
+var Motion = hex.Motion,
+	Animation = hex.Animation;
 var math  = require("mathjs");
 
 var eps = 0.4; 
@@ -16,7 +17,7 @@ var Walk = function(gamepad) {
 	var self = this;
 
 	this.reset = function(gamepad) {
-		//console.log('reset');
+
 		self.gamepad = gamepad || true;
 		self.group = 1;
 		self.isWalking = false;
@@ -25,7 +26,10 @@ var Walk = function(gamepad) {
 		self.stepTime = 1200;
 		self.stepSize = 100;
 		self.count = 0;
-		//Motion.init();
+
+		Animation.reset();
+		Motion.init();
+
 	}
 
 	this.setParams = function(obj) {
@@ -34,6 +38,8 @@ var Walk = function(gamepad) {
 	}
 
 	this.start = function(direction, n_steps) {
+
+		self.reset();
 		
 		for (var i = 0; i < n_steps; i++) {
 			var firstOrLast = (i == 0 || i == n_steps - 1);

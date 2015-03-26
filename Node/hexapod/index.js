@@ -14,3 +14,5 @@ var classes = [
 classes.forEach(function(cls) {
 	global.hex[cls.name] = cls.instance ? new (require(cls.file)) : require(cls.file);
 });
+
+delete classes;

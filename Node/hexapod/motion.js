@@ -50,7 +50,7 @@ var Motion = {
         torque_test = torque[torque.length - 1];
         if(Math.abs(torque_test) > 150) {
           clearInterval(myInterval);
-          Animation.get('main').stop();
+          Animation.get('default').stop();
           console.log(torque)
         }
       }, time);    
@@ -368,7 +368,7 @@ var Motion = {
       };
 
       //Animation.stop();
-      Animation.create('main', true).play(data);
+      Animation.create('default', true).play(data);
 
       // Updating states
       x = this.clone(xf);

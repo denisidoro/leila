@@ -1,5 +1,39 @@
-var utils = require('./utils'),
-  servoUtils = require('./servoUtils');
+// helpers
+
+var ServoUtils = {
+
+  // get complementar angles
+  reflect: function(x, swap) {
+
+    if (swap)
+      x = ServoUtils.swap(x);
+
+    if (Array.isArray(x)) {
+      for (var i = 0; i < x.length; i++)
+        x[i] = ServoUtils.reflect(x[i]);
+      return x;
+    }
+    else
+      return 1023 - x;
+
+  },
+
+  // swap information for moveAll() in case of reflection
+  swap: function(x) {
+
+    var y = [];
+
+    for (var i = 0; i < 18; i++)
+      y.push(x[i + ((i%3)%2 == i%2 ? 3 : -3)]);
+
+    return y;
+    
+  }
+
+}
+
+
+// main class
 
 var Servo = function(id) {
 
@@ -95,14 +129,14 @@ Servo.moveAll = function(pos, speed, diff, calls) {
   try {
 
     if (Servo.invert) {
-      pos = servoUtils.reflect(pos, true);
+      pos = ServoUtils.reflect(pos, true);
       if (Array.isArray(speed))
-        speed = servoUtils.swap(speed);
+        speed = ServoUtils.swap(speed);
     }
 
     // emit info to client and to animation buffer
   	io.emit('moveAll', {pos: pos, speed: speed});
-    //module.parent.exports.Animation.updateBuffer(pos, speed);
+    hex.Animation.updateBuffer(pos, speed);
 
     if (Servo.list.length < pos.length)
       throw new Error("Not enough motors");

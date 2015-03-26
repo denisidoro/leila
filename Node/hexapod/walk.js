@@ -1,7 +1,6 @@
-var utils = require('./utils'),
-  Motion = utils.require('motion');
-
+var Motion = hex.Motion;
 var math  = require("mathjs");
+
 var eps = 0.4; 
 
 // helpers

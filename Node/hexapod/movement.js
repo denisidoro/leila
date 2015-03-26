@@ -1,8 +1,7 @@
 // Libraries
-var utils = require('./utils'),
-  Servo = utils.require('servo'),
-  Motion = utils.require('motion'),
-  Animation = utils.require('animation');
+var Servo = hex.Servo,
+  Motion = hex.Motion,
+  Animation = hex.Animation;
 
 var Movement = {
 

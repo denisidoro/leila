@@ -1,6 +1,8 @@
-var utils = require('./utils'),
-  Servo = utils.require('servo'),
-  Motion = utils.require('motion');
+var Servo = hex.Servo,
+  Motion = hex.Motion,
+  Accel = hex.Accel;
+
+console.log(hex.Accel);
 
 var Base = {
 
@@ -14,12 +16,12 @@ var Base = {
   	return Servo.get(id);
   },
 
-	rotation: [0, 0, 0],
-	position: [0, 0, 0],
-  speed: [0, 0, 0],
-  acceleration: [0, 0, 0],
-  upsideDown: function(invert) {
-    Servo.invert = invert;
+  getAccel: function() {
+    return Accel.meterPerSecSec;
+  },
+
+  invert: function(invert) {
+    Servo.invert = (typeof invert == 'undefined') ? !Servo.invert : invert;
   }
 
 };

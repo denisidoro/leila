@@ -1,20 +1,16 @@
-// global.c = require('./hexapod/constants.js');
-// global.hex = {
-//     Servo: require('./hexapod/servo.js'),
-//     Motion: require('./hexapod/motion.js'),
-//     Base: require('./hexapod/base.js'),
-//     Action: require('./hexapod/action.js')
-// };
+global.hex = {};
 
-var utils = require('./utils')
+var classes = [
+	{name: 'c', file: './constants'},
+	{name: 'Servo', file: './servo'},
+	{name: 'Animation', file: './animation'},
+	{name: 'Motion', file: './motion'},
+	{name: 'Walk', file: './walk', instance: true},
+	{name: 'Movement', file: './movement'},
+	{name: 'Accel', file: './adxl345', instance: true},
+	{name: 'Base', file: './base'}
+];
 
-module.exports = {
-	c: require('./constants'), 				
-	Servo: require('./servo'), 					
-	Animation: require('./animation'),					
-	Motion: require('./motion'),
-	Walk: new (require('./walk')),						
-	Movement: require('./movement'),	
-	Accel: new (require('./adxl345')),	
-	Base: require('./base')
-}
+classes.forEach(function(cls) {
+	global.hex[cls.name] = cls.instance ? new (require(cls.file)) : require(cls.file);
+});

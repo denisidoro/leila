@@ -1,8 +1,7 @@
 // Libraries
-var utils = require('./utils'),
-  c = utils.require('constants'),
-  Servo = utils.require('servo'),
-  Animation = utils.require('animation');
+var c = hex.c,
+  Servo = hex.Servo,
+  Animation = hex.Animation;
 var math  = require("mathjs");
 
 // Constants

@@ -1,6 +1,5 @@
 var ease = require('ease-component');
-var utils = require('./utils'),
-  Servo = utils.require('servo');
+var Servo = hex.Servo;
 
 
 // buffers
@@ -21,7 +20,7 @@ var timeoutCallback = function(kf, animation, remaining) {
 			var args = [];
 			if (kf.args)
 				args = Array.isArray(kf.args) ? kf.args : [kf.args];
-			var r = module.parent.exports.Movement[kf.fn].apply(this, args);
+			var r = hex.Movement[kf.fn].apply(this, args);
 			if (Array.isArray(r)) {
 				delete kf.fn; delete kf.args;
 				kf.pos = r;
@@ -125,7 +124,7 @@ function easeData(start, end, points, duration, easing) {
 		for (var i = 0; i < 18; i++) {
 			var p = start[i] + (end[i] - start[i]) * (k/points);
 			pos.push(p);
-			var s = k == 0 ? 1023 : module.parent.exports.Motion.speedCalculation(p, data.keyframes[k-1].pos[i], (t-data.points[k-1])*duration);
+			var s = k == 0 ? 1023 : hex.Motion.speedCalculation(p, data.keyframes[k-1].pos[i], (t-data.points[k-1])*duration);
 			speed.push(s);
 		}
 

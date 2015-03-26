@@ -67,7 +67,7 @@ module.exports = app;
 // set globals
 global.RASP = false;
 global.io = io;
-global.hex = require('./hexapod');
+require('./hexapod');
 
 // event requirements
 require('./events/serverStarted')();

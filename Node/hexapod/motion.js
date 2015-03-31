@@ -422,7 +422,7 @@ var Motion = {
       };
 
       //Animation.stop();
-      Animation.create('main', true).play(data);
+      Animation.create('default', true).play(data);
 
       // Updating states
       x = this.clone(xf);

@@ -26,43 +26,97 @@ var slider_event = false;
 // Main
 var Motion = {
 
-  testeTorque: function(){
-    Motion.init();
+  riseLeg: function(i){
 
-    var Uf1 = Motion.getNewLegPositions([4], [[0, 0, 80]], U);
-    var Uf2 = Motion.getNewLegPositions([4], [[0, 0, -140]], Uf1);
+    console.log(U)
+    var Uf1 = Motion.getNewLegPositions([i], [[0, 0, 80]]);
+    console.log(Uf1)
 
     // Subir a pata
     Motion.moveTo(x, r, Uf1, 1000, 10);
 
-    // Descer muito
-    Motion.moveTo(x, r, Uf2, 5000, 2000);
+    // // Descer muito
+    // Motion.moveTo(x, r, Uf2, 5000, 2000);
 
-    var time = 50; //in ms
+    // var time = 20; //in ms
 
-    var torque = [];
-    var torque_test;
-    var aux = [];
+    // var torque = [];
+    // var position = [];
+    // var torque_test;
+    // var torque_anterior = 0;
+    // var aux = [];
 
-    var myInterval = setInterval(function() {
-        aux = Servo.getFeedback('presentLoad');
-        torque.push(aux[13]);
-        torque_test = torque[torque.length - 1];
-        if(Math.abs(torque_test) > 150) {
-          clearInterval(myInterval);
-          Animation.get('default').stop();
-          console.log(torque)
-        }
-      }, time);    
+    // var myInterval = setInterval(function() {
+    //     aux = Servo.getFeedback('presentLoad');
+    //     position = Servo.getFeedback('presentPosition');
+    //     torque.push(aux[13]);
+    //     torque_anterior = torque_test;
+    //     torque_test = torque[torque.length - 1];
+    //     if( ((Math.abs(torque_test) - Math.abs(torque_anterior)) > 80)  && (Math.abs(torque_test) > Math.abs(torque_anterior)) ) {
+    //       clearInterval(myInterval);
+    //       Servo.moveAll(position);
+    //       console.log(torque)
+    //     }
+    //   }, time);    
 
-    console.log(torque)
+    // console.log(torque)
 
     // var t = setTimeout(function() {           
     //   clearInterval(myInterval);
     //   console.log(torque);
     // }, 10000);
 
-    
+  },
+
+  descendLeg: function(i){
+    var descend = true;
+    var dt = 500; // in ms
+    var dx = 10; // in mm
+
+    var aux = [];
+    var load1 = [];
+    var load2 = []
+    var position = [];
+    var current_load1;
+    var previous_load1;
+    var current_load2;
+    var previous_load2; 
+
+    var U_down = [];
+
+    var myInterval = setInterval(function(){
+      U_down = Motion.getNewLegPositions([i], [[0, 0, -dx]], U);
+      if(descend) 
+        Motion.moveTo(x, r, U_down, dt-20, 5);     
+
+      var wait_move = setTimeout(function(){
+        //*************************
+          aux = Servo.getFeedback('presentLoad');
+          position = Servo.getFeedback('presentPosition');
+
+          load1.push(aux[3*i + 1]);
+          load2.push(aux[3*i + 2]);
+
+          previous_load1 = current_load1;
+          current_load1 = load1[load1.length - 1];
+
+          previous_load2 = current_load2;
+          current_load2 = load2[load2.length - 1];
+          if( (((Math.abs(current_load1) - Math.abs(previous_load1)) > 50)  
+                && (Math.abs(current_load1) > Math.abs(previous_load1)))
+                ||
+                (((Math.abs(current_load2) - Math.abs(previous_load2)) > 200)  
+                && (Math.abs(current_load2) > Math.abs(previous_load2)))
+                 ) {
+            clearInterval(myInterval);
+            Servo.moveAll(Servo.getFeedback('presentPosition'));
+            console.log([load1, load2])
+            descend = false;
+          }
+        }, dt - 20);
+        //*************************
+    }, dt);
+
 
   },
 
@@ -368,7 +422,7 @@ var Motion = {
       };
 
       //Animation.stop();
-      Animation.create('default', true).play(data);
+      Animation.create('main', true).play(data);
 
       // Updating states
       x = this.clone(xf);

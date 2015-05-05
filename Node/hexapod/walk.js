@@ -47,7 +47,7 @@ var Walk = function(gamepad) {
 	this.walk = function(n_steps) {
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
-			self.step(direction, i*(self.stepTime + 10), last, false, false, false);
+			self.step([0, self.angle], i*(self.stepTime + 10), last, false, false, false);
 		}
 	}
 
@@ -76,17 +76,15 @@ var Walk = function(gamepad) {
 
 	this.step = function(direction, startingTime, last, base_angles, leg_angles, n_points, touch) {
 
-		console.log("step: (" + [self.angle.toFixed(0), self.stepTime].join(", ") + ")");
+		console.log("step: (" + [startingTime, self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 
+		// OMAR, MUDAR ESSA LOGICA COMENTADA
 		/*
 		// get state
 		var state = Motion.getState(true);
 		//console.log(state)
 		var U = state.U, r = state.r, x = state.x;
 		delete state;
-
-		self.isWalking = true;
-    	self.setWalkingFalse(self.stepTime);   
 
 	    direction = Motion.degreesToRadians(direction);
 		//console.log(['newdir', direction]);
@@ -175,7 +173,7 @@ var Walk = function(gamepad) {
 		}
 		*/
 
-		// this is necessary for all the logic
+		// this is necessary independent of the step logic
 		self.stepCount += 1;
 		if (last)
 			self.reset();

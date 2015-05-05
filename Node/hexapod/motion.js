@@ -135,8 +135,6 @@ var Motion = {
 
 
   descendGroup: function(i, startingTime){
-    console.log("CENTROOOO")
-    console.log(x)
     var descend = true;
     var dt = 450; // in ms
     var dx = 5; // in mm
@@ -227,7 +225,6 @@ var Motion = {
                 //Servo.moveAll(position);
                 //console.log([load1, load2])
                 if(newDescendingLegs.length == 0){
-                  Servo.moveAll(position);
                   descend = false;
                   //console.log("PAROU TUUUUDO")
                   //console.log("LOAD 1")

@@ -2,6 +2,10 @@ var Motion = hex.Motion,
 	Animation = hex.Animation;
 var math  = require("mathjs");
 
+var c = hex.c,
+  Servo = hex.Servo,
+  Animation = hex.Animation;
+
 var eps = 0.4; 
 
 // helpers
@@ -88,8 +92,6 @@ var Walk = function(gamepad) {
 
 		}, time);
 	}
-
-
 
 
 
@@ -200,6 +202,133 @@ var Walk = function(gamepad) {
 
 	// constructor
 	self.reset(gamepad);
+
+
+	//***************************************************************************************************
+	//***************************************************************************************************
+	this.descendGroup = function(i, startingTime){
+
+		// get state
+		var state = Motion.getState(true);
+		//console.log(state)
+		var U = state.U, r = state.r, x = state.x;
+
+	    var descend = true;
+	    var dt = 350; // in ms
+	    var dx = 5; // in mm
+
+	    var delta_x_base = [0, 0, -dx];
+	    var xf = [];
+
+	    var aux = [];
+	    var load1 = [[], [], []];
+	    var load2 = [[], [], []];
+	    var position = [];
+	    var current_load1 = [];
+	    var previous_load1 = [];
+	    var current_load2 = [];
+	    var previous_load2 = []; 
+	    var count;
+
+
+	    var movingLegs = [];
+	    if(i == 0) movingLegs = [0, 3, 4];
+	    else movingLegs = [1, 2, 5];
+	    var descendingLegs = [0, 1, 2]; // Index of the legs in movingLegs that are still descending
+	    var newDescendingLegs = [];
+	    var move = [];
+
+	    var U_down = [];
+	    var displacement_down = [];
+
+	    var waitToStart = setTimeout( function(){
+
+	    //**************************************************************************************************
+	        var myInterval = setInterval(function(){
+	          //console.log("CHAMANDO myInterval")
+	          //console.log("descendingLegs")
+	          //console.log(descendingLegs)
+	          state = Motion.getState(true);
+	          U = state.U, r = state.r, x = state.x;
+
+	          move = [];
+	          for(var k = 0; k < descendingLegs.length; k++){
+	            displacement_down.push([0, 0, -dx]);
+	            move.push(movingLegs[descendingLegs[k]]);
+	          }
+	          //if(descendingLegs.length != 3) delta_x_base = [0,0,0];
+	          if(true) delta_x_base = [0,0,0];
+	          xf = math.add(x, delta_x_base);
+	          U_down = Motion.getNewLegPositions(move, displacement_down, U);
+	          if(descend) 
+	            Motion.moveTo(xf, r, U_down, dt-30, 5); 
+
+	        var wait_move = setTimeout(function(){
+	        //console.log("CHAMANDO WAIT MOVE")
+	          //*************************
+
+	          aux = Servo.getFeedback('presentLoad');
+	          position = Servo.getFeedback('presentPosition');
+
+	          for(var m = 0; m < movingLegs.length; m++){
+	            if(descendingLegs.indexOf(m) != -1){
+	              load1[m].push(aux[3*movingLegs[m] + 1]);
+	              load2[m].push(aux[3*movingLegs[m] + 2]);
+
+	              previous_load1[m] = current_load1[m];
+	              current_load1[m] = load1[m][load1[m].length - 1];
+
+	              previous_load2[m] = current_load2[m];
+	              current_load2[m] = load2[m][load2[m].length - 1];
+	            }
+	          }
+
+	          count =  descendingLegs.length;
+	          newDescendingLegs = Motion.clone(descendingLegs);
+	          for(var n = 0; n < count; n++){
+	            //console.log("LEG = ")
+	            //console.log(descendingLegs[n]);
+	            //console.log(descendingLegs)
+	            if( (((Math.abs(current_load1[descendingLegs[n]]) - Math.abs(previous_load1[descendingLegs[n]])) > 50)  
+	                    && (Math.abs(current_load1[descendingLegs[n]]) > Math.abs(previous_load1[descendingLegs[n]])))
+	                    ||
+	                    (((Math.abs(current_load2[descendingLegs[n]]) - Math.abs(previous_load2[descendingLegs[n]])) > 200)  
+	                    && (Math.abs(current_load2[descendingLegs[n]]) > Math.abs(previous_load2[descendingLegs[n]])))
+	                     ) {
+	                newDescendingLegs.splice(n, 1);
+	                //console.log("PAROU A PATAAAAAA")
+	                //console.log(descendingLegs[n]);
+	                //console.log("AQUIIIII **************************************************************")
+	                //console.log(load1);
+	                //Servo.moveAll(position);
+	                //console.log([load1, load2])
+	                if(newDescendingLegs.length == 0){
+	                  descend = false;
+	                  //console.log("PAROU TUUUUDO")
+	                  //console.log("LOAD 1")
+	                  //console.log(load1);
+	                  //console.log("LOAD 2")
+	                  //console.log(load2);
+	                  clearTimeout(wait_move);
+	                  clearInterval(myInterval);
+	                  descendingLegs = Motion.clone(newDescendingLegs);
+	                  break; 
+	                }
+	              }
+	          }
+	          descendingLegs = Motion.clone(newDescendingLegs);
+
+	            }, dt - 20);
+	            //*************************
+
+	        }, dt);
+	    //******************************************************************************************************************
+	     }, startingTime);
+
+  }
+	//***************************************************************************************************
+	//***************************************************************************************************
+
 
 };
 

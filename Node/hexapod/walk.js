@@ -23,9 +23,13 @@ var Walk = function(gamepad) {
 		self.isWalking = false;
 		self.lastAngle = -1;
 		self.lastRadius = -1;
-		self.stepTime = 1200;
+		self.stepTime = 3000;
 		self.stepSize = 100;
 		self.count = 0;
+
+		//*** 
+		self.smartHeight = 100;
+		//***
 
 		Animation.reset();
 		Motion.init();
@@ -37,7 +41,7 @@ var Walk = function(gamepad) {
 			self[p] = obj[p];
 	}
 
-	this.start = function(direction, n_steps) {
+	this.WalkLeila = function(direction, n_steps) {
 
 		self.reset();
 		
@@ -85,7 +89,11 @@ var Walk = function(gamepad) {
 		}, time);
 	}
 
-	this.step = function(direction, startingTime, firstLast, base_angles, leg_angles, n_points) {
+
+
+
+
+	this.step = function(direction, startingTime, firstLast, base_angles, leg_angles, n_points, touch) {
 
 		console.log(['step', self.count, direction, self.stepTime, firstLast]);
 
@@ -169,7 +177,20 @@ var Walk = function(gamepad) {
 			uf[j] = math.squeeze(uf[j]);
 		}
 
-		Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);
+		if(!touch)
+			Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);
+
+		if(touch){
+			if(!n_points) n_points = 5;
+			var heights = [];
+    		for(var i = 0; i < n_points; i++){
+      			if(i == 0) heights[i] = 0;
+      			else heights[i] = self.smartHeight;
+      		}
+      		if(self.count == 0)
+      			Motion.tripodStep(self.group, uf, math.add(xf, [0, 0, self.smartHeight]), rf, self.stepTime, startingTime, n_points, heights);
+      		Motion.descendGroup(self.group, self.count == 0 ? startingTime + self.stepTime + 1000 : 100);
+		}
 
 		self.count += 1;
 		if (firstLast[1])

@@ -33,7 +33,7 @@ var Motion = {
     console.log(Uf1)
 
     // Subir a pata
-    Motion.moveTo(x, r, Uf1, 1000, 10);
+    Motion.moveTo(x, r, Uf1, 3000, 10);
 
     // // Descer muito
     // Motion.moveTo(x, r, Uf2, 5000, 2000);
@@ -68,10 +68,23 @@ var Motion = {
 
   },
 
+  riseGroup: function(i){
+    var movingLegs = [];
+    if(i == 0) movingLegs = [0, 3, 4];
+    else movingLegs = [1, 2, 5];
+
+    console.log(U)
+    var Uf1 = Motion.getNewLegPositions(movingLegs, [[0, 0, 80], [0, 0, 80], [0, 0, 80]]);
+    console.log(Uf1)
+
+    // Subir a pata
+    Motion.moveTo([0, 0, 0], r, Uf1, 1000, 10);
+  },
+
   descendLeg: function(i){
     var descend = true;
-    var dt = 500; // in ms
-    var dx = 10; // in mm
+    var dt = 250; // in ms
+    var dx = 5; // in mm
 
     var aux = [];
     var load1 = [];
@@ -109,13 +122,137 @@ var Motion = {
                 && (Math.abs(current_load2) > Math.abs(previous_load2)))
                  ) {
             clearInterval(myInterval);
-            Servo.moveAll(Servo.getFeedback('presentPosition'));
+            //Servo.moveAll(Servo.getFeedback('presentPosition'));
+            Servo.moveAll(position);
             console.log([load1, load2])
             descend = false;
+            clearTimeout(wait_move);
           }
-        }, dt - 20);
+        }, dt - 10);
         //*************************
     }, dt);
+  },
+
+
+  descendGroup: function(i, startingTime){
+    console.log("CENTROOOO")
+    console.log(x)
+    var descend = true;
+    var dt = 450; // in ms
+    var dx = 5; // in mm
+
+    var delta_x_base = [0, 0, -dx];
+    var xf = [];
+
+    var aux = [];
+    var load1 = [[], [], []];
+    var load2 = [[], [], []];
+    var position = [];
+    var current_load1 = [];
+    var previous_load1 = [];
+    var current_load2 = [];
+    var previous_load2 = []; 
+    var count;
+    var stop = false;
+
+
+    var movingLegs = [];
+    if(i == 0) movingLegs = [0, 3, 4];
+    else movingLegs = [1, 2, 5];
+    var descendingLegs = [0, 1, 2]; // Index of the legs in movingLegs that are still descending
+    var newDescendingLegs = [];
+    var move = [];
+
+    var U_down = [];
+    var displacement_down = [];
+
+    var waitToStart = setTimeout( function(){
+
+    //**************************************************************************************************
+        var myInterval = setInterval(function(){
+          //console.log("CHAMANDO myInterval")
+          //console.log("descendingLegs")
+          //console.log(descendingLegs)
+
+          move = [];
+          for(var k = 0; k < descendingLegs.length; k++){
+            displacement_down.push([0, 0, -dx]);
+            move.push(movingLegs[descendingLegs[k]]);
+          }
+          //if(descendingLegs.length != 3) delta_x_base = [0,0,0];
+          if(true) delta_x_base = [0,0,0];
+          xf = math.add(x, delta_x_base);
+          U_down = Motion.getNewLegPositions(move, displacement_down, U);
+          if(descend) 
+            Motion.moveTo(xf, r, U_down, dt-30, 5); 
+
+        var wait_move = setTimeout(function(){
+        //console.log("CHAMANDO WAIT MOVE")
+          //*************************
+
+          aux = Servo.getFeedback('presentLoad');
+          position = Servo.getFeedback('presentPosition');
+
+          for(var m = 0; m < movingLegs.length; m++){
+            if(descendingLegs.indexOf(m) != -1){
+              load1[m].push(aux[3*movingLegs[m] + 1]);
+              load2[m].push(aux[3*movingLegs[m] + 2]);
+
+              previous_load1[m] = current_load1[m];
+              current_load1[m] = load1[m][load1[m].length - 1];
+
+              previous_load2[m] = current_load2[m];
+              current_load2[m] = load2[m][load2[m].length - 1];
+            }
+          }
+
+          count =  descendingLegs.length;
+          newDescendingLegs = Motion.clone(descendingLegs);
+          for(var n = 0; n < count; n++){
+            //console.log("LEG = ")
+            //console.log(descendingLegs[n]);
+            //console.log(descendingLegs)
+            if( (((Math.abs(current_load1[descendingLegs[n]]) - Math.abs(previous_load1[descendingLegs[n]])) > 50)  
+                    && (Math.abs(current_load1[descendingLegs[n]]) > Math.abs(previous_load1[descendingLegs[n]])))
+                    ||
+                    (((Math.abs(current_load2[descendingLegs[n]]) - Math.abs(previous_load2[descendingLegs[n]])) > 200)  
+                    && (Math.abs(current_load2[descendingLegs[n]]) > Math.abs(previous_load2[descendingLegs[n]])))
+                     ) {
+                newDescendingLegs.splice(n, 1);
+                stop = true;
+                //console.log("PAROU A PATAAAAAA")
+                //console.log(descendingLegs[n]);
+                //console.log("AQUIIIII **************************************************************")
+                //console.log(load1);
+                //Servo.moveAll(position);
+                //console.log([load1, load2])
+                if(newDescendingLegs.length == 0){
+                  Servo.moveAll(position);
+                  descend = false;
+                  //console.log("PAROU TUUUUDO")
+                  //console.log("LOAD 1")
+                  //console.log(load1);
+                  //console.log("LOAD 2")
+                  //console.log(load2);
+                  clearTimeout(wait_move);
+                  clearInterval(myInterval);
+                  descendingLegs = Motion.clone(newDescendingLegs);
+                  break; 
+                }
+              }
+          }
+          if (stop) {
+            Servo.moveAll(position);
+            stop = false;
+          }
+          descendingLegs = Motion.clone(newDescendingLegs);
+
+            }, dt - 20);
+            //*************************
+
+        }, dt);
+    //******************************************************************************************************************
+     }, startingTime);
 
 
   },
@@ -135,12 +272,12 @@ var Motion = {
   init: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
-        u[0] = [-c.X2 - 110, c.Y2 + 110, -h];
-        u[1] = [c.X2 + 110, c.Y2 + 110, -h];
-        u[2] = [-c.X1 - 150, 0, -h];
-        u[3] = [c.X1 + 150, 0, -h];
-        u[4] = [-c.X2 - 110, -c.Y2 - 110, -h];
-        u[5] = [c.X2 + 110, -c.Y2 - 110, -h];
+        u[0] = [-c.X2 - 140, c.Y2 + 50, -h];
+        u[1] = [c.X2 + 140, c.Y2 + 50, -h];
+        u[2] = [-c.X1 - 140, 0, -h];
+        u[3] = [c.X1 + 140, 0, -h];
+        u[4] = [-c.X2 - 140, -c.Y2 - 50, -h];
+        u[5] = [c.X2 + 140, -c.Y2 - 50, -h];
       // Writing states
       U = U_i || u;
       x = x_i || [0, 0, 0];

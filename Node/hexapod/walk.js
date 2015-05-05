@@ -256,8 +256,8 @@ var Walk = function(gamepad) {
 	            displacement_down.push([0, 0, -dx]);
 	            move.push(movingLegs[descendingLegs[k]]);
 	          }
-	          //if(descendingLegs.length != 3) delta_x_base = [0,0,0];
-	          if(true) delta_x_base = [0,0,0];
+	          if(descendingLegs.length != 3) delta_x_base = [0,0,0];
+	          //if(true) delta_x_base = [0,0,0];
 	          xf = math.add(x, delta_x_base);
 	          U_down = Motion.getNewLegPositions(move, displacement_down, U);
 	          if(descend) 

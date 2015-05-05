@@ -78,7 +78,7 @@ var Motion = {
     console.log(Uf1)
 
     // Subir a pata
-    Motion.moveTo([0, 0, 0], r, Uf1, 1000, 10);
+    Motion.moveTo([0, 0, 50], r, Uf1, 1000, 10);
   },
 
   descendLeg: function(i){

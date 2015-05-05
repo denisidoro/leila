@@ -67,22 +67,34 @@ module.exports = function() {
         });
 
         socket.on('walk', function(data) {
-            //console.log('walk');
-         
+
             try {   
 
-                //console.log(data);
-                //return false;
-                //console.log(data.r);
-                //console.log(data);
-                //console.log(data);
-                hex.Walk.update(data.r, data.a);
+                if (data.toggle) {
+                    hex.Walk.toggle();
+                    return;
+                }
+                
+                var scale = function scale(x, in_min, in_max, out_min, out_max) {
+                  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+                }
 
+                var angle = Math.atan2(-data.y, -data.x) * 180 / 3.1415 - 90;
+                if (angle < 0) angle += 360;
+
+                var radius = Math.sqrt(Math.pow(data.x, 2) + Math.pow(data.y, 2));
+
+                hex.Walk.update({
+                    angle: angle,
+                    stepTime: scale(radius, 0, Math.sqrt(2) * 0.95, 1500, 450)
+                });
 
             }
+
             catch(e) {
                 console.log(e);
             }
+
         });
 
         socket.on("updateRegister", function(d){

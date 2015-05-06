@@ -20,93 +20,71 @@ var Walk = function(gamepad) {
 
 	var self = this;
 
-	this.reset = function(gamepad) {
-
-		self.gamepad = gamepad || true;
-		self.group = 1;
-		self.isWalking = false;
-		self.lastAngle = -1;
-		self.lastRadius = -1;
-		self.stepTime = 3000;
-		self.stepSize = 100;
-		self.count = 0;
-
-		//*** 
-		self.smartHeight = 100;
-		//***
-
+	this.reset = function() {
+		console.log('reset');
+		self.last = false;
+		self.shouldMove = false;
+		self.stepCount = 0;
 		Animation.reset();
 		Motion.init();
-
 	}
 
-	this.setParams = function(obj) {
+	this.resetAll = function() {
+		self.group = 1;
+		self.stepTime = 3000;
+		self.stepSize = 100;
+		self.smartHeight = 100;
+		self.angle = 0;
+		self.reset();
+	}
+
+	this.update = function(obj) {
+		//console.log("update: (" + [self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 		for (p in obj)
 			self[p] = obj[p];
 	}
 
-	this.WalkLeila = function(direction, n_steps) {
-
-		self.reset();
-		
+	this.walk = function(n_steps) {
 		for (var i = 0; i < n_steps; i++) {
-			var firstOrLast = (i == 0 || i == n_steps - 1);
-			self.step(direction, 10 + i*self.stepTime, firstOrLast, false, false, false);
+			var last = (i == n_steps - 1);
+			self.step([0, self.angle], i*(self.stepTime + 10), last, false, false, false);
 		}
-
 	}
 
-	this.update = function(radius, angle) {
-
-		//console.log(['update', self.isWalking, self.lastRadius, self.lastAngle]);
-
-		var first = (self.count == 0);
-
-		if (first && radius < eps)
-			return false;
-
-		if (first || self.isWalking) {
-			self.lastRadius = radius;
-			self.lastAngle = angle;
-			//console.log('update vars only');
-			if (self.isWalking) return false;
+	this.toggle = function() {
+		console.log("toggle: " + self.shouldMove + " -> " + !self.shouldMove);
+		if (!self.shouldMove) {
+			self.shouldMove = true;
+			self.tryStep();
 		}
+		else
+			self.last = true;
+	}
 
-		var last = (self.lastRadius < eps); // last
-		
-        self.setParams({stepTime: scale(self.lastRadius, 0, Math.sqrt(2) * 0.95, 1500, 450)});
-		self.step([0, self.lastAngle], 10, [first, last], false, false, false);
+    this.tryStep = function(last) {
+
+        if (!self.shouldMove)
+        	return false;
+
+		self.step([0, self.angle], 10, self.last, false, false, false);
+
+		setTimeout(function() {
+			self.tryStep();
+		}, self.stepTime);
 
 	}
 
-	this.setWalkingFalse = function(time) {
-		console.log(time);
-		var t = setTimeout(function() {
-			
-			//console.log('\tisfalse: ' + (new Date()).getTime())
-			self.isWalking = false;
-			
-			//console.log(['setFalse', self.gamepad, self.lastRadius, eps]);
-			if (self.gamepad && self.lastRadius > eps)
-				self.update();						
+	this.step = function(direction, startingTime, last, base_angles, leg_angles, n_points, touch) {
 
-		}, time);
-	}
+		console.log("step: (" + [startingTime, self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 
-
-
-	this.step = function(direction, startingTime, firstLast, base_angles, leg_angles, n_points, touch) {
-
-		console.log(['step', self.count, direction, self.stepTime, firstLast]);
-
+		// OMAR, MUDAR ESSA LOGICA COMENTADA
+		/*
 		// get state
 		var state = Motion.getState(true);
 		//console.log(state)
 		var U = state.U, r = state.r, x = state.x;
 		delete state;
-
-		self.isWalking = true;
-    	self.setWalkingFalse(self.stepTime);   
 
 	    direction = Motion.degreesToRadians(direction);
 		//console.log(['newdir', direction]);
@@ -135,7 +113,7 @@ var Walk = function(gamepad) {
 			        self.stepSize*Math.sin(theta)];
 		}
 
-		if (firstLast[0] || firstLast[1]) {
+		if (self.stepCount == 0 || last) {
 			delta_u = math.multiply(0.5, step);
 			delta_x = math.multiply(0.25, step);
 		}
@@ -189,19 +167,21 @@ var Walk = function(gamepad) {
       			if(i == 0) heights[i] = 0;
       			else heights[i] = self.smartHeight;
       		}
-      		if(self.count == 0)
+      		if(self.stepCount == 0)
       			Motion.tripodStep(self.group, uf, math.add(xf, [0, 0, self.smartHeight]), rf, self.stepTime, startingTime, n_points, heights);
-      		Motion.descendGroup(self.group, self.count == 0 ? startingTime + self.stepTime + 1000 : 100);
+      		Motion.descendGroup(self.group, self.stepCount == 0 ? startingTime + self.stepTime + 1000 : 100);
 		}
+		*/
 
-		self.count += 1;
-		if (firstLast[1])
-			self.reset(self.gamepad);
+		// this is necessary independent of the step logic
+		self.stepCount += 1;
+		if (last)
+			self.reset();
 
     }
 
 	// constructor
-	self.reset(gamepad);
+	self.resetAll();
 
 
 	//***************************************************************************************************

@@ -7,9 +7,7 @@ var configs = new function() {
 
 configs.base = {
 	rotX: 0, rotY: 0, rotZ: 0, 
-	posX: 0, posY: 0, posZ: 0,
-	stepSize: 150, walkAngle: 0,
-	changeStateTime: 1000
+	posX: 0, posY: 0, posZ: 0
 };
 
 for (var i = 0; i < 18; i++)
@@ -26,29 +24,19 @@ function initGUI() {
 	gui.f1 = gui.addFolder('Base');
 	
 	// rotation
+
 	var controllers = [];
+
 	controllers.push(gui.f1.add(configs.base, 'rotX', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'rotY', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'rotZ', -20, 20));
 	controllers.push(gui.f1.add(configs.base, 'posX', -40, 40));
 	controllers.push(gui.f1.add(configs.base, 'posY', -40, 40));
 	controllers.push(gui.f1.add(configs.base, 'posZ', -40, 40));
+
 	$.each(controllers, function(i, c) {
 		c.listen().onChange(function(value) {
-			console.log('change base');
 			socket.emit('changeState', configs.base);
-		});
-	});
-	controllers.push(gui.f1.add(configs.base, 'changeStateTime', 500, 2500));
-
-	// walking
-	controllers = [];
-	controllers.push(gui.f1.add(configs.base, 'stepSize', 30, 200));
-	controllers.push(gui.f1.add(configs.base, 'walkAngle', 0, 360));
-	$.each(controllers, function(i, c) {
-		c.listen().onChange(function(value) {	
-			//console.log('walk')
-			// socket emit
 		});
 	});
 

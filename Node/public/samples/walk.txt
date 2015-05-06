@@ -1,13 +1,11 @@
-hex.Base.upsideDown(false);
-hex.Motion.init();
+hex.Base.invert(false);
 
-//tripodPlaneWalk: function(step_size, n_steps,
-//direction, stepTime, startingTime, base_angles, leg_angles, n_points)
-//57; 26; 0
+hex.Walk.update({
+	angle: 0,
+	stepTime: 1500
+});
 
+hex.Animation.reset();
 
-hex.Motion.tripodPlaneWalk(100, 10, [[0,0], [0,0], [20, 0]], 1500, 100,
-                            [0, 0, 20], [0, 0, 20, 20]);
-
-
-//hex.Motion.tripodPlaneWalk(120, 4, [0,0], 1500, 100);
+var numSteps = 4;
+hex.Walk.walk(numSteps);

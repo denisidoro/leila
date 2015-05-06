@@ -37,7 +37,7 @@ var ServoUtils = {
 
 var Servo = function(id) {
 
-    this.id = (typeof id == 'undefined') ? Servo.list.length : id;
+    this.id = (typeof id == 'undefined') ? Servo.list.length + 20: id;
     this.motor = null;
     this.feedback = {};
 
@@ -81,7 +81,7 @@ Servo.init = false;
 
 Servo.assignMotor = function(m) {
   //console.log(['assign', m]);
-  Servo.list[m.getID() - 1].motor = m;
+  Servo.list[m.getID() - 21].motor = m;
 }
 
 Servo.get = function(id) {

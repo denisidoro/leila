@@ -50,7 +50,7 @@ var Walk = function(gamepad) {
 		console.log("WALLLLLLK")
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
-			self.step([0, self.angle], i*(self.stepTime + 10), last, false, false, false);
+			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false, false);
 		}
 	}
 
@@ -69,7 +69,7 @@ var Walk = function(gamepad) {
         if (!self.shouldMove)
         	return false;
 
-		self.step([0, self.angle], 10, self.last, false, false, false);
+		self.step([self.angle, 0], 10, self.last, false, false, false);
 
 		setTimeout(function() {
 			self.tryStep();
@@ -159,12 +159,14 @@ var Walk = function(gamepad) {
 
 		for (var j = 0; j < 3; j++){
 			legDefault = math.squeeze(math.subset(Motion.getDefaultPositions(), math.index(movingLegs[j], [0, 3] )));
-
 			uf[j] = math.squeeze(math.multiply(Rz, legDefault))  ; // Final position 
 			uf[j] = math.add(uf[j], xf);
-			uf[j] = math.add(uf[j], delta_u);
+			uf[j] = math.add(uf[j], delta_u);			
 			uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
 		}
+
+		console.log("AEEEEEE")
+		console.log(uf);
 
 		if(!touch)
 			Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);

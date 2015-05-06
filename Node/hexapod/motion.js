@@ -26,6 +26,27 @@ var slider_event = false;
 // Main
 var Motion = {
 
+  getDefaultPositions: function(){
+    var h = 110;
+
+    // x = x0 || math.matrix([0, 0, 0]);
+   
+    // //console.log(x);
+    // x = [math.subset(x, math.index(0)),
+    //      math.subset(x, math.index(1)),
+    //      math.subset(x, math.index(2))
+    //     ];
+
+    var u = [];
+        u[0] = [-c.X2 - 140, c.Y2 + 50 , -h ];
+        u[1] = [c.X2 + 140, c.Y2 + 50 , -h ];
+        u[2] = [-c.X1 - 140, 0 , -h ];
+        u[3] = [c.X1 + 140, 0 , -h ] ;
+        u[4] = [-c.X2 - 140, -c.Y2 - 50, -h] ;
+        u[5] = [c.X2 + 140, -c.Y2 - 50 , -h];
+    return u;
+  },
+
   riseLeg: function(i){
 
     console.log(U)
@@ -457,11 +478,12 @@ var Motion = {
       list_starting_time[i] = list_starting_time[i-1] + list_time[i-1]; 
     }
     
-    /*console.log("****************")
-    console.log(list_time)
-    console.log(list_starting_time)
+    //console.log("****************")
+    //console.log(d);
+    //console.log(list_time)
     //console.log(list_starting_time)
-    console.log("****************")*/
+    //console.log(list_starting_time)
+    //console.log("****************")
 
     // Moving 
     for(var i = 0; i < n_points; i++){
@@ -733,7 +755,7 @@ var Motion = {
     }
 
     var result = this.radiansToBits([alpha,beta,gamma]);
-    //console.log(result);
+    //console.log(result)
     //Verify alpha, after conversion to bits
     if(!result || result[0] > c.ALPHA_UPPER_LIMIT_BITS || result[0] < c.ALPHA_LOWER_LIMIT_BITS){
       throw new Error("Limits exceeded (alpha = " + result[0] + ")");

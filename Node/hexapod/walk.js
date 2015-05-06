@@ -20,18 +20,20 @@ var Walk = function(gamepad) {
 
 	var self = this;
 
-	this.reset = function() {
+	this.reset = function(time) {
 		console.log('reset');
-		self.last = false;
-		self.shouldMove = false;
-		self.stepCount = 0;
-		Animation.reset();
-		Motion.init();
+		setTimeout(function() {
+			self.last = false;
+			self.shouldMove = false;
+			self.stepCount = 0;
+			Animation.reset();
+			Motion.init();
+		}, time || 0);
 	}
 
 	this.resetAll = function() {
 		self.group = 1;
-		self.stepTime = 3000;
+		self.stepTime = 1500;
 		self.stepSize = 100;
 		self.smartHeight = 100;
 		self.angle = 0;
@@ -45,6 +47,7 @@ var Walk = function(gamepad) {
 	}
 
 	this.walk = function(n_steps) {
+		console.log("WALLLLLLK")
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
 			self.step([0, self.angle], i*(self.stepTime + 10), last, false, false, false);
@@ -76,10 +79,11 @@ var Walk = function(gamepad) {
 
 	this.step = function(direction, startingTime, last, base_angles, leg_angles, n_points, touch) {
 
+		console.log("STEEEEEEEEP");
+
 		console.log("step: (" + [startingTime, self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 
 		// OMAR, MUDAR ESSA LOGICA COMENTADA
-		/*
 		// get state
 		var state = Motion.getState(true);
 		//console.log(state)
@@ -99,8 +103,9 @@ var Walk = function(gamepad) {
 	    var phi = 0;
 	    var theta = 0;
 	    var step = [];
-	    var delta_r = [];
-	    var R = [];   
+	    var delta_r = [];   
+		var Rz = [];   
+	    var legDefault = [];
 
 	    var i = 0;
 		if (math.size(direction).length == 1) 
@@ -113,12 +118,16 @@ var Walk = function(gamepad) {
 			        self.stepSize*Math.sin(theta)];
 		}
 
-		if (self.stepCount == 0 || last) {
-			delta_u = math.multiply(0.5, step);
+		if (self.stepCount == 0) {
+			delta_u = math.multiply(1/4, step);
+			delta_x = math.multiply(0.25, step);
+		}
+		else if(last){
+			delta_u = [0,0,0];
 			delta_x = math.multiply(0.25, step);
 		}
 		else {
-			delta_u = step;
+			delta_u = math.multiply(step, 1/4);
 			delta_x = math.multiply(0.5, step);
 		}
 
@@ -141,20 +150,20 @@ var Walk = function(gamepad) {
 		else
 			rf = math.clone(r);
 
-		if (leg_angles)
-			R = Motion.rotationXYZ([0, 0, leg_angles]);
-		else
-			R = Motion.rotationXYZ([0,0,0]);
+		Rz = Motion.rotationXYZ([0,0, math.subset(rf, math.index(2))]);
+
+		//if (leg_angles)
+		//	R = Motion.rotationXYZ([0, 0, leg_angles]);
+		//else
+		//	R = Motion.rotationXYZ([0,0,0]);
 
 		for (var j = 0; j < 3; j++){
-			uf[j] = math.add(ui[j], delta_u);
-			uf[j] = math.subtract(uf[j], xf);
-			uf[j] = math.transpose(uf[j]);
-			uf[j] = math.multiply(R, uf[j]);
-			uf[j] = math.squeeze(uf[j]);
+			legDefault = math.squeeze(math.subset(Motion.getDefaultPositions(), math.index(movingLegs[j], [0, 3] )));
+
+			uf[j] = math.squeeze(math.multiply(Rz, legDefault))  ; // Final position 
 			uf[j] = math.add(uf[j], xf);
+			uf[j] = math.add(uf[j], delta_u);
 			uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
-			uf[j] = math.squeeze(uf[j]);
 		}
 
 		if(!touch)
@@ -171,12 +180,12 @@ var Walk = function(gamepad) {
       			Motion.tripodStep(self.group, uf, math.add(xf, [0, 0, self.smartHeight]), rf, self.stepTime, startingTime, n_points, heights);
       		Motion.descendGroup(self.group, self.stepCount == 0 ? startingTime + self.stepTime + 1000 : 100);
 		}
-		*/
+		
 
 		// this is necessary independent of the step logic
 		self.stepCount += 1;
 		if (last)
-			self.reset();
+			self.reset(startingTime + self.stepTime);
 
     }
 

@@ -17,7 +17,7 @@ var Movement = {
   },
 
   init: function() {
-    Motion.initAuto();
+    Motion.init();
   },
 
   allEqual: function(args, amplitude) {

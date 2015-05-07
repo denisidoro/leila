@@ -2,6 +2,14 @@ function sendCode() {
 	var text = editor.getValue();
 	if (text.indexOf("//#") == 0)
 		eval(text.substring(3));
+	if (text.indexOf("//yt") == 0) {
+		var args = text.split('\n')[0].split(':');
+		var start = args[2] || 0;
+		$("iframe").css("display", "block");
+		//player.seekTo(start);
+		//player.playVideo();
+		player.loadVideoById(args[1], start);
+	}
 	//socket.emitWithLog('eval', editor.getValue(text));
 	socket.emit('eval', editor.getValue(text));
 }

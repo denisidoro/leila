@@ -1,3 +1,6 @@
+// Editor
+var editor;
+
 $(document).ready(function() {
 
 	// Socket

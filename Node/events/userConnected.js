@@ -101,7 +101,7 @@ module.exports = function() {
             var motorid = d.motor;
             var registerName = d.register;
             var value = d.value;
-            hex.Servo.get(motorid - 1).motor.setRegisterValue(registerName,value);
+            hex.Servo.get(motorid - 1).motor.setRegisterValue(registerName,value); // LTODO: get(motorid)
         });
 
 	});

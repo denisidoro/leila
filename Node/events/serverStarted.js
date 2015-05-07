@@ -16,7 +16,7 @@ module.exports = function() {
         
         m.motor.on("valueUpdated", function(d) {
             //io.emit("valueUpdated", {id: id, register: d.name, value: d.value});
-            hex.Servo.get(id - 1).update(d.name, d.value);
+            hex.Servo.get(id - 1).update(d.name, d.value); // LTODO: get(id)
         });
 
         if (count == 18) {
@@ -29,7 +29,7 @@ module.exports = function() {
 
     ms.on("motorRemoved",function(m) {
         console.log("motor removed - " + m.id);
-        hex.Servo.list[m.id - 1].motor = null;
+        hex.Servo.list[m.id - 1].motor = null; // LTODO: get(m.id)
         io.emit("removeMotor", {id:m.id});
     });
 

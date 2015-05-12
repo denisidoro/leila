@@ -811,14 +811,18 @@ var Motion = {
     return math.multiply(Rx, math.multiply(Ry, Rz));
   },
 
-  degreesToRadians: function(degrees){
+  degreesToRadians: function(degrees, factor){
     if (Array.isArray(degrees)) {
       var r = [];
       for (var i = 0; i < degrees.length; i++)
         r.push(Motion.degreesToRadians(degrees[i]));
       return r;
     }
-    return degrees*math.pi/180;
+    return degrees*(factor || math.pi/180);
+  },
+
+  radiansToDegrees: function(radians){
+    return Motion.degreesToRadians(radians, 180/math.pi);
   },
 
   clone: function(a){

@@ -50,7 +50,7 @@ var Walk = function(gamepad) {
 		console.log("WALLLLLLK")
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
-			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false, false);
+			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false);
 		}
 	}
 
@@ -69,7 +69,7 @@ var Walk = function(gamepad) {
         if (!self.shouldMove)
         	return false;
 
-		self.step([self.angle, 0], 10, self.last, false, false, false);
+		self.step([self.angle, 0], 10, self.last, false, false);
 
 		setTimeout(function() {
 			self.tryStep();
@@ -77,9 +77,26 @@ var Walk = function(gamepad) {
 
 	}
 
-	this.step = function(direction, startingTime, last, base_angles, leg_angles, n_points, touch) {
 
-		console.log("STEEEEEEEEP");
+	this.turn = function(angle, startingTime, last, relative) {
+
+		var tempStepSize = self.stepSize;
+		var state = Motion.getState(true);
+		var r = state.r;
+
+		if (relative) angle += Motion.radiansToDegrees(math.subset(r, math.index(2)));
+		console.log("ANGULO: " + angle);
+		
+		self.stepSize = 0; 
+		self.step([0,0], startingTime, last, angle || 0.0000001); // 0 is false, 0.00000001 is beautiful
+		self.step([0,0], startingTime + self.stepTime, last, angle || 0.0000001); 
+
+		self.stepSize = tempStepSize;
+
+	}
+
+
+	this.step = function(direction, startingTime, last, base_angles, n_points, touch) {
 
 		console.log("step: (" + [startingTime, self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 
@@ -93,7 +110,6 @@ var Walk = function(gamepad) {
 	    direction = Motion.degreesToRadians(direction);
 		//console.log(['newdir', direction]);
 	    if (base_angles) 	base_angles = Motion.degreesToRadians(base_angles);
-	    if (leg_angles)		leg_angles = Motion.degreesToRadians(leg_angles);
 	    var movingLegs = [];
 	    var xf;
 	    var rf;
@@ -152,11 +168,6 @@ var Walk = function(gamepad) {
 
 		Rz = Motion.rotationXYZ([0,0, math.subset(rf, math.index(2))]);
 
-		//if (leg_angles)
-		//	R = Motion.rotationXYZ([0, 0, leg_angles]);
-		//else
-		//	R = Motion.rotationXYZ([0,0,0]);
-
 		for (var j = 0; j < 3; j++){
 			legDefault = math.squeeze(math.subset(Motion.getDefaultPositions(), math.index(movingLegs[j], [0, 3] )));
 			uf[j] = math.squeeze(math.multiply(Rz, legDefault))  ; // Final position 
@@ -164,9 +175,6 @@ var Walk = function(gamepad) {
 			uf[j] = math.add(uf[j], delta_u);			
 			uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
 		}
-
-		console.log("AEEEEEE")
-		console.log(uf);
 
 		if(!touch)
 			Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);

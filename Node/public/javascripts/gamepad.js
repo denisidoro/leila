@@ -62,18 +62,25 @@ function initGamepad() {
         else { configs.servos['servo' + gamepad.currentServo] -= (s.LEFT_TOP_SHOULDER == 1 ? 40 : 10); changeServos(); }
         break; 
       case "DPAD_LEFT":
-        if (s.RIGHT_TOP_SHOULDER != 1) { configs.base.posX -= 5; changeState(); }
-        else { gamepad.currentServo += (gamepad.currentServo == 0 ? 17 : -1); }
+        if (s.RIGHT_TOP_SHOULDER == 1) { gamepad.currentServo += (gamepad.currentServo == 0 ? 17 : -1); }
+        else if (s.FACE_2 == 1) { semit("hex.Walk.turn(15, 10, false, true);"); }
+        else { configs.base.posX -= 5; changeState(); }
         break;
       case "DPAD_RIGHT":
         console.log('right');
-        if (s.RIGHT_TOP_SHOULDER != 1) { configs.base.posX += 5; changeState(); }
-        else { gamepad.currentServo += (gamepad.currentServo == 17 ? -17 : 1); }  
+        if (s.RIGHT_TOP_SHOULDER == 1) { gamepad.currentServo += (gamepad.currentServo == 17 ? -17 : 1); }  
+        else if (s.FACE_2 == 1) { semit("hex.Walk.turn(-15, 10, false, true);"); }
+        else { configs.base.posX += 5; changeState(); }
         break;
 
       // Y: init
       case "FACE_4":
         motionInit();
+        break;
+
+      // B: turn 15o
+      case "FACE_2":
+        // + dpad left/right
         break;
 
     }
@@ -96,13 +103,13 @@ function initGamepad() {
       // right analog: rotate base X and Y
       case "RIGHT_STICK_Y":
         if (isSmall(e.value)) break;
-        configs.base.rotX = scale(e.value, 1, -1, -15, 15);
+        configs.base.rotX = scale(e.value, 1, -1, -9, 9);
         //console.log("RSY");
         changeState();
         break;
       case "RIGHT_STICK_X":
         if (isSmall(e.value)) break;
-        configs.base.rotY = scale(e.value, 1, -1, -15, 15);
+        configs.base.rotY = scale(e.value, 1, -1, -9, 9);
         //console.log("RSx");
         changeState();
         break;

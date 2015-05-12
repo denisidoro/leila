@@ -27,7 +27,7 @@ var slider_event = false;
 var Motion = {
 
   getDefaultPositions: function(){
-    var h = 110;
+    var h = 110 + math.subset(x, math.index(2));
 
     // x = x0 || math.matrix([0, 0, 0]);
    

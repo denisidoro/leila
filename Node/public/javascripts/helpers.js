@@ -1,3 +1,20 @@
+function motionInit() {
+	for (p in configs.base)
+		configs.base[p] = 0;
+	semit('hex.Motion.init(); hex.Animation.reset();');
+}
+
+function semit(str) {
+	socket.emit('eval', str);
+}
+
+function snapshotKeyframe() {
+	var angles = getServoAngles().map(function(x) { 
+	    return parseInt(x, 10); 
+	});
+	editor.insert(JSON.stringify(angles));
+}
+
 function sendCode() {
 	var text = editor.getValue();
 	if (text.indexOf("//#") == 0)

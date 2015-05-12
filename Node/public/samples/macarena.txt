@@ -1,4 +1,4 @@
-//yt:neqGdK8qAxQ:15
+//yt:neqGdK8qAxQ:0.5
 
 var macarena2 = {
     duration: 177000,

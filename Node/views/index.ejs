@@ -7,7 +7,7 @@
 
   <body>
 
-    <iframe style="display:none" id="video" src="//www.youtube.com/embed/e-ORhEE9VVg?enablejsapi=1&html5=1" frameborder="0" allowfullscreen></iframe>
+    <iframe style="display:none" id="video" src="https://www.youtube.com/embed/e-ORhEE9VVg?enablejsapi=1&html5=1" frameborder="0" allowfullscreen></iframe>
 
     <div id='main-holder'>
 
@@ -20,8 +20,8 @@
             <div class="btn-group btn-group-sm" role="group" aria-label="...">
               <button type="button" class="btn btn-default" onclick="sendCode()">Send code</button>
               <select id="samples" class="selectpicker" data-style="btn btn-sm btn-default"></select>
-              <button type="button" class="btn btn-default" onclick="editor.insert(JSON.stringify(getServoAngles()))">Frame</button>
-              <button type="button" class="btn btn-default" onclick="socket.emit('eval', 'hex.Motion.init()');">Init</button>
+              <button type="button" class="btn btn-default" onclick="snapshotKeyframe()">Frame</button>
+              <button type="button" class="btn btn-default" onclick="motionInit()">Init</button>
             </div>
           </p>
           <div id="editor-holder">

@@ -190,7 +190,7 @@ var Animation = function() {
 			if (data.points[i] >= startingPoint) {
 				self.timeouts.push(setTimeout(function() {
 					timeoutCallback(kf, self, kf.length - i + 1);
-				},  Math.round((data.startingTime || 5) + data.points[i] * data.duration)));	
+				},  Math.round((data.startingTime || 5) + data.points[i] * data.duration) - (data.startAt ? data.startAt : 0)));	
 			}
 		});
 

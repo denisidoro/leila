@@ -7,14 +7,15 @@ var math  = require("mathjs");
 // Constants
 var delta_h = 35;
 //var MAX_SERVO_SPEED = 306; // degrees/s (see constants.js)
-MAX_SERVO_SPEED = 800; // Não sei por que, mas fica bom com esse valor!
+MAX_SERVO_SPEED = 800; // Review this constant if the servos "stop" a lot during a movement
 
 // State variables
 // Fixed frame
 
-// x: centro da base s2
-// U: as posições das pontas das patas s2
-// r: angulos de rotação s2
+// x: base center
+// U: legs' positions
+// r: rotation angles
+// Values are updated in function moveTo()
 var x = [];
 var U = [];
 var r = [];
@@ -26,16 +27,10 @@ var slider_event = false;
 // Main
 var Motion = {
 
+
+  // Returns a 6x3 matrix containing the default positions of the legs in the base frame.
   getDefaultPositions: function(){
     var h = 110 + math.subset(x, math.index(2));
-
-    // x = x0 || math.matrix([0, 0, 0]);
-   
-    // //console.log(x);
-    // x = [math.subset(x, math.index(0)),
-    //      math.subset(x, math.index(1)),
-    //      math.subset(x, math.index(2))
-    //     ];
 
     var u = [];
         u[0] = [-c.X2 - 140, c.Y2 + 50 , -h ];
@@ -47,6 +42,12 @@ var Motion = {
     return u;
   },
 
+  // See variable h in getDefaultPositions()
+  getDefaultHeight: function(){
+    return 110 + math.subset(x, math.index(2)); 
+  },
+
+
   riseLeg: function(i){
 
     console.log(U)
@@ -56,39 +57,9 @@ var Motion = {
     // Subir a pata
     Motion.moveTo(x, r, Uf1, 3000, 10);
 
-    // // Descer muito
-    // Motion.moveTo(x, r, Uf2, 5000, 2000);
-
-    // var time = 20; //in ms
-
-    // var torque = [];
-    // var position = [];
-    // var torque_test;
-    // var torque_anterior = 0;
-    // var aux = [];
-
-    // var myInterval = setInterval(function() {
-    //     aux = Servo.getFeedback('presentLoad');
-    //     position = Servo.getFeedback('presentPosition');
-    //     torque.push(aux[13]);
-    //     torque_anterior = torque_test;
-    //     torque_test = torque[torque.length - 1];
-    //     if( ((Math.abs(torque_test) - Math.abs(torque_anterior)) > 80)  && (Math.abs(torque_test) > Math.abs(torque_anterior)) ) {
-    //       clearInterval(myInterval);
-    //       Servo.moveAll(position);
-    //       console.log(torque)
-    //     }
-    //   }, time);    
-
-    // console.log(torque)
-
-    // var t = setTimeout(function() {           
-    //   clearInterval(myInterval);
-    //   console.log(torque);
-    // }, 10000);
-
   },
 
+  // Rise the legs 0, 3, 4 or the legs 1, 2, 5
   riseGroup: function(i){
     var movingLegs = [];
     if(i == 0) movingLegs = [0, 3, 4];
@@ -99,9 +70,11 @@ var Motion = {
     console.log(Uf1)
 
     // Subir a pata
-    Motion.moveTo([0, 0, 50], r, Uf1, 1000, 10);
+    Motion.moveTo([0, 0, 0], r, Uf1, 1000, 10);
   },
 
+
+  // Descend the i-th leg until it touches the ground
   descendLeg: function(i){
     var descend = true;
     var dt = 250; // in ms
@@ -154,127 +127,8 @@ var Motion = {
     }, dt);
   },
 
-
-  descendGroup: function(i, startingTime){
-    var descend = true;
-    var dt = 450; // in ms
-    var dx = 5; // in mm
-
-    var delta_x_base = [0, 0, -dx];
-    var xf = [];
-
-    var aux = [];
-    var load1 = [[], [], []];
-    var load2 = [[], [], []];
-    var position = [];
-    var current_load1 = [];
-    var previous_load1 = [];
-    var current_load2 = [];
-    var previous_load2 = []; 
-    var count;
-    var stop = false;
-
-
-    var movingLegs = [];
-    if(i == 0) movingLegs = [0, 3, 4];
-    else movingLegs = [1, 2, 5];
-    var descendingLegs = [0, 1, 2]; // Index of the legs in movingLegs that are still descending
-    var newDescendingLegs = [];
-    var move = [];
-
-    var U_down = [];
-    var displacement_down = [];
-
-    var waitToStart = setTimeout( function(){
-
-    //**************************************************************************************************
-        var myInterval = setInterval(function(){
-          //console.log("CHAMANDO myInterval")
-          //console.log("descendingLegs")
-          //console.log(descendingLegs)
-
-          move = [];
-          for(var k = 0; k < descendingLegs.length; k++){
-            displacement_down.push([0, 0, -dx]);
-            move.push(movingLegs[descendingLegs[k]]);
-          }
-          //if(descendingLegs.length != 3) delta_x_base = [0,0,0];
-          if(true) delta_x_base = [0,0,0];
-          xf = math.add(x, delta_x_base);
-          U_down = Motion.getNewLegPositions(move, displacement_down, U);
-          if(descend) 
-            Motion.moveTo(xf, r, U_down, dt-30, 5); 
-
-        var wait_move = setTimeout(function(){
-        //console.log("CHAMANDO WAIT MOVE")
-          //*************************
-
-          aux = Servo.getFeedback('presentLoad');
-          position = Servo.getFeedback('presentPosition');
-
-          for(var m = 0; m < movingLegs.length; m++){
-            if(descendingLegs.indexOf(m) != -1){
-              load1[m].push(aux[3*movingLegs[m] + 1]);
-              load2[m].push(aux[3*movingLegs[m] + 2]);
-
-              previous_load1[m] = current_load1[m];
-              current_load1[m] = load1[m][load1[m].length - 1];
-
-              previous_load2[m] = current_load2[m];
-              current_load2[m] = load2[m][load2[m].length - 1];
-            }
-          }
-
-          count =  descendingLegs.length;
-          newDescendingLegs = Motion.clone(descendingLegs);
-          for(var n = 0; n < count; n++){
-            //console.log("LEG = ")
-            //console.log(descendingLegs[n]);
-            //console.log(descendingLegs)
-            if( (((Math.abs(current_load1[descendingLegs[n]]) - Math.abs(previous_load1[descendingLegs[n]])) > 50)  
-                    && (Math.abs(current_load1[descendingLegs[n]]) > Math.abs(previous_load1[descendingLegs[n]])))
-                    ||
-                    (((Math.abs(current_load2[descendingLegs[n]]) - Math.abs(previous_load2[descendingLegs[n]])) > 200)  
-                    && (Math.abs(current_load2[descendingLegs[n]]) > Math.abs(previous_load2[descendingLegs[n]])))
-                     ) {
-                newDescendingLegs.splice(n, 1);
-                stop = true;
-                //console.log("PAROU A PATAAAAAA")
-                //console.log(descendingLegs[n]);
-                //console.log("AQUIIIII **************************************************************")
-                //console.log(load1);
-                //Servo.moveAll(position);
-                //console.log([load1, load2])
-                if(newDescendingLegs.length == 0){
-                  descend = false;
-                  //console.log("PAROU TUUUUDO")
-                  //console.log("LOAD 1")
-                  //console.log(load1);
-                  //console.log("LOAD 2")
-                  //console.log(load2);
-                  clearTimeout(wait_move);
-                  clearInterval(myInterval);
-                  descendingLegs = Motion.clone(newDescendingLegs);
-                  break; 
-                }
-              }
-          }
-          if (stop) {
-            Servo.moveAll(position);
-            stop = false;
-          }
-          descendingLegs = Motion.clone(newDescendingLegs);
-
-            }, dt - 20);
-            //*************************
-
-        }, dt);
-    //******************************************************************************************************************
-     }, startingTime);
-
-
-  },
-
+  // "Bring" the fixed frame to the center of the base, as it is after initialization, but does not adapt
+  // the fixed frame to the rotation of the base.
   resetFrames: function(){
     var xx = math.squeeze(x);
     var delta_U = [xx, xx, xx, xx, xx, xx];
@@ -282,11 +136,14 @@ var Motion = {
     x = [0,0,0];
   },
 
+  // Returns current state (x, U, r) = (center, legs, rotation)
   getState: function(json){
     if (json) return {x: x, r: r, U: U};
     return [x, U, r];
   },
 
+
+  // Moves the robot to a inital position
   init: function(x_i, U_i, r_i){
       var h = 110;
       var u = [];
@@ -298,7 +155,9 @@ var Motion = {
         u[5] = [c.X2 + 140, -c.Y2 - 50, -h];
       // Writing states
       U = U_i || u;
-      x = x_i || [0, 0, 0];
+      //x = x_i || [0, 0, 0];
+      if(! x_i) x = [0,0,0];
+      else x = x_i;
       r = r_i || [0,0,0];
       Motion.moveToInit();
   },
@@ -307,6 +166,8 @@ var Motion = {
       // Moving
       Servo.moveAll(this.getStateAngles(r, x, U), 80);
   },
+
+
 
   initAuto: function(timeUnit){
     var timeUnit = timeUnit || 1000;
@@ -335,16 +196,16 @@ var Motion = {
 
     U = this.clone(u);
 
-    console.log("abviasivbebeubv")
-    console.log(timeUnit)
-
     Motion.moveTo(x, r, u, 6*timeUnit, 2*timeUnit + 500);
   },
 
+  
   // group = 0 -> legs: 0, 3, 4
   // group = 1 -> legs: 1, 2, 5
   // legsDisplacement: matrix 3x3 (line i: displacement of a leg)
-  // n_points: number of points in one step
+  // startingTime: when to begin the movement (in milliseconds)
+  // n_points: number of intermediate positions between the initial (before the step) and the final position (after the step);
+  //           migth be used to "smooth" the movement or reduce slips
   // heights: array of size n_points
   // factors: array of size n_points
   tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime, n_points, heights, factors){
@@ -377,18 +238,7 @@ var Motion = {
       def_factors[i] = def_factors[i-1] + 1/(n_points-3);
     }
     def_factors[n_points-1] = 1;
-    factors =  factors || def_factors;
-
-    // default factors_base
-    // var def_factors_base = [];
-    // def_factors_base[0] = 0;
-    // def_factors_base[1] = 0;
-    // for(var i = 2; i < n_points - 1; i++){
-    //   def_factors_base[i] = def_factors_base[i-1] + 1/(n_points-3);
-    // }
-    // def_factors_base[n_points-1] = 1;
-    // factors_base =  factors_base || def_factors_base;
-
+    if(! factors) factors = def_factors;
 
     // default heights
     var def_heights = [];
@@ -396,9 +246,10 @@ var Motion = {
       if((i == n_points - 1)  || (i == 0)) def_heights[i] = 0;
       else def_heights[i] = delta_h;
     }
-    heights = heights || def_heights;
+    if(!heights) heights = def_heights;
 
-    // calculating list_x, list_r, list_U and list_time
+    // Calculating list_x, list_r, list_U and list_time
+    // These lists contain the state of the robot in each point of the step.
     for(var i = 0; i < n_points; i++){
       // list_x
       list_x[i] = math.multiply( 
@@ -477,13 +328,17 @@ var Motion = {
     for(var i = 1; i < n_points; i++){
       list_starting_time[i] = list_starting_time[i-1] + list_time[i-1]; 
     }
+
+    //***********************
+    console.log("*************************")
+    console.log(list_time)
+    console.log(list_starting_time)
+    console.log(d)
+
     
-    //console.log("****************")
-    //console.log(d);
-    //console.log(list_time)
-    //console.log(list_starting_time)
-    //console.log(list_starting_time)
-    //console.log("****************")
+    console.log("*************************")
+    //**********************
+
 
     // Moving 
     for(var i = 0; i < n_points; i++){
@@ -494,6 +349,7 @@ var Motion = {
                     list_starting_time[i]);
     }
   },
+
 
   // movingLegs: vector containing the legs that are moving (from 0 to 5)
   // diplacement: matrix (movingLegs.length x 3) containing the displacement of each leg in the vector movingLegs
@@ -601,29 +457,13 @@ var Motion = {
     return Math.round((math.abs(start - end)/(duration/1000))*(0.3*1023/MAX_SERVO_SPEED*1));
   },
 
-  // xf: final center position
-  // rf: final roation angles
-  // Uf: final contact points (matrix 6x3)
-  // time: movement time in ms
 
-
-
-
-  // Angles: relative rotation
-  turn: function(angles, direction) {
-    var U1 = [];
-    var U2 = [];
-    var R  = [];
-    var aux = [];
-    //First step - legs 0, 3 and 4
-
-
-    aux = math.subset(U, math.index(0, [0,3]));
-
-
-  },
-
-// move all legs, based on body base
+// Inverse kinematics
+// angles: rotation angles (r_x, r_y, r_z), in radians
+// xBase: center of the base
+// u: 6x3 matrix containing the legs' (tips) positions
+// xLeg: 6x3 matrix containing the positions of the legs' junction in the base frame (it's default value is
+//        given below and should not be changed unless the base dimensions are changed)
   getStateAngles: function(angles, xBase, u, xLeg) {
     if (!u) {
       var u = [];
@@ -659,18 +499,13 @@ var Motion = {
       return false;
     }
     //console.log(bits);
-
-    //hex.Servo.moveAll(bits, speed);
-    //hex.Base.rotation = angles;
-    //hex.Base.position = xBase;
-    //console.log(bits);
     return bits;
   },
 
   // xBase: coordinates of the center of the base
-  // xLeg : olha pra cima
-  // u: ponto de contato da pata com o chão em relação ao referencial fixo
-  // angles: angulos de rotação
+  // xLeg: vector containing the position of the leg's junction in the base frame 
+  // u: vector containing the legs (tip) position
+  // angles: rotation angles (r_x, r_y, r_z), in radians
   // return [alpha, beta, gamma], from 0 to 1023
   getLegAngles: function (i, xBase, xLeg, u, angles) {
 
@@ -763,6 +598,9 @@ var Motion = {
     return result;
   },
 
+  // Converts an array [alpha, beta, gamma] in radians to and array
+  // [alpha_bits, beta_bits, gamma_bits] whose components are between 0 and 1023, so
+  // that these angles can be sent to the servomotors.
   radiansToBits: function(radians, negative) {
 
     if (Array.isArray(radians)) {
@@ -783,6 +621,9 @@ var Motion = {
     return bits > 1023 ? 1023 : bits;
   },
 
+  // Returns a rotation matrix
+  // a = [angle_x, angle_y, angle_z]
+  // R = Rx * Ry * Rz
   rotationXYZ: function(a) {
 
     var t;

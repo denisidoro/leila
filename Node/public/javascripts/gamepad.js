@@ -67,7 +67,6 @@ function initGamepad() {
         else { configs.base.posX -= 5; changeState(); }
         break;
       case "DPAD_RIGHT":
-        console.log('right');
         if (s.RIGHT_TOP_SHOULDER == 1) { gamepad.currentServo += (gamepad.currentServo == 17 ? -17 : 1); }  
         else if (s.FACE_2 == 1) { semit("hex.Walk.turn(-15, 10, false, true);"); }
         else { configs.base.posX += 5; changeState(); }

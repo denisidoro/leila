@@ -9,7 +9,7 @@ define("Y2",				130.41);
 // Angle limits
 define("ALPHA_LIMIT",		1.309); 	// in rad (~ 75 degrees)
 //define("BETA_UPPER_LIMIT",	1.5708); 	// in rad (~ 90 degress)
-define("BETA_UPPER_LIMIT",	2.2); 	// in rad 
+define("BETA_UPPER_LIMIT",	2.5); 	// in rad 
 define("BETA_LOWER_LIMIT",  -0.523599); // in rad (~ -30 degrees)
 define("GAMMA_UPPER_LIMIT",	2.8);    	// in rad 
 define("GAMMA_LOWER_LIMIT", 0);

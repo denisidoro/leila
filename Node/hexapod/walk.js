@@ -31,11 +31,27 @@ var Walk = function(gamepad) {
 		}, time || 0);
 	}
 
+	this.reset2 = function(time){		
+		var state = Motion.getState(true);
+		//console.log(state)
+		var U = state.U, r = state.r, x = state.x;
+
+		console.log('reset');
+		setTimeout(function() {
+			self.last = false;
+			self.shouldMove = false;
+			self.stepCount = 0;
+			Animation.reset();
+			if (!x || x != []) Motion.init([0, 0, math.subset(x, math.index(2))]);
+			else Motion.init();
+		}, time || 0);
+	}
+
 	this.resetAll = function() {
 		self.group = 1;
-		self.stepTime = 1500;
+		self.stepTime = 2500;
 		self.stepSize = 100;
-		self.smartHeight = 100;
+		self.smartHeight = 90;
 		self.angle = 0;
 		self.reset();
 	}
@@ -47,10 +63,16 @@ var Walk = function(gamepad) {
 	}
 
 	this.walk = function(n_steps) {
-		console.log("WALLLLLLK")
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
 			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false);
+		}
+	}
+
+	this.walkCrazy = function(n_steps) {
+		for (var i = 0; i < n_steps; i++) {
+			var last = (i == n_steps - 1);
+			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false, true);
 		}
 	}
 
@@ -84,9 +106,7 @@ var Walk = function(gamepad) {
 		var state = Motion.getState(true);
 		var r = state.r;
 
-		if (relative) angle += Motion.radiansToDegrees(math.subset(r, math.index(2)));
-		console.log("ANGULO: " + angle);
-		
+		if (relative) angle += Motion.radiansToDegrees(math.subset(r, math.index(2)));		
 		self.stepSize = 0; 
 		self.step([0,0], startingTime, last, angle || 0.0000001); // 0 is false, 0.00000001 is beautiful
 		self.step([0,0], startingTime + self.stepTime, last, angle || 0.0000001); 
@@ -182,20 +202,19 @@ var Walk = function(gamepad) {
 		if(touch){
 			if(!n_points) n_points = 5;
 			var heights = [];
-    		for(var i = 0; i < n_points; i++){
-      			if(i == 0) heights[i] = 0;
-      			else heights[i] = self.smartHeight;
-      		}
-      		if(self.stepCount == 0)
-      			Motion.tripodStep(self.group, uf, math.add(xf, [0, 0, self.smartHeight]), rf, self.stepTime, startingTime, n_points, heights);
-      		Motion.descendGroup(self.group, self.stepCount == 0 ? startingTime + self.stepTime + 1000 : 100);
-		}
-		
 
+    		for(var i = 0; i < n_points; i++){
+      			if((i == n_points - 1)  || (i == 0)) heights[i] = 0;
+      			else heights[i] = Motion.getDefaultHeight() ;
+    		}
+
+      		Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points, heights);
+
+		}
 		// this is necessary independent of the step logic
 		self.stepCount += 1;
 		if (last)
-			self.reset(startingTime + self.stepTime);
+			self.reset2(startingTime + self.stepTime);
 
     }
 
@@ -206,7 +225,6 @@ var Walk = function(gamepad) {
 	//***************************************************************************************************
 	//***************************************************************************************************
 	this.descendGroup = function(i, startingTime){
-
 		// get state
 		var state = Motion.getState(true);
 		//console.log(state)
@@ -215,9 +233,6 @@ var Walk = function(gamepad) {
 	    var descend = true;
 	    var dt = 350; // in ms
 	    var dx = 5; // in mm
-
-	    var delta_x_base = [0, 0, -dx];
-	    var xf = [];
 
 	    var aux = [];
 	    var load1 = [[], [], []];
@@ -244,9 +259,6 @@ var Walk = function(gamepad) {
 
 	    //**************************************************************************************************
 	        var myInterval = setInterval(function(){
-	          //console.log("CHAMANDO myInterval")
-	          //console.log("descendingLegs")
-	          //console.log(descendingLegs)
 	          state = Motion.getState(true);
 	          U = state.U, r = state.r, x = state.x;
 
@@ -255,16 +267,11 @@ var Walk = function(gamepad) {
 	            displacement_down.push([0, 0, -dx]);
 	            move.push(movingLegs[descendingLegs[k]]);
 	          }
-	          if(descendingLegs.length != 3) delta_x_base = [0,0,0];
-	          //if(true) delta_x_base = [0,0,0];
-	          xf = math.add(x, delta_x_base);
 	          U_down = Motion.getNewLegPositions(move, displacement_down, U);
 	          if(descend) 
-	            Motion.moveTo(xf, r, U_down, dt-30, 5); 
+	            Motion.moveTo(x, r, U_down, dt-30, 5); 
 
 	        var wait_move = setTimeout(function(){
-	        //console.log("CHAMANDO WAIT MOVE")
-	          //*************************
 
 	          aux = Servo.getFeedback('presentLoad');
 	          position = Servo.getFeedback('presentPosition');
@@ -285,29 +292,17 @@ var Walk = function(gamepad) {
 	          count =  descendingLegs.length;
 	          newDescendingLegs = Motion.clone(descendingLegs);
 	          for(var n = 0; n < count; n++){
-	            //console.log("LEG = ")
-	            //console.log(descendingLegs[n]);
-	            //console.log(descendingLegs)
-	            if( (((Math.abs(current_load1[descendingLegs[n]]) - Math.abs(previous_load1[descendingLegs[n]])) > 50)  
+
+	            if( (((Math.abs(current_load1[descendingLegs[n]]) - Math.abs(previous_load1[descendingLegs[n]])) > 30)  
 	                    && (Math.abs(current_load1[descendingLegs[n]]) > Math.abs(previous_load1[descendingLegs[n]])))
 	                    ||
 	                    (((Math.abs(current_load2[descendingLegs[n]]) - Math.abs(previous_load2[descendingLegs[n]])) > 200)  
 	                    && (Math.abs(current_load2[descendingLegs[n]]) > Math.abs(previous_load2[descendingLegs[n]])))
 	                     ) {
 	                newDescendingLegs.splice(n, 1);
-	                //console.log("PAROU A PATAAAAAA")
-	                //console.log(descendingLegs[n]);
-	                //console.log("AQUIIIII **************************************************************")
-	                //console.log(load1);
-	                //Servo.moveAll(position);
-	                //console.log([load1, load2])
+
 	                if(newDescendingLegs.length == 0){
 	                  descend = false;
-	                  //console.log("PAROU TUUUUDO")
-	                  //console.log("LOAD 1")
-	                  //console.log(load1);
-	                  //console.log("LOAD 2")
-	                  //console.log(load2);
 	                  clearTimeout(wait_move);
 	                  clearInterval(myInterval);
 	                  descendingLegs = Motion.clone(newDescendingLegs);
@@ -325,9 +320,6 @@ var Walk = function(gamepad) {
 	     }, startingTime);
 
   }
-	//***************************************************************************************************
-	//***************************************************************************************************
-
 
 };
 

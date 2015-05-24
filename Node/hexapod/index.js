@@ -9,7 +9,8 @@ var classes = [
 	{name: 'Movement', file: './movement'},
 	{name: 'Accel', file: './adxl345', instance: true},
 	{name: 'Base', file: './base'},
-	{name: 'Kalman', file: './kalman'}
+	{name: 'Kalman', file: './kalman'},
+	{name: 'KalmanAngle', file: './kalmanAngle'}
 ];
 
 classes.forEach(function(cls) {

@@ -40,10 +40,8 @@ module.exports = function() {
         io.emit('response', msg);
     }
 
-    // Initialization
-
+    // Initialization: INSERT HERE ANY AUTOINIT CODE
     ms.init();
     hex.Base.init();
-
 
 }

@@ -205,7 +205,7 @@ var Motion = {
   // legsDisplacement: matrix 3x3 (line i: displacement of a leg)
   // startingTime: when to begin the movement (in milliseconds)
   // n_points: number of intermediate positions between the initial (before the step) and the final position (after the step);
-  //           migth be used to "smooth" the movement or reduce slips
+  //           might be used to "smooth" the movement or reduce slips
   // heights: array of size n_points
   // factors: array of size n_points
   tripodStep: function(group, legsDisplacement, xf, rf, time, startingTime, n_points, heights, factors){
@@ -330,13 +330,11 @@ var Motion = {
     }
 
     //***********************
-    console.log("*************************")
-    console.log(list_time)
-    console.log(list_starting_time)
-    console.log(d)
-
-    
-    console.log("*************************")
+    // console.log("*************************")
+    // console.log(list_time)
+    // console.log(list_starting_time)
+    // console.log(d)
+    // console.log("*************************")
     //**********************
 
 
@@ -370,15 +368,13 @@ var Motion = {
     return math.add(Ui, delta_U)
   },
 
-  // New version of changeState()
   // Move to new position
   // xf: final center position
-  // rf: final roation angles (in degrees)
+  // rf: final roation angles (in radians)
   // Uf: final contact points (matrix 6x3)
   // time: movement time in ms
   // if the movement is relative, xf is seen as delta_x
   moveTo: function(xf, rf, Uf, time, startingTime, isRelative_x, isRelative_r, isRelative_U, isSlider){
-    //rf = Motion.degreesToRadians(rf);
 
     try {
       

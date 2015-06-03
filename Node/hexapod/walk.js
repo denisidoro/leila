@@ -69,7 +69,7 @@ var Walk = function(gamepad) {
 		}
 	}
 
-	this.walkCrazy = function(n_steps) {
+	this.walkIrregular = function(n_steps) {
 		for (var i = 0; i < n_steps; i++) {
 			var last = (i == n_steps - 1);
 			self.step([self.angle, 0], i*(self.stepTime + 10), last, false, false, true);
@@ -116,7 +116,7 @@ var Walk = function(gamepad) {
 	}
 
 
-	this.step = function(direction, startingTime, last, base_angles, n_points, touch) {
+	this.step = function(direction, startingTime, last, base_angles, n_points, isIrregularSurface) {
 
 		console.log("step: (" + [startingTime, self.angle.toFixed(0), self.stepTime].join(", ") + ")");
 
@@ -196,16 +196,16 @@ var Walk = function(gamepad) {
 			uf[j] = math.subtract(uf[j], ui[j]); // delta_u instead of uf, tripodStep() takes the variation
 		}
 
-		if(!touch)
+		if(!isIrregularSurface)
 			Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points);
 
-		if(touch){
+		if(isIrregularSurface){
 			if(!n_points) n_points = 5;
 			var heights = [];
 
     		for(var i = 0; i < n_points; i++){
       			if((i == n_points - 1)  || (i == 0)) heights[i] = 0;
-      			else heights[i] = Motion.getDefaultHeight() ;
+      			else heights[i] = Motion.getDefaultHeight() - 25;
     		}
 
       		Motion.tripodStep(self.group, uf, xf, rf, self.stepTime, startingTime, n_points, heights);
